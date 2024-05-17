@@ -1,0 +1,23 @@
+{
+    "name": "checkflow",
+    "private": true,
+    "scripts": {
+        "build": "turbo build",
+        "dev": "turbo dev",
+        "lint": "turbo lint",
+        "format": "biome check . --apply-unsafe"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^1.6.4",
+        "prettier": "^3.2.5",
+        "tsconfig": "workspace:*",
+        "turbo": "latest"
+    },
+    "packageManager": "pnpm@8.9.0",
+    "engines": {
+        "node": ">=18"
+    },
+    "dependencies": {
+        "drizzle-kit": "^0.20.17"
+    }
+}

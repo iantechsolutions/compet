@@ -1,0 +1,140 @@
+import { TRPCError, initTRPC } from '@trpc/server'
+import { getServerAuthSession } from 'auth-helpers'
+import { eq } from 'drizzle-orm'
+import superjson from 'superjson'
+import { ZodError } from 'zod'
+
+import { db, schema } from '~/server/db'
+
+/**
+ * 1. CONTEXT
+ *
+ * This section defines the "contexts" that are available in the backend API.
+ *
+ * These allow you to access things when processing a request, like the database, the session, etc.
+ *
+ * This helper generates the "internals" for a tRPC context. The API handler and RSC clients each
+ * wrap this and provides the required context.
+ *
+ * @see https://trpc.io/docs/server/context
+ */
+export const createTRPCContext = async (opts: { headers: Headers }) => {
+    return {
+        db,
+        ...opts,
+    }
+}
+
+/**
+ * 2. INITIALIZATION
+ *
+ * This is where the tRPC API is initialized, connecting the context and transformer. We also parse
+ * ZodErrors so that you get typesafety on the frontend if your procedure fails due to validation
+ * errors on the backend.
+ */
+const t = initTRPC.context<typeof createTRPCContext>().create({
+    transformer: superjson,
+    errorFormatter({ shape, error }) {
+        return {
+            ...shape,
+            data: {
+                ...shape.data,
+                zodError: error.cause instanceof ZodError ? error.cause.flatten() : null,
+            },
+        }
+    },
+})
+
+/**
+ * Create a server-side caller.
+ *
+ * @see https://trpc.io/docs/server/server-side-calls
+ */
+export const createCallerFactory = t.createCallerFactory
+
+/**
+ * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
+ *
+ * These are the pieces you use to build your tRPC API. You should import these a lot in the
+ * "/src/server/api/routers" directory.
+ */
+
+/**
+ * This is how you create new routers and sub-routers in your tRPC API.
+ *
+ * @see https://trpc.io/docs/router
+ */
+export const createTRPCRouter = t.router
+
+/**
+ * Public (unauthenticated) procedure
+ *
+ * This is the base piece you use to build new queries and mutations on your tRPC API. It does not
+ * guarantee that a user querying is authorized, but you can still access user session data if they
+ * are logged in.
+ */
+export const publicProcedure = t.procedure
+
+export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
+    const session = await getServerAuthSession()
+
+    if (!session) {
+        throw new TRPCError({
+            code: 'UNAUTHORIZED',
+        })
+    }
+
+    const user = await ctx.db.query.users.findFirst({
+        where: eq(schema.users.Id, session.user.id),
+        columns: {
+            client: true,
+            company: true,
+            splicer: true,
+        },
+    })
+
+    if (!user) {
+        await ctx.db
+            .insert(schema.users)
+            .values({
+                Id: session.user.id,
+                email: session.user.email,
+                name: session.user.name,
+                picture: session.user.picture,
+            })
+            .onConflictDoNothing()
+    }
+
+    return next({
+        ctx: {
+            session,
+            ...ctx,
+            isCompany: user?.client ?? false,
+            isClient: user?.company ?? false,
+        },
+    })
+})
+
+export const sellerProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+    if (!ctx.isCompany) {
+        throw new TRPCError({
+            code: 'FORBIDDEN',
+        })
+    }
+
+    return next({
+        ctx,
+    })
+})
+
+export const buyerProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+    if (!ctx.isClient) {
+        throw new TRPCError({
+            code: 'FORBIDDEN',
+        })
+    }
+
+    return next({
+        ctx,
+    })
+})
