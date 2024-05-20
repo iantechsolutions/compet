@@ -5,6 +5,7 @@ import { Description } from '@radix-ui/react-dialog'
 import { isNotNull, relations, sql } from 'drizzle-orm'
 import { index, int, sqliteTableCreator, text } from 'drizzle-orm/sqlite-core'
 import {nanoid} from 'nanoid'
+import { z } from 'zod'
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
  * database instance for multiple projects.
@@ -49,7 +50,10 @@ export const users = createTable(
 export const clientes = createTable(
     'Cliente',
     {
-        Id: int('Id', { mode: 'number' }).notNull().primaryKey({ autoIncrement: true }),
+        Id: text("id", { length: 255 })
+        .notNull()
+        .primaryKey()
+        .$default(()=>createId()),
         Nombre: text('Nombre', { length: 256 }),
         Direccion: text('Direccion', { length: 256 }),
     },
@@ -59,10 +63,14 @@ export const clientes = createTable(
 )
 
 
+
 export const empalmistas = createTable(
     'Empalmista',
     {
-        Id: int('Id', { mode: 'number' }).notNull().primaryKey({ autoIncrement: true }),
+        Id: text("id", { length: 255 })
+        .notNull()
+        .primaryKey()
+        .$default(()=>createId()),
         Nombre: text('Nombre', { length: 256 }),
     },
     (example) => ({
@@ -73,7 +81,10 @@ export const empalmistas = createTable(
 export const fotos = createTable(
     'Fotos',
     {
-        Id: int('Id', { mode: 'number' }).notNull().primaryKey({ autoIncrement: true }),
+        Id: text("id", { length: 255 })
+        .notNull()
+        .primaryKey()
+        .$default(()=>createId()),
         Link: text('Link', { length: 256 }),
         Instalacion: int('Instalacion').notNull().references(()=>instalaciones.Id)
         
@@ -94,7 +105,10 @@ export const fotosRelation = relations(fotos, ({ one }) => ({
 export const instalaciones = createTable(
     'Instalacion',
     {
-        Id: int('Id', { mode: 'number' }).notNull().primaryKey({ autoIncrement: true }),
+        Id: text("id", { length: 255 })
+        .notNull()
+        .primaryKey()
+        .$default(()=>createId()),
         Pedido: int('Pedido').notNull().references(()=>pedidos.Id),
         Empalmista: int('Empalmista').references(()=>empalmistas.Id),
         Fecha_de_alta: int('FechaAlta', { mode: 'timestamp' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
@@ -132,7 +146,10 @@ export const instalacionesRelations = relations(instalaciones, ({ one,many }) =>
   export const pedidos = createTable(
     'Pedido',
     {
-        Id: int('Id', { mode: 'number' }).notNull().primaryKey({ autoIncrement: true }),
+        Id: text("id", { length: 255 })
+        .notNull()
+        .primaryKey()
+        .$default(()=>createId()),
         Fecha_de_creacion: int('FechaCreacion', { mode: 'timestamp' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
         Fecha_de_aprobacion: int('FechaAprobacion', { mode: 'timestamp' }),
         Fecha_de_envio:int('FechaEnvio', { mode: 'timestamp' }),
@@ -156,7 +173,10 @@ export const pedidosRelations = relations(pedidos, ({ one,many }) => ({
 export const productosPedidos = createTable(
     'ProductosPedidos',
     {
-        Id: int('Id', { mode: 'number' }).notNull().primaryKey({ autoIncrement: true }),
+        Id: text("id", { length: 255 })
+        .notNull()
+        .primaryKey()
+        .$default(()=>createId()),
         Pedido: int('Pedido').notNull().references(()=>pedidos.Id),
         Producto: int('Producto').notNull().references(()=>productos.Id),
         Cantidad: int('Cantidad').notNull(),
@@ -186,7 +206,10 @@ export const productosPedidosRelation = relations(productosPedidos, ({ one }) =>
 export const productos = createTable(
     'Producto',
     {
-        Id: int('Id', { mode: 'number' }).notNull().primaryKey({ autoIncrement: true }),
+        Id: text("id", { length: 255 })
+        .notNull()
+        .primaryKey()
+        .$default(()=>createId()),
         Nombre: text('Nombre', { length: 256 }).notNull(),
         Codigo_de_barras: text('BarCode', { length: 256 }),
         Descripcion: text('Descripcion',{length: 256})
@@ -283,3 +306,7 @@ export const pasoCritico = createTable("paso_critico", {
     useCamera: int('useCamera', { mode: 'boolean' }).default(false),
 
 });
+
+function createInsertSchema(Clientes: any) {
+    throw new Error('Function not implemented.')
+}

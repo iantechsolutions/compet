@@ -1,42 +1,41 @@
 import { z } from 'zod'
-import { db } from '~/server/db'
+import { db, schema } from '~/server/db'
 import { asc, eq } from "drizzle-orm";
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '~/server/api/trpc'
 import { clientes } from '~/server/db/schema'
 
 export const clientesRouter = createTRPCRouter({
-    create: publicProcedure.input(z.object({ name: z.string().min(1), direccion: z.string()})).mutation(async ({ ctx, input }) => {
-        // simulate a slow db call
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+  create: protectedProcedure
+  .input(z.object( {Direccion: z.string(), Nombre: z.string() }))
+  .mutation(async ({ input }) => {
+    
+    await db.insert(clientes).values(input);
 
-        await ctx.db.insert(clientes).values({
-            Nombre:input.name,
-            Direccion: input.direccion,
-        })
+  }),
+
+    list: publicProcedure.query(async ({}) => {
+        const clientes = await db.query.clientes.findMany();
+        return clientes;
     }),
 
-    list: publicProcedure.query(({ ctx }) => {
-        return ctx.db.query.clientes.findMany()
-    }),
-
-    get: publicProcedure
+    get: protectedProcedure
     .input(
       z.object({
-        Id: z.number(),
+        clienteId: z.string(),
       }),
     )
     .query(async ({ input }) => {
-      const channel = await db.query.clientes.findFirst({
-        where: eq(clientes.Id, input.Id)
+      const administrative_audit = await db.query.clientes.findFirst({
+        where: eq(schema.clientes.Id, input.clienteId),
       });
 
-      return channel;
+      return administrative_audit;
     }),
-
-    update: publicProcedure.input(z.object({Id:z.number(), name: z.string().min(1), direccion: z.string() })).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({Id:z.string(), name: z.string().min(1), direccion: z.string() })).mutation(async ({ ctx, input }) => {
       await db
         .update(clientes)
         .set({
+          Id: input.Id,
           Nombre: input.name,
           Direccion: input.direccion,
         })
@@ -46,7 +45,7 @@ export const clientesRouter = createTRPCRouter({
     delete: publicProcedure
     .input(
       z.object({
-        Id: z.number(),
+        Id: z.string(),
       }),
     )
     .mutation(async ({ input }) => {

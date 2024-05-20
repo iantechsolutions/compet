@@ -35,8 +35,8 @@ export function AddClienteDialog() {
   async function handleCreate() {
     try {
       await createChannel({
-        name,
-        direccion,
+        Nombre: name,
+        Direccion: direccion,
       });
 
       toast.success("Cliente creado correctamente");

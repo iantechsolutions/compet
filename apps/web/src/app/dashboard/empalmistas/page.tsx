@@ -5,7 +5,8 @@ import { List, ListTile } from "~/components/list";
 import { AddEmpalmistaDialog } from "./add-empalmista-dialog";
 
 export default async function Home(){
-    const clients = await api.empalmistas.list.query();
+
+    const empalmistas = await api.empalmistas.list();
     return(
       <LayoutContainer>
       <section className="space-y-2">
@@ -14,12 +15,12 @@ export default async function Home(){
           <AddEmpalmistaDialog />
         </div>
         <List>
-          {clients.map((clients) => {
+          {empalmistas.map((empalmistas) => {
             return (
               <ListTile
-                key={clients.Id}
-                leading={clients.Id}
-                title={clients.Nombre}
+                key={empalmistas.Id}
+                leading={empalmistas.Id}
+                title={empalmistas.Nombre}
               />
             );
           })}

@@ -33,7 +33,7 @@ export const instalacionesRouter = createTRPCRouter({
     get: publicProcedure
     .input(
       z.object({
-        Id: z.number(),
+        Id: z.string(),
       }),
     )
     .query(async ({ input }) => {
@@ -53,7 +53,7 @@ export const instalacionesRouter = createTRPCRouter({
       return channel;
     }),
 
-    update: publicProcedure.input(z.object({Id:z.number(), tipoInstalacion: z.string(), Pedido: z.number(),Empalmista: z.number(),FechaAlta: z.number(),FechaInst: z.number(),FechaVeri: z.number(),Estado: z.number(),Cliente: z.number() })).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({Id:z.string(), tipoInstalacion: z.string(), Pedido: z.number(),Empalmista: z.number(),FechaAlta: z.number(),FechaInst: z.number(),FechaVeri: z.number(),Estado: z.number(),Cliente: z.number() })).mutation(async ({ ctx, input }) => {
       await db
         .update(instalaciones)
         .set({
@@ -72,7 +72,7 @@ export const instalacionesRouter = createTRPCRouter({
     delete: publicProcedure
     .input(
       z.object({
-        Id: z.number(),
+        Id: z.string(),
       }),
     )
     .mutation(async ({ input }) => {

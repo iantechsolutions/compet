@@ -52,16 +52,120 @@ app.use(async (c, next) => {
     next()
 })
 
-app.use(async (c,next) => {
-    console.log("llega");
-    const products = await api.productos.list();
-    console.log(products)
-    c.set('productos',products);
-    next()
+// app.use(async (c,next) => {
+//     console.log("llega");
+//     const products = await api.productos.list();
+//     c.set('productos',products);
+//     next()
+// })
+
+app.get('/clientes', async (c) =>{
+    const clients = await api.clientes.list();
+    return c.json({clients})
 })
+app.get('/clientes/:Id', async (c) =>{
+    const Id = c.req.param('Id');
+    const products = await api.clientes.get({
+        clienteId: Id,
+    });
+    return c.json({products})
+});
+
+app.get('/productos', async (c) =>{
+    const productos = await api.productos.list();
+    return c.json({productos})
+})
+app.get('/productos/:Id', async (c) =>{
+    const Id = c.req.param('Id');
+    const products = await api.productos.get({
+        Id: Id,
+    });
+    return c.json({products})
+});
+
+app.get('/pedidos', async (c) =>{
+    const pedidos = await api.pedidos.list();
+    return c.json({pedidos})
+})
+app.get('/pedidos/:Id', async (c) =>{
+    const Id = c.req.param('Id');
+    const pedidos = await api.pedidos.get({
+        Id: Id,
+    });
+    return c.json({pedidos})
+});
+
+app.get('/instalaciones', async (c) =>{
+    const instalaciones = await api.instalaciones.list();
+    return c.json({instalaciones})
+})
+app.get('/instalaciones/:Id', async (c) =>{
+    const Id = c.req.param('Id');
+    const instalaciones = await api.instalaciones.get({
+        Id: Id,
+    });
+    return c.json({instalaciones})
+});
+app.get('/fotos', async (c) =>{
+    const fotos = await api.fotos.list();
+    return c.json({fotos})
+})
+app.get('/fotos/:Id', async (c) =>{
+    const Id = c.req.param('Id');
+    const fotos = await api.fotos.get({
+        Id: Id,
+    });
+    return c.json({fotos})
+});
+
+app.get('/empalmistas', async (c) =>{
+    const empalmistas = await api.empalmistas.list();
+    return c.json({empalmistas})
+})
+app.get('/empalmistas/:Id', async (c) =>{
+    const Id = c.req.param('Id');
+    const empalmistas = await api.empalmistas.get({
+        Id: Id,
+    });
+    return c.json({empalmistas})
+});
 
 
+// app.get('/documentUploads', async (c) =>{
+//     const documentUploads = await api.documentUploads.list();
+//     return c.json({documentUploads})
+// })
+// app.get('/documentUploads/:Id', async (c) =>{
+//     const Id = c.req.param('Id');
+//     const documentUploads = await api.documentUploads.get({
+//         Id: Id,
+//     });
+//     return c.json({documentUploads})
+// });
 
+app.get('/tipoinstalaciones', async (c) =>{
+    const tipoInstalaciones = await api.tipoInstalaciones.list();
+    return c.json({tipoInstalaciones})
+})
+app.get('/tipoinstalaciones/:Id', async (c) =>{
+    const Id = c.req.param('Id');
+    const tipoInstalaciones = await api.tipoInstalaciones.get({
+        Id: Id,
+    });
+    return c.json({tipoInstalaciones})
+});
+
+app.get('/pasocritico', async (c) =>{
+    const pasoCritico = await api.pasoCritico.list();
+    return c.json({pasoCritico})
+})
+app.get('/pasocritico/:Id', async (c) =>{
+    const Id = c.req.param('Id');
+    const pasoCritico = await api.pasoCritico.get({
+        Id: Id,
+    });
+    return c.json({pasoCritico})
+});
 
 app.route('/', appv1)
 

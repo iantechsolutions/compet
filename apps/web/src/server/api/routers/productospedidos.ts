@@ -26,7 +26,7 @@ export const productosPedidosRouter = createTRPCRouter({
     get: publicProcedure
     .input(
       z.object({
-        Id: z.number(),
+        Id: z.string(),
       }),
     )
     .query(async ({ input }) => {
@@ -37,7 +37,7 @@ export const productosPedidosRouter = createTRPCRouter({
       return channel;
     }),
 
-    update: publicProcedure.input(z.object({Id:z.number(),Pedido: z.number(),Producto:z.number(),Cantidad:z.number(),Nombre:z.string(),Descripcion:z.string(),CodigoBarras:z.string()})).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({Id:z.string(),Pedido: z.number(),Producto:z.number(),Cantidad:z.number(),Nombre:z.string(),Descripcion:z.string(),CodigoBarras:z.string()})).mutation(async ({ ctx, input }) => {
       await db
         .update(productosPedidos)
         .set({
@@ -54,7 +54,7 @@ export const productosPedidosRouter = createTRPCRouter({
     delete: publicProcedure
     .input(
       z.object({
-        Id: z.number(),
+        Id: z.string(),
       }),
     )
     .mutation(async ({ input }) => {

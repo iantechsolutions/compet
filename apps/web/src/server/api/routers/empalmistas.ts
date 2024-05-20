@@ -21,7 +21,7 @@ export const empalmistasRouter = createTRPCRouter({
     get: publicProcedure
     .input(
       z.object({
-        Id: z.number(),
+        Id: z.string(),
       }),
     )
     .query(async ({ input }) => {
@@ -32,7 +32,7 @@ export const empalmistasRouter = createTRPCRouter({
       return channel;
     }),
 
-    update: publicProcedure.input(z.object({Id:z.number(), name: z.string().min(1) })).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({Id:z.string(), name: z.string().min(1) })).mutation(async ({ ctx, input }) => {
       await db
         .update(empalmistas)
         .set({
@@ -44,7 +44,7 @@ export const empalmistasRouter = createTRPCRouter({
     delete: publicProcedure
     .input(
       z.object({
-        Id: z.number(),
+        Id: z.string(),
       }),
     )
     .mutation(async ({ input }) => {
