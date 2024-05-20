@@ -5,7 +5,7 @@ import { List, ListTile } from "~/components/list";
 import { AddEmpalmistaDialog } from "./add-empalmista-dialog";
 
 export default async function Home(){
-    const clients = await api.empalmistas.list();
+    const clients = await api.empalmistas.list.query();
     return(
       <LayoutContainer>
       <section className="space-y-2">

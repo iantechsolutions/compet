@@ -101,7 +101,8 @@ export const instalaciones = createTable(
         Fecha_de_instalacion:int('FechaInstal', { mode: 'timestamp' }),
         Fecha_de_verificacion:int('FechaVeri', { mode: 'timestamp' }),
         Estado: int('Estado').notNull(),
-        Cliente: int('Cliente').notNull().references(()=>clientes.Id)
+        Cliente: int('Cliente').notNull().references(()=>clientes.Id),
+        tipoInstalacion: text('tipoInstalacion').notNull(),
     },
     (example) => ({
         instalationsIndex: index('instalations_idx').on(example.Pedido),
@@ -123,6 +124,7 @@ export const instalacionesRelations = relations(instalaciones, ({ one,many }) =>
     }),
     fotos: many(fotos),
     documentos: many(documentUploads),
+    tipoInstalaciones: many(tipoInstalaciones)
   }));
   
 
@@ -257,3 +259,27 @@ export const documentUploads = createTable(
 
 
 
+export const tipoInstalaciones = createTable("tipo_instalaciones", {
+    id: text("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$default(()=>createId()),
+    pasoCritico: text("pasoCritico", { length: 255 }).notNull(),
+    description: text("descripcion", { length: 255 }).notNull(),
+});
+
+export const tipoInstalacionesRelations = relations(tipoInstalaciones, ({ many }) => ({
+    pasoCritico: many(pasoCritico)
+  }));
+
+
+export const pasoCritico = createTable("paso_critico", {
+    id: text("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$default(()=>createId()),
+    detalle: text("detalle", { length: 255 }).notNull(),
+    description: text("descripcion", { length: 255 }).notNull(),
+    useCamera: int('useCamera', { mode: 'boolean' }).default(false),
+
+});

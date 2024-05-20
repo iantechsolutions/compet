@@ -20,8 +20,10 @@ declare module 'hono' {
     }
 }
 
+
+
 app.use(async (c, next) => {
-    console.log("llega")
+    console.log("llega uwu")
     const authorizationHeader = c.req.header('Authorization')
 
     if (!authorizationHeader) {
@@ -47,12 +49,11 @@ app.use(async (c, next) => {
     }
 
     c.set('user', user)
-
     next()
 })
 
 app.use(async (c,next) => {
-    console.log("llega");
+    console.log("llega al otro");
     const products = await api.productos.list();
     console.log(products)
     c.set('productos',products);
@@ -64,7 +65,7 @@ app.use(async (c,next) => {
 
 app.route('/', appv1)
 
-
+// (c: Context, input: InputType) => Promise<OutputType>
 app.route('/upload', {
     post: async (c) => {
         const input = c.req.body;
@@ -83,6 +84,10 @@ app.route('/upload', {
         return c.json({ message: 'Image uploaded successfully', data: uploaded }, 200);
     }
 });
+
+// app.get('/posts/:filename{.+\\.png$}', (c) => {
+//     //...
+//   })
 
 
 

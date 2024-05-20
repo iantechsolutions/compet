@@ -8,6 +8,8 @@ import { fotosRouter } from './routers/fotos'
 import { instalacionesRouter } from './routers/instalaciones'
 import { pedidosRouter } from './routers/pedidos'
 import { productosPedidosRouter } from './routers/productospedidos'
+import { pasoCriticoRouter } from './routers/pasoCritico-router'
+import { tipoInstalacionesRouter } from './routers/tipoInstalaciones-router'
 
 /**
  * This is the primary router for your server.
@@ -23,6 +25,8 @@ export const appRouter = createTRPCRouter({
     instalaciones: instalacionesRouter,
     productosPedidos: productosPedidosRouter,
     pedidos:pedidosRouter,
+    pasoCritico: pasoCriticoRouter,
+    tipoInstalaciones: tipoInstalacionesRouter,
     sellCheck: sellerProcedure.query(({ ctx }) => {
         // falla si no es seller
     }),
