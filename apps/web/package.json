@@ -26,6 +26,7 @@
         "@trpc/next": "next",
         "@trpc/react-query": "next",
         "@trpc/server": "next",
+        "@uploadthing/react": "^6.5.4",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.0",
         "cmdk": "^0.2.0",

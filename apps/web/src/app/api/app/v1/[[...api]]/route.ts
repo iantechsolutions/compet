@@ -1,9 +1,10 @@
 import { type User, getServerAuthSession, getUserFromAccessToken } from 'auth-helpers'
-import { Hono } from 'hono'
+import { Context, Hono } from 'hono'
 import { appv1 } from 'mobile-api'
 import { api } from '~/trpc/server'
 import { createRouteHandler } from "uploadthing/server";
 import { utapi } from '~/server/uploadthing';
+import { UploadthingComponentProps } from '@uploadthing/react';
 export const runtime = 'edge'
 
 const app = new Hono().basePath('/api/app/v1')
@@ -20,10 +21,8 @@ declare module 'hono' {
     }
 }
 
-
-
 app.use(async (c, next) => {
-    console.log("llega uwu")
+    console.log("llega")
     const authorizationHeader = c.req.header('Authorization')
 
     if (!authorizationHeader) {
@@ -49,11 +48,12 @@ app.use(async (c, next) => {
     }
 
     c.set('user', user)
+
     next()
 })
 
 app.use(async (c,next) => {
-    console.log("llega al otro");
+    console.log("llega");
     const products = await api.productos.list();
     console.log(products)
     c.set('productos',products);
@@ -65,12 +65,12 @@ app.use(async (c,next) => {
 
 app.route('/', appv1)
 
-// (c: Context, input: InputType) => Promise<OutputType>
-app.route('/upload', {
-    post: async (c) => {
-        const input = c.req.body;
+
+
+    app.post( async (request: any, reply: any) => {
+        const input = request.body;
         if (!input.imagedata || !input.fileName) {
-            return c.json({ error: 'Missing image data or file name' }, 400);
+            return reply.json({ error: 'Missing image data or file name' }, 400);
         }
 
         const uploaded = await utapi.uploadFiles(
@@ -78,16 +78,12 @@ app.route('/upload', {
         );
 
         if (!uploaded) {
-            return c.json({ error: 'Failed to upload image' }, 500);
+            return reply.json({ error: 'Failed to upload image' }, 500);
         }
 
-        return c.json({ message: 'Image uploaded successfully', data: uploaded }, 200);
+        return reply.json({ message: 'Image uploaded successfully', data: uploaded }, 200);
     }
-});
-
-// app.get('/posts/:filename{.+\\.png$}', (c) => {
-//     //...
-//   })
+    );
 
 
 
