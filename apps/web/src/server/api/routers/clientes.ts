@@ -31,7 +31,7 @@ export const clientesRouter = createTRPCRouter({
 
       return administrative_audit;
     }),
-    update: publicProcedure.input(z.object({Id:z.string(), name: z.string().min(1), direccion: z.string() })).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({Id:z.string(), name: z.string(), direccion: z.string() })).mutation(async ({ ctx, input }) => {
       await db
         .update(clientes)
         .set({

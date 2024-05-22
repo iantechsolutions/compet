@@ -2,41 +2,30 @@ import { api } from "~/trpc/server"
 import LayoutContainer from "~/components/layout-container";
 import { Title } from "~/components/title";
 import { List, ListTile } from "~/components/list";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "~/components/ui/table"
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-  } from "~/components/ui/accordion"
 import { AddPedidoDialog } from "./add-pedido-dialog";
-import AccordionList from "./accordion-list";
 
-  export default async function Home(){
-    const pedidos = await api.pedidos.list();
-    const c = pedidos.at(0)?.productos;
+
+export default async function Home(){
+
+    const pedido = await api.pedidos.list();
     return(
       <LayoutContainer>
       <section className="space-y-2">
         <div className="flex justify-between">
-          <Title>Pedidos</Title>
+          <Title>Empalmistas</Title>
           <AddPedidoDialog />
         </div>
-        <AccordionList pedidos={pedidos}></AccordionList>
-        
-        <br/>
-        <br/>
-        <br/>
-        <br/>
+        <List>
+          {pedido.map((pedido) => {
+            return (
+              <ListTile
+                key={pedido.Id}
+                leading={pedido.Id}
+                title={pedido.Estado}
+              />
+            );
+          })}
+        </List>
       </section>
     </LayoutContainer>
     )

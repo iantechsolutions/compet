@@ -5,7 +5,7 @@ import { Description } from '@radix-ui/react-dialog'
 import { isNotNull, relations, sql } from 'drizzle-orm'
 import { index, int, sqliteTableCreator, text } from 'drizzle-orm/sqlite-core'
 import {nanoid} from 'nanoid'
-import { z } from 'zod'
+import { string, z } from 'zod'
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
  * database instance for multiple projects.
@@ -81,7 +81,7 @@ export const empalmistas = createTable(
 export const fotos = createTable(
     'Fotos',
     {
-        Id: text("id", { length: 255 })
+        Id:text("id", { length: 255 })
         .notNull()
         .primaryKey()
         .$default(()=>createId()),
@@ -109,13 +109,13 @@ export const instalaciones = createTable(
         .notNull()
         .primaryKey()
         .$default(()=>createId()),
-        Pedido: int('Pedido').notNull().references(()=>pedidos.Id),
-        Empalmista: int('Empalmista').references(()=>empalmistas.Id),
+        Pedido: text('Pedido').notNull().references(()=>pedidos.Id),
+        Empalmista: text('Empalmista').references(()=>empalmistas.Id),
         Fecha_de_alta: int('FechaAlta', { mode: 'timestamp' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
         Fecha_de_instalacion:int('FechaInstal', { mode: 'timestamp' }),
         Fecha_de_verificacion:int('FechaVeri', { mode: 'timestamp' }),
         Estado: int('Estado').notNull(),
-        Cliente: int('Cliente').notNull().references(()=>clientes.Id),
+        Cliente: text('Cliente').notNull().references(()=>clientes.Id),
         tipoInstalacion: text('tipoInstalacion').notNull(),
     },
     (example) => ({
@@ -154,7 +154,7 @@ export const instalacionesRelations = relations(instalaciones, ({ one,many }) =>
         Fecha_de_aprobacion: int('FechaAprobacion', { mode: 'timestamp' }),
         Fecha_de_envio:int('FechaEnvio', { mode: 'timestamp' }),
         Estado: text('Estado').notNull(),
-        Cliente: int('Cliente').notNull().references(()=>clientes.Id)
+        Cliente: text('Cliente').notNull().references(()=>clientes.Id)
     },
     (example) => ({
         instalationsIndex: index('pedidos_idx').on(example.Id),
@@ -177,8 +177,8 @@ export const productosPedidos = createTable(
         .notNull()
         .primaryKey()
         .$default(()=>createId()),
-        Pedido: int('Pedido').notNull().references(()=>pedidos.Id),
-        Producto: int('Producto').notNull().references(()=>productos.Id),
+        Pedido: text('Pedido').notNull().references(()=>pedidos.Id),
+        Producto: text('Producto').notNull().references(()=>productos.Id),
         Cantidad: int('Cantidad').notNull(),
         Nombre: text('Nombre', { length: 256 }),
         Descripcion: text('Descripcion',{length: 256}),
@@ -240,7 +240,7 @@ export const documentUploads = createTable(
         "rec" | null
       >(),
   
-      instalationId: int("instalationId")
+      instalationId: text("instalationId")
         .notNull()
         .references(() => instalaciones.Id),
   
