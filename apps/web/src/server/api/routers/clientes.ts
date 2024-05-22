@@ -21,7 +21,7 @@ export const clientesRouter = createTRPCRouter({
     get: protectedProcedure
     .input(
       z.object({
-        clienteId: z.string(),
+        clienteId: z.number(),
       }),
     )
     .query(async ({ input }) => {
@@ -31,7 +31,7 @@ export const clientesRouter = createTRPCRouter({
 
       return administrative_audit;
     }),
-    update: publicProcedure.input(z.object({Id:z.string(), name: z.string(), direccion: z.string() })).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({Id:z.number(), name: z.string(), direccion: z.string() })).mutation(async ({ ctx, input }) => {
       await db
         .update(clientes)
         .set({
@@ -45,7 +45,7 @@ export const clientesRouter = createTRPCRouter({
     delete: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        Id: z.number(),
       }),
     )
     .mutation(async ({ input }) => {

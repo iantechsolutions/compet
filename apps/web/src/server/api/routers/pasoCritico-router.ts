@@ -26,18 +26,18 @@ export const pasoCriticoRouter = createTRPCRouter({
     get: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        Id: z.number(),
       }),
     )
     .query(async ({ input }) => {
       const channel = await db.query.pasoCritico.findFirst({
-        where: eq(pasoCritico.id, input.Id)
+        where: eq(pasoCritico.Id, input.Id)
       });
 
       return channel;
     }),
 
-    update: publicProcedure.input(z.object({Id:z.string(), detalle: z.string(), description: z.string(),
+    update: publicProcedure.input(z.object({Id:z.number(), detalle: z.string(), description: z.string(),
          useCamera: z.boolean() })).mutation(async ({ ctx, input }) => {
       await db
         .update(pasoCritico)
@@ -46,19 +46,19 @@ export const pasoCriticoRouter = createTRPCRouter({
             description: input.description,
           useCamera: input.useCamera,
         })
-        .where(eq(pasoCritico.id, input.Id));
+        .where(eq(pasoCritico.Id, input.Id));
     }),
 
     delete: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        Id: z.number(),
       }),
     )
     .mutation(async ({ input }) => {
       await db
         .delete(pasoCritico)
-        .where(eq(pasoCritico.id, input.Id));
+        .where(eq(pasoCritico.Id, input.Id));
     }),
 
 })

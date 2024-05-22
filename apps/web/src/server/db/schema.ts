@@ -5,7 +5,7 @@ import { Description } from '@radix-ui/react-dialog'
 import { isNotNull, relations, sql } from 'drizzle-orm'
 import { index, int, sqliteTableCreator, text } from 'drizzle-orm/sqlite-core'
 import {nanoid} from 'nanoid'
-import { string, z } from 'zod'
+import { number, string, z } from 'zod'
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
  * database instance for multiple projects.
@@ -21,7 +21,7 @@ export function createId() {
 export const users = createTable(
     'user',
     {
-        Id: text('id').primaryKey(),
+        Id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
         email: text('email', { length: 256 }).unique().notNull(),
         name: text('name', { length: 256 }),
         picture: text('picture'),
@@ -37,7 +37,7 @@ export const users = createTable(
 // export const posts = createTable(
 //     'post',
 //     {
-//         id: int('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+//         Id: int('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
 //         name: text('name', { length: 256 }),
 //         createdAt: int('created_at', { mode: 'timestamp' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
 //         updatedAt: int('updatedAt', { mode: 'timestamp' }),
@@ -50,10 +50,7 @@ export const users = createTable(
 export const clientes = createTable(
     'Cliente',
     {
-        Id: text("id", { length: 255 })
-        .notNull()
-        .primaryKey()
-        .$default(()=>createId()),
+        Id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
         Nombre: text('Nombre', { length: 256 }),
         Direccion: text('Direccion', { length: 256 }),
     },
@@ -67,10 +64,7 @@ export const clientes = createTable(
 export const empalmistas = createTable(
     'Empalmista',
     {
-        Id: text("id", { length: 255 })
-        .notNull()
-        .primaryKey()
-        .$default(()=>createId()),
+        Id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
         Nombre: text('Nombre', { length: 256 }),
     },
     (example) => ({
@@ -81,10 +75,7 @@ export const empalmistas = createTable(
 export const fotos = createTable(
     'Fotos',
     {
-        Id:text("id", { length: 255 })
-        .notNull()
-        .primaryKey()
-        .$default(()=>createId()),
+        Id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
         Link: text('Link', { length: 256 }),
         Instalacion: int('Instalacion').notNull().references(()=>instalaciones.Id)
         
@@ -105,18 +96,15 @@ export const fotosRelation = relations(fotos, ({ one }) => ({
 export const instalaciones = createTable(
     'Instalacion',
     {
-        Id: text("id", { length: 255 })
-        .notNull()
-        .primaryKey()
-        .$default(()=>createId()),
-        Pedido: text('Pedido').notNull().references(()=>pedidos.Id),
-        Empalmista: text('Empalmista').references(()=>empalmistas.Id),
+        Id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+        Pedido: int('Pedido').notNull().references(()=>pedidos.Id),
+        Empalmista: int('Empalmista').references(()=>empalmistas.Id),
         Fecha_de_alta: int('FechaAlta', { mode: 'timestamp' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
         Fecha_de_instalacion:int('FechaInstal', { mode: 'timestamp' }),
         Fecha_de_verificacion:int('FechaVeri', { mode: 'timestamp' }),
         Estado: int('Estado').notNull(),
-        Cliente: text('Cliente').notNull().references(()=>clientes.Id),
-        tipoInstalacion: text('tipoInstalacion').notNull(),
+        Cliente: int('Cliente').notNull().references(()=>clientes.Id),
+        tipoInstalacion: int('tipoInstalacion').notNull(),
     },
     (example) => ({
         instalationsIndex: index('instalations_idx').on(example.Pedido),
@@ -146,15 +134,12 @@ export const instalacionesRelations = relations(instalaciones, ({ one,many }) =>
   export const pedidos = createTable(
     'Pedido',
     {
-        Id: text("id", { length: 255 })
-        .notNull()
-        .primaryKey()
-        .$default(()=>createId()),
+        Id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
         Fecha_de_creacion: int('FechaCreacion', { mode: 'timestamp' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
         Fecha_de_aprobacion: int('FechaAprobacion', { mode: 'timestamp' }),
         Fecha_de_envio:int('FechaEnvio', { mode: 'timestamp' }),
         Estado: text('Estado').notNull(),
-        Cliente: text('Cliente').notNull().references(()=>clientes.Id)
+        Cliente: int('Cliente').notNull().references(()=>clientes.Id)
     },
     (example) => ({
         instalationsIndex: index('pedidos_idx').on(example.Id),
@@ -173,12 +158,10 @@ export const pedidosRelations = relations(pedidos, ({ one,many }) => ({
 export const productosPedidos = createTable(
     'ProductosPedidos',
     {
-        Id: text("id", { length: 255 })
-        .notNull()
-        .primaryKey()
-        .$default(()=>createId()),
-        Pedido: text('Pedido').notNull().references(()=>pedidos.Id),
-        Producto: text('Producto').notNull().references(()=>productos.Id),
+        Id: int("id").notNull()
+        .primaryKey(),
+        Pedido: int('Pedido').notNull().references(()=>pedidos.Id),
+        Producto: int('Producto').notNull().references(()=>productos.Id),
         Cantidad: int('Cantidad').notNull(),
         Nombre: text('Nombre', { length: 256 }),
         Descripcion: text('Descripcion',{length: 256}),
@@ -206,10 +189,8 @@ export const productosPedidosRelation = relations(productosPedidos, ({ one }) =>
 export const productos = createTable(
     'Producto',
     {
-        Id: text("id", { length: 255 })
-        .notNull()
-        .primaryKey()
-        .$default(()=>createId()),
+        Id: int("id").notNull()
+        .primaryKey(),
         Nombre: text('Nombre', { length: 256 }).notNull(),
         Codigo_de_barras: text('BarCode', { length: 256 }),
         Descripcion: text('Descripcion',{length: 256})
@@ -223,10 +204,8 @@ export const productos = createTable(
 export const documentUploads = createTable(
     "document_upload",
     {
-    id: text("id", { length: 255 })
-    .notNull()
-    .primaryKey()
-    .$default(()=>createId()),
+        Id: int("id").notNull()
+        .primaryKey(),
       userId: text("userId", { length: 255 }).notNull(),
       fileUrl: text("fileUrl", { length: 255 }).notNull(),
       fileName: text("fileName", { length: 255 }).notNull(),
@@ -261,10 +240,7 @@ export const documentUploads = createTable(
     }));
   
   export const responseDocumentUploads = createTable("response_document_uploads", {
-    id: text("id", { length: 255 })
-    .notNull()
-    .primaryKey()
-    .$default(()=>createId()),
+    Id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
     userId: text("userId", { length: 255 }).notNull(),
     fileUrl: text("fileUrl", { length: 255 }).notNull(),
     fileName: text("fileName", { length: 255 }).notNull(),
@@ -283,11 +259,8 @@ export const documentUploads = createTable(
 
 
 export const tipoInstalaciones = createTable("tipo_instalaciones", {
-    id: text("id", { length: 255 })
-    .notNull()
-    .primaryKey()
-    .$default(()=>createId()),
-    pasoCritico: text("pasoCritico", { length: 255 }).notNull(),
+    Id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+    pasoCritico: int("pasoCritico").notNull(),
     description: text("descripcion", { length: 255 }).notNull(),
 });
 
@@ -297,10 +270,7 @@ export const tipoInstalacionesRelations = relations(tipoInstalaciones, ({ many }
 
 
 export const pasoCritico = createTable("paso_critico", {
-    id: text("id", { length: 255 })
-    .notNull()
-    .primaryKey()
-    .$default(()=>createId()),
+    Id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
     detalle: text("detalle", { length: 255 }).notNull(),
     description: text("descripcion", { length: 255 }).notNull(),
     useCamera: int('useCamera', { mode: 'boolean' }).default(false),

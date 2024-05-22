@@ -7,7 +7,7 @@ import { pasoCritico, tipoInstalaciones } from '~/server/db/schema'
 
 
 export const tipoInstalacionesRouter = createTRPCRouter({
-    create: publicProcedure.input(z.object({ pasoCritico: z.string(), description: z.string()
+    create: publicProcedure.input(z.object({ pasoCritico: z.number(), description: z.string()
         })).mutation(async ({ ctx, input }) => {
         // simulate a slow db call
         await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -25,39 +25,39 @@ export const tipoInstalacionesRouter = createTRPCRouter({
     get: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        Id: z.number(),
       }),
     )
     .query(async ({ input }) => {
       const channel = await db.query.tipoInstalaciones.findFirst({
-        where: eq(tipoInstalaciones.id, input.Id)
+        where: eq(tipoInstalaciones.Id, input.Id)
       });
 
       return channel;
     }),
 
-    update: publicProcedure.input(z.object({Id:z.string(), pasoCritico: z.string(), description: z.string()
+    update: publicProcedure.input(z.object({Id:z.number(), pasoCritico: z.number(), description: z.string()
 })).mutation(async ({ ctx, input }) => {
       await db
         .update(tipoInstalaciones)
         .set({
-            id: input.Id,
+            Id: input.Id,
             pasoCritico: input.pasoCritico,
             description: input.description,
         })
-        .where(eq(tipoInstalaciones.id, input.Id));
+        .where(eq(tipoInstalaciones.Id, input.Id));
     }),
 
     delete: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        Id: z.number(),
       }),
     )
     .mutation(async ({ input }) => {
       await db
         .delete(tipoInstalaciones)
-        .where(eq(tipoInstalaciones.id, input.Id));
+        .where(eq(tipoInstalaciones.Id, input.Id));
     }),
 
 })

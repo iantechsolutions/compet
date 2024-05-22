@@ -78,13 +78,13 @@ app.get('/clientes', async (c) =>{
 app.get('/clientes/:Id', async (c) =>{
     const Id = c.req.param('Id');
     const clients = await api.clientes.get({
-        clienteId: Id,
+        clienteId: parseInt(Id)
     });
     return c.json({clients})
 });
 
 app.delete('/clientes/delete/:Id', async (c) => {
-    const Id = c.req.param('Id');
+    const Id = parseInt(c.req.param('Id'))
     const clientes = await api.clientes.delete({
         Id
     });
@@ -93,7 +93,7 @@ app.delete('/clientes/delete/:Id', async (c) => {
 app.put('/clientes/update/:Id', async (c) => {
    
     const db = await api.clientes.get({
-        clienteId: c.req.param('Id')
+        clienteId: parseInt(c.req.param('Id'))
     });
     if(db?.Nombre != undefined && db.Direccion != undefined)
         {
@@ -115,20 +115,19 @@ app.post('/clientes/post', async (c) => {
 });
 
 
-
 app.get('/productos', async (c) =>{
     const productos = await api.productos.list();
     return c.json({productos})
 })
 app.get('/productos/:Id', async (c) =>{
-    const Id = c.req.param('Id');
+    const Id = parseInt(c.req.param('Id'))
     const products = await api.productos.get({
         Id: Id,
     });
     return c.json({products})
 });
 app.delete('/productos/delete/:Id', async (c) => {
-    const Id = c.req.param('Id');
+    const Id = parseInt(c.req.param('Id'))
      await api.productos.delete({
         Id
     });
@@ -136,9 +135,9 @@ app.delete('/productos/delete/:Id', async (c) => {
 });
 
 app.put('/productos/update/:Id', async (c) => {
-   
+    const Id = parseInt(c.req.param('Id'))
     const db = await api.productos.get({
-        Id: c.req.param('Id')
+        Id: Id
     });
     if(db?.Nombre != undefined && db.Descripcion != undefined && db.Codigo_de_barras != null)
         {
@@ -169,7 +168,7 @@ app.get('/pedidos', async (c) =>{
 app.get('/pedidos/:Id', async (c) =>{
     const Id = c.req.param('Id');
     const pedidos = await api.pedidos.get({
-        Id: Id,
+        Id: parseInt(Id)
     });
     return c.json({pedidos})
 });
@@ -178,7 +177,7 @@ app.get('/pedidos/:Id', async (c) =>{
 app.delete('/pedidos/delete/:Id', async (c) => {
     const Id = c.req.param('Id');
     const pedidos = await api.pedidos.delete({
-        Id: Id
+        Id: parseInt(Id)
     });
     return c.text("Succefuled delete")
 });
@@ -186,7 +185,7 @@ app.delete('/pedidos/delete/:Id', async (c) => {
 app.put('/pedidos/update/:Id', async (c) => {
    
     const db = await api.pedidos.get({
-        Id: c.req.param('Id')
+        Id: parseInt(c.req.param('Id'))
     });
     if(db?.cliente != null  && db.Fecha_de_creacion != null && db.Estado != undefined)
         {
@@ -203,7 +202,7 @@ app.put('/pedidos/update/:Id', async (c) => {
 
 app.post('/pedidos/post', async (c) => {
     const result = await api.pedidos.create({
-        Cliente: '1',
+        Cliente: 1,
         FechaCreacion: 0,
         Estado: '1'
     });
@@ -217,14 +216,14 @@ app.get('/instalaciones', async (c) =>{
     return c.json({instalaciones})
 })
 app.get('/instalaciones/:Id', async (c) =>{
-    const Id = c.req.param('Id');
+    const Id = parseInt(c.req.param('Id'))
     const instalaciones = await api.instalaciones.get({
         Id: Id,
     });
     return c.json({instalaciones})
 });
 app.delete('/instalaciones/delete/:Id', async (c) => {
-    const Id = c.req.param('Id');
+    const Id = parseInt(c.req.param('Id'))
     const instalaciones = await api.instalaciones.delete({
         Id: Id
     });
@@ -234,7 +233,7 @@ app.delete('/instalaciones/delete/:Id', async (c) => {
 app.put('/instalaciones/update/:Id', async (c) => {
    
     const db = await api.instalaciones.get({
-        Id: c.req.param('Id')
+        Id: parseInt(c.req.param('Id'))
     });
     if(db?.Empalmista != null  && db.Fecha_de_alta != null && db.Fecha_de_verificacion != undefined && db.Fecha_de_instalacion != undefined)
         {
@@ -255,14 +254,14 @@ app.put('/instalaciones/update/:Id', async (c) => {
 
 app.post('/instalaciones/post', async (c) => {
     const result = await api.instalaciones.create({
-        Cliente: '1',
-        Empalmista: '1',
-        Pedido: '1',
+        Cliente: 1,
+        Empalmista: 1,
+        Pedido: 1,
         Estado: 0,
         FechaAlta: 0,
         FechaInst: 0,
         FechaVeri: 0,
-        tipoInstalacion: '1'
+        tipoInstalacion: 1
     });
     return c.json("Succesful")
 });
@@ -273,7 +272,7 @@ app.get('/fotos', async (c) =>{
     return c.json({fotos})
 })
 app.get('/fotos/:Id', async (c) =>{
-    const Id = c.req.param('Id');
+    const Id = parseInt(c.req.param('Id'))
     const fotos = await api.fotos.get({
         Id: Id,
     });
@@ -281,7 +280,7 @@ app.get('/fotos/:Id', async (c) =>{
 });
 
 app.delete('/fotos/delete/:Id', async (c) => {
-    const Id = c.req.param('Id');
+    const Id = parseInt(c.req.param('Id'))
     const fotos = await api.fotos.delete({
         Id: Id
     });
@@ -291,7 +290,7 @@ app.delete('/fotos/delete/:Id', async (c) => {
 app.put('/fotos/update/:Id', async (c) => {
    
     const db = await api.fotos.get({
-        Id: c.req.param('Id')
+        Id: parseInt(c.req.param('Id'))
     });
     if(db?.Instalacion != null  && db.Link != null)
         {
@@ -317,7 +316,7 @@ app.get('/empalmistas', async (c) =>{
     return c.json({empalmistas})
 })
 app.get('/empalmistas/:Id', async (c) =>{
-    const Id = c.req.param('Id');
+    const Id = parseInt(c.req.param('Id'))
     const empalmistas = await api.empalmistas.get({
         Id: Id,
     });
@@ -325,7 +324,7 @@ app.get('/empalmistas/:Id', async (c) =>{
 });
 
 app.delete('/empalmistas/delete/:Id', async (c) => {
-    const Id = c.req.param('Id');
+    const Id = parseInt(c.req.param('Id'))
     const empalmistas = await api.empalmistas.delete({
         Id: Id
     });
@@ -335,7 +334,7 @@ app.delete('/empalmistas/delete/:Id', async (c) => {
 app.put('/empalmistas/update/:Id', async (c) => {
    
     const db = await api.empalmistas.get({
-        Id: c.req.param('Id')
+        Id: parseInt(c.req.param('Id'))
     });
     if(db?.Nombre != null)
         {
@@ -375,14 +374,14 @@ app.get('/tipoinstalaciones', async (c) =>{
     return c.json({tipoInstalaciones})
 })
 app.get('/tipoinstalaciones/:Id', async (c) =>{
-    const Id = c.req.param('Id');
+    const Id = parseInt(c.req.param('Id'))
     const tipoInstalaciones = await api.tipoInstalaciones.get({
         Id: Id,
     });
     return c.json({tipoInstalaciones})
 });
 app.delete('/tipoInstalaciones/:Id', async (c) => {
-    const Id = c.req.param('Id');
+    const Id = parseInt(c.req.param('Id'))
     const tipoInstalaciones = await api.tipoInstalaciones.delete({
         Id: Id
     });
@@ -392,12 +391,12 @@ app.delete('/tipoInstalaciones/:Id', async (c) => {
 app.put('/tipoInstalaciones/:Id', async (c) => {
    
     const db = await api.tipoInstalaciones.get({
-        Id: c.req.param('Id')
+        Id: parseInt(c.req.param('Id'))
     });
     if(db?.description != null)
         {
     await api.tipoInstalaciones.update({
-        Id: db.id,
+        Id: db.Id,
         description: db.description,
         pasoCritico: db.pasoCritico
     })
@@ -408,7 +407,7 @@ app.put('/tipoInstalaciones/:Id', async (c) => {
 app.post('/tipoInstalaciones', async (c) => {
     const result = await api.tipoInstalaciones.create({
         description: "",
-        pasoCritico: ""
+        pasoCritico: 1
         });
     return c.json("Succesful")
 });
@@ -420,14 +419,14 @@ app.get('/pasocritico', async (c) =>{
     return c.json({pasoCritico})
 })
 app.get('/pasocritico/:Id', async (c) =>{
-    const Id = c.req.param('Id');
+    const Id = parseInt(c.req.param('Id'))
     const pasoCritico = await api.pasoCritico.get({
         Id: Id,
     });
     return c.json({pasoCritico})
 });
 app.delete('/pasoCritico/delete/:Id', async (c) => {
-    const Id = c.req.param('Id');
+    const Id = parseInt(c.req.param('Id'))
     const pasoCritico = await api.pasoCritico.delete({
         Id: Id
     });
@@ -437,12 +436,12 @@ app.delete('/pasoCritico/delete/:Id', async (c) => {
 app.put('/pasoCritico/update/:Id', async (c) => {
    
     const db = await api.pasoCritico.get({
-        Id: c.req.param('Id')
+        Id: parseInt(c.req.param('Id'))
     });
     if(db?.description != null && db?.useCamera != null)
         {
     await api.pasoCritico.update({
-        Id: db.id,
+        Id: db.Id,
         description: db.description,
         detalle: db.detalle,
         useCamera: db.useCamera

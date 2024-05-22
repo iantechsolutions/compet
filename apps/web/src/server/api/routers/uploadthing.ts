@@ -6,7 +6,7 @@ export const uploadthingrouter = createTRPCRouter({
   upload:publicProcedure
   .input(
     z.object({
-      instalacionId:z.string(),
+      instalacionId:z.number(),
       fileName: z.string(),
       imagedata: z.string(),
     })

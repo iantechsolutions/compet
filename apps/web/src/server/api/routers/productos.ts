@@ -23,7 +23,7 @@ export const productosRouter = createTRPCRouter({
     get: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        Id: z.number(),
       }),
     )
     .query(async ({ input }) => {
@@ -34,7 +34,7 @@ export const productosRouter = createTRPCRouter({
       return channel;
     }),
 
-    update: publicProcedure.input(z.object({Id:z.string(), name: z.string().min(1), description: z.string(), barcode: z.string() })).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({Id:z.number(), name: z.string().min(1), description: z.string(), barcode: z.string() })).mutation(async ({ ctx, input }) => {
       await db
         .update(productos)
         .set({
@@ -48,7 +48,7 @@ export const productosRouter = createTRPCRouter({
     delete: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        Id: z.number(),
       }),
     )
     .mutation(async ({ input }) => {

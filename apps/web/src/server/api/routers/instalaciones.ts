@@ -8,7 +8,9 @@ import { PgTimestampBuilder } from 'drizzle-orm/pg-core';
 
 export const instalacionesRouter = createTRPCRouter({
     // Producto: z.number(),Empalmista: z.number(),FechaAlta: z.number(),FechaInst: z.number(),FechaVeri: z.number(),Estado: z.number(),Cliente: z.number()
-    create: publicProcedure.input(z.object({ Pedido: z.string(),tipoInstalacion: z.string(),Empalmista: z.string(),FechaAlta: z.number(),FechaInst: z.number().optional(),FechaVeri: z.number().optional(),Estado: z.number(),Cliente: z.string()})).mutation(async ({ ctx, input }) => {
+    create: publicProcedure.input(z.object({ Pedido: z.number(),tipoInstalacion: z.number(),
+      Empalmista: z.number(),FechaAlta: z.number(),FechaInst: z.number().optional(),FechaVeri: z.number().optional(),
+      Estado: z.number(),Cliente: z.number()})).mutation(async ({ ctx, input }) => {
         // simulate a slow db call
         await new Promise((resolve) => setTimeout(resolve, 1000))
         await ctx.db.insert(instalaciones).values(
@@ -33,7 +35,7 @@ export const instalacionesRouter = createTRPCRouter({
     get: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        Id: z.number(),
       }),
     )
     .query(async ({ input }) => {
@@ -53,8 +55,8 @@ export const instalacionesRouter = createTRPCRouter({
       return channel;
     }),
 
-    update: publicProcedure.input(z.object({Id:z.string(), tipoInstalacion: z.string(), Pedido: z.string(),Empalmista: z.string()
-      ,FechaAlta: z.date(),FechaInst: z.date(),FechaVeri: z.date(),Estado: z.number(),Cliente: z.string() })).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({Id:z.number(), tipoInstalacion: z.number(), Pedido: z.number(),Empalmista: z.number()
+      ,FechaAlta: z.date(),FechaInst: z.date(),FechaVeri: z.date(),Estado: z.number(),Cliente: z.number() })).mutation(async ({ ctx, input }) => {
       await db
         .update(instalaciones)
         .set({
@@ -73,7 +75,7 @@ export const instalacionesRouter = createTRPCRouter({
     delete: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        Id: z.number(),
       }),
     )
     .mutation(async ({ input }) => {
