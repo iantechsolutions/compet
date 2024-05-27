@@ -47,6 +47,7 @@ dependencies:
   shadcn_ui: ^0.4.1
   anadea_stepper: ^0.0.5
   simple_barcode_scanner: ^0.1.1
+  image_picker: ^1.1.1
 
 dev_dependencies:
   flutter_test:

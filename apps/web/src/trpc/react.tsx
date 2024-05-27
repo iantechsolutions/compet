@@ -60,5 +60,5 @@ function getBaseUrl() {
     if (process.env.VERCEL_URL) {
         return `https://${process.env.VERCEL_URL}`
     }
-    return `http://localhost:${process.env.PORT ?? 3000}`
+    return `http://192.168.0.21:${process.env.PORT ?? 3000}`
 }

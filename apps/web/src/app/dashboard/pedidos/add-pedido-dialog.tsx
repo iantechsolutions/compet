@@ -46,6 +46,7 @@ export function AddPedidoDialog() {
   const { data: productos } = api.productos.list.useQuery(undefined)
 
   const handleClienteChange = (value : any) => {
+    console.log(value);
     setCliente(value);
   }
   const handleProductoChange = (value : any) => {
@@ -62,37 +63,37 @@ export function AddPedidoDialog() {
 
   async function handleCreate() {
     try {
+      const idCliente = clientes?.find((producto) => producto.Id.toLowerCase() === cliente)?.Id;
       const result = await createPedido({
-        Cliente: parseInt(cliente),
+        Cliente: idCliente!,
         Estado: "Pendiente",
         FechaCreacion: new Date().getTime(),
       });
-      console.log("result");
-      console.log(result);
-      const id = result.lastInsertRowid
+      const id = result[0]!.Id;
       if(id){
         for (const [productId, count] of Object.entries(productCounts)) {
-            const desc = productos?.find((producto) => producto.Id === Number.parseInt(productId))?.Descripcion;
-            const nombre = productos?.find((producto) => producto.Id === Number.parseInt(productId))?.Nombre;
-            const codigo = productos?.find((producto) => producto.Id === Number.parseInt(productId))?.Codigo_de_barras;
+            const desc = productos?.find((producto) => producto.Id.toLowerCase() === productId)?.Descripcion;
+            const idProd = productos?.find((producto) => producto.Id.toLowerCase() === productId)?.Id;
+            const nombre = productos?.find((producto) => producto.Id.toLowerCase() === productId)?.Nombre;
+            const codigo = productos?.find((producto) => producto.Id.toLowerCase() === productId)?.Codigo_de_barras;
             await createProductoPedido({
-                Pedido: Number(id),
-                Producto: parseInt(productId),
+                Pedido: id,
+                Producto: idProd!,
                 Cantidad: count,
                 Descripcion: desc ?? "",
                 Nombre: nombre ?? "",
                 CodigoBarras: "Codigo: " + codigo
             });
         };
-        const prod = productos?.find((producto) => producto.Id === Number.parseInt(productoSeleccion));
-        await createProductoPedido({
-          Pedido: Number(id),
-          Producto: parseInt(productoSeleccion), 
-          Cantidad: cantidad,
-          Descripcion: prod?.Descripcion || "",
-          CodigoBarras: prod?.Codigo_de_barras || "",
-          Nombre:prod?.Nombre || "",
-        })
+        // const prod = productos?.find((producto) => producto.Id === productoSeleccion);
+        // await createProductoPedido({
+        //   Pedido: id,
+        //   Producto: prod!.Id, 
+        //   Cantidad: cantidad,
+        //   Descripcion: prod?.Descripcion || "",
+        //   CodigoBarras: prod?.Codigo_de_barras || "",
+        //   Nombre:prod?.Nombre || "",
+        // })
         }
       toast.success("Pedido creado correctamente");
       router.refresh();
@@ -139,7 +140,7 @@ export function AddPedidoDialog() {
                 type="number"
                 min="0"
                 value={cantidad}
-                onChange={e => setCantidad(Number.parseInt(e.target.value))}
+                onChange={e => setCantidad(Number(e.target.value))}
             />
 
           </div>

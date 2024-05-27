@@ -71,7 +71,7 @@ class LoginScreenState extends State<LoginScreen> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        actionButton("Entrar como empalmista", '/empalmistaUser'),
+        actionButton("Entrar como empalmista", '/uploadScreen'),
         actionButton("Listado clientes", '/clientes'),
         actionButton("Listado empalmistas", '/empalmistasLista'),
         actionButton("Listado instalaciones", '/instalaciones'),

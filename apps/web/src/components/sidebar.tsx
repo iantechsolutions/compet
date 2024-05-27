@@ -6,8 +6,11 @@ import { Button } from './ui/button'
 import {
     DrillIcon,
     LayoutDashboardIcon,
+    ListChecks,
+    ListChecksIcon,
     PackageIcon,
     Settings2Icon,
+    TagIcon,
     TruckIcon,
     UserRound,
     UsersRoundIcon,
@@ -54,6 +57,14 @@ export default function Sidebar() {
                                 )}
                                 {userInfo?.isCompany && (
                                 <SidenavItem
+                                    icon={<TagIcon />}
+                                    href="/dashboard/tiposinstalaciones"
+                                >
+                                    Categorias
+                                </SidenavItem>
+                                )}
+                                {userInfo?.isCompany && (
+                                <SidenavItem
                                     icon={<TruckIcon />}
                                     href="/dashboard/pedidos"
                                 >
@@ -66,6 +77,12 @@ export default function Sidebar() {
                                     href="/dashboard/instalaciones"
                                 >
                                     Instalaciones
+                                </SidenavItem>
+                                <SidenavItem
+                                    icon={<ListChecksIcon/>}
+                                    href="/dashboard/pasoscriticos"
+                                >
+                                    Pasos Criticos
                                 </SidenavItem>
                             </Sidenav>
     )

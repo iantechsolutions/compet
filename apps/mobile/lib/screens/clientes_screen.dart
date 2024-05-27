@@ -30,13 +30,6 @@ class HomeScreenState extends State<ClientesScreen> {
             "Listado Clientes",
           )
         ]),
-        // bottom: PreferredSize(
-        //   preferredSize: const Size.fromHeight(4.0),
-        //   child: Container(
-        //     color: Colors.black,
-        //     height: 1.0,
-        //   ),
-        // ),
         foregroundColor: Colors.black,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
@@ -51,21 +44,6 @@ class HomeScreenState extends State<ClientesScreen> {
           }
           if (state is ClientesFetched) {
             if (state.clientes.isNotEmpty) {
-              // return ListView.builder(
-              //     // padding: const EdgeInsets.all(20.0),
-              //     itemCount: state.clientes.length,
-              //     itemBuilder: (BuildContext context, int index) {
-              //       Cliente cliente = state.clientes[index];
-              //       return ListTile(
-              //         title: Text(cliente.nombre),
-              //         subtitle: Text("${cliente.direccion}",
-              //             style: const TextStyle(color: Colors.grey)),
-              //         splashColor: Theme.of(context).colorScheme.inversePrimary,
-              //         focusColor: Colors.white,
-              //         onTap: () {
-              //         },
-              //       );
-              //     });
               return ShadTable.list(
                   header: const [
                     ShadTableCell.header(

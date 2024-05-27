@@ -23,7 +23,7 @@ const inter = Inter({
 })
 
 export const metadata = {
-    title: 'Checkflow',
+    title: 'tRacc',
     description: '',
     icons: [{ rel: 'icon', url: '/favicon.ico' }],
 }

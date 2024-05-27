@@ -19,7 +19,8 @@ class HomeScreenState extends State<EmpalmistaUserScreen> {
     super.initState();
   }
 
-  String formatDate(DateTime dateTime) {
+  String formatDate(DateTime? dateTime) {
+    if (dateTime == null) return "";
     return ("${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute}");
   }
 
@@ -82,7 +83,7 @@ class HomeScreenState extends State<EmpalmistaUserScreen> {
                                     ),
                                   );
                                 },
-                                text: Text(instalacion.id.toString(),
+                                text: Text("",
                                     style: const TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w700,

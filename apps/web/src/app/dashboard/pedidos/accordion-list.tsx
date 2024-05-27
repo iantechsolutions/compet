@@ -33,22 +33,22 @@ interface Pedido {
   }
 interface AccordionListProps {
     pedidos: {
-        Id: number;
-        Cliente: number;
+        Id: string;
+        Cliente: string;
         Fecha_de_creacion: Date;
         Fecha_de_aprobacion: Date | null;
         Fecha_de_envio: Date | null;
         Estado: string;
         cliente: {
-            Id: number;
+            Id: string;
             Nombre: string | null;
             Direccion: string | null;
         };
         productos: {
-            Id: number;
+            Id: string;
             Nombre: string | null;
-            Pedido: number;
-            Producto: number;
+            Pedido: string;
+            Producto: string;
             Codigo_de_barras: string | null;
             Descripcion: string | null;
             Cantidad: number;
@@ -65,7 +65,7 @@ export default function AccordionList({ pedidos }: AccordionListProps) {
     api.instalaciones.create.useMutation();
 
 
-    const handleEditEstado = (id: number, estado: string) => {
+    const handleEditEstado = (id: string, estado: string) => {
         const pedido = pedidos.find((pedido) => pedido.Id === id);
         if (pedido?.Estado === "Pendiente") {
             pedido.Estado = "Aprobado";
@@ -93,8 +93,9 @@ export default function AccordionList({ pedidos }: AccordionListProps) {
                 Cliente: pedido.Cliente,
                 FechaAlta: new Date().getMilliseconds(),
                 Pedido : pedido.Id,
-                Estado: 0,
-                Empalmista: 1,
+                Estado: "",
+                Empalmista: "",
+                tipoInstalacion: "default",
             })
         
         }

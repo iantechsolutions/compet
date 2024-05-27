@@ -8,7 +8,7 @@ import { PgTimestampBuilder } from 'drizzle-orm/pg-core';
 
 export const pedidosRouter = createTRPCRouter({
     // Producto: z.number(),Empalmista: z.number(),FechaAlta: z.number(),FechaInst: z.number(),FechaVeri: z.number(),Estado: z.number(),Cliente: z.number()
-    create: publicProcedure.input(z.object({FechaCreacion: z.number(),Fecha_de_aprobacion: z.number().optional(),Fecha_de_envio: z.number().optional(),Estado: z.string(),Cliente: z.number()})).mutation(async ({ ctx, input }) => {
+    create: publicProcedure.input(z.object({FechaCreacion: z.number(),Fecha_de_aprobacion: z.number().optional(),Fecha_de_envio: z.number().optional(),Estado: z.string(),Cliente: z.string()})).mutation(async ({ ctx, input }) => {
       // simulate a slow db call
       await new Promise((resolve) => setTimeout(resolve, 1000))
       const fechaAprobacion = input.Fecha_de_aprobacion !== undefined ? new Date(input.Fecha_de_aprobacion) : undefined;
@@ -22,7 +22,7 @@ export const pedidosRouter = createTRPCRouter({
           Fecha_de_envio: FechaEnvio,
 
         }
-      )
+      ).returning()
       return result;
     }),
 
@@ -53,7 +53,7 @@ export const pedidosRouter = createTRPCRouter({
       return channel;
     }),
 
-    update: publicProcedure.input(z.object({Id:z.string(),FechaCreacion: z.number(),Fecha_de_aprobacion: z.number().optional(),Fecha_de_envio: z.number().optional(),Estado: z.string(),Cliente: z.number()})).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({Id:z.string(),FechaCreacion: z.number(),Fecha_de_aprobacion: z.number().optional(),Fecha_de_envio: z.number().optional(),Estado: z.string(),Cliente: z.string()})).mutation(async ({ ctx, input }) => {
       await db
         .update(pedidos)
         .set({

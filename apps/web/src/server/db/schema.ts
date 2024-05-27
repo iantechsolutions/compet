@@ -56,10 +56,7 @@ export const clientes = createTable(
         .$default(()=>createId()),
         Nombre: text('Nombre', { length: 256 }),
         Direccion: text('Direccion', { length: 256 }),
-    },
-    (example) => ({
-        nameIndex: index('clients_idx').on(example.Nombre),
-    }),
+    }
 )
 
 
@@ -72,10 +69,7 @@ export const empalmistas = createTable(
         .primaryKey()
         .$default(()=>createId()),
         Nombre: text('Nombre', { length: 256 }),
-    },
-    (example) => ({
-        splicerIndex: index('splicers_idx').on(example.Nombre),
-    }),
+    }
 )
 
 export const fotos = createTable(
@@ -86,7 +80,7 @@ export const fotos = createTable(
         .primaryKey()
         .$default(()=>createId()),
         Link: text('Link', { length: 256 }),
-        Instalacion: int('Instalacion').notNull().references(()=>instalaciones.Id)
+        Instalacion: text('Instalacion').notNull().references(()=>instalaciones.Id)
         
     },
     (example) => ({
@@ -109,14 +103,14 @@ export const instalaciones = createTable(
         .notNull()
         .primaryKey()
         .$default(()=>createId()),
-        Pedido: int('Pedido').notNull().references(()=>pedidos.Id),
-        Empalmista: int('Empalmista').references(()=>empalmistas.Id),
-        Fecha_de_alta: int('FechaAlta', { mode: 'timestamp' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
+        Pedido: text('Pedido').notNull().references(()=>pedidos.Id),
+        Empalmista: text('Empalmista').references(()=>empalmistas.Id),
+        Fecha_de_alta: int('FechaAlta', { mode: 'timestamp' }).default(sql`CURRENT_TIMESTAMP`),
         Fecha_de_instalacion:int('FechaInstal', { mode: 'timestamp' }),
         Fecha_de_verificacion:int('FechaVeri', { mode: 'timestamp' }),
-        Estado: int('Estado').notNull(),
-        Cliente: int('Cliente').notNull().references(()=>clientes.Id),
-        tipoInstalacion: text('tipoInstalacion').notNull(),
+        Estado: text('Estado').notNull(),
+        Cliente: text('Cliente').notNull().references(()=>clientes.Id),
+        tipoInstalacion: text('tipoInstalacion',{ length: 255 }),
     },
     (example) => ({
         instalationsIndex: index('instalations_idx').on(example.Pedido),
@@ -136,9 +130,13 @@ export const instalacionesRelations = relations(instalaciones, ({ one,many }) =>
         fields: [instalaciones.Cliente],
         references: [clientes.Id],
     }),
+    tipoInstalacion: one(tipoInstalaciones,{
+        fields: [instalaciones.tipoInstalacion],
+        references: [tipoInstalaciones.id],
+    }),
     fotos: many(fotos),
     documentos: many(documentUploads),
-    tipoInstalaciones: many(tipoInstalaciones)
+    
   }));
   
 
@@ -154,11 +152,8 @@ export const instalacionesRelations = relations(instalaciones, ({ one,many }) =>
         Fecha_de_aprobacion: int('FechaAprobacion', { mode: 'timestamp' }),
         Fecha_de_envio:int('FechaEnvio', { mode: 'timestamp' }),
         Estado: text('Estado').notNull(),
-        Cliente: int('Cliente').notNull().references(()=>clientes.Id)
-    },
-    (example) => ({
-        instalationsIndex: index('pedidos_idx').on(example.Id),
-    }),
+        Cliente: text('Cliente').notNull().references(()=>clientes.Id)
+    }
 )
 
 export const pedidosRelations = relations(pedidos, ({ one,many }) => ({
@@ -177,8 +172,8 @@ export const productosPedidos = createTable(
         .notNull()
         .primaryKey()
         .$default(()=>createId()),
-        Pedido: int('Pedido').notNull().references(()=>pedidos.Id),
-        Producto: int('Producto').notNull().references(()=>productos.Id),
+        Pedido: text('Pedido').notNull().references(()=>pedidos.Id),
+        Producto: text('Producto').notNull().references(()=>productos.Id),
         Cantidad: int('Cantidad').notNull(),
         Nombre: text('Nombre', { length: 256 }),
         Descripcion: text('Descripcion',{length: 256}),
@@ -212,12 +207,19 @@ export const productos = createTable(
         .$default(()=>createId()),
         Nombre: text('Nombre', { length: 256 }).notNull(),
         Codigo_de_barras: text('BarCode', { length: 256 }),
-        Descripcion: text('Descripcion',{length: 256})
-    },
-    (example) => ({
-        productsIndex: index('products_idx').on(example.Nombre),
-    }),
+        Descripcion: text('Descripcion',{length: 256}),
+        tipoDeInstalacion_id: text('tipoDeInstalacion_id',{length: 256}).references(()=>tipoInstalaciones.id),
+    }
 )
+
+export const productosRelation = relations(productos, ({ one }) => ({
+    tipoDeInstalacion: one(tipoInstalaciones, {
+      fields: [productos.tipoDeInstalacion_id],
+      references: [tipoInstalaciones.id],
+    }),
+      
+}));
+
 
 
 export const documentUploads = createTable(
@@ -226,7 +228,7 @@ export const documentUploads = createTable(
     id: text("id", { length: 255 })
     .notNull()
     .primaryKey()
-    .$default(()=>createId()),
+    .$default(()=>createId().toLowerCase()),
       userId: text("userId", { length: 255 }).notNull(),
       fileUrl: text("fileUrl", { length: 255 }).notNull(),
       fileName: text("fileName", { length: 255 }).notNull(),
@@ -287,12 +289,11 @@ export const tipoInstalaciones = createTable("tipo_instalaciones", {
     .notNull()
     .primaryKey()
     .$default(()=>createId()),
-    pasoCritico: text("pasoCritico", { length: 255 }).notNull(),
     description: text("descripcion", { length: 255 }).notNull(),
 });
 
 export const tipoInstalacionesRelations = relations(tipoInstalaciones, ({ many }) => ({
-    pasoCritico: many(pasoCritico)
+    pasoCriticoTotipoInstalacion: many(pasoCriticoTotipoInstalacion)
   }));
 
 
@@ -304,8 +305,34 @@ export const pasoCritico = createTable("paso_critico", {
     detalle: text("detalle", { length: 255 }).notNull(),
     description: text("descripcion", { length: 255 }).notNull(),
     useCamera: int('useCamera', { mode: 'boolean' }).default(false),
-
 });
+
+export const pasoCriticoRelations = relations(pasoCritico, ({ many }) => ({
+    pasoCriticoTotipoInstalacion: many(pasoCriticoTotipoInstalacion)
+})
+);
+
+export const pasoCriticoTotipoInstalacion = createTable("pasoCriticoTotipoInstalacion", {
+    id: text("id", { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$default(()=>createId()),
+    tipoInstalacion: text("tipoInstalacion", { length: 255 }).notNull().references(()=>tipoInstalaciones.id),
+    pasoCritico: text("pasoCritico", { length: 255 }).notNull().references(()=>pasoCritico.id),
+});
+
+export const pasoCriticoTotipoInstalacionRelations = relations(pasoCriticoTotipoInstalacion, ({ one }) => ({
+    tipoInstalacion: one(tipoInstalaciones,{
+        fields: [pasoCriticoTotipoInstalacion.tipoInstalacion],
+        references: [tipoInstalaciones.id],
+    }),
+    pasoCritico: one(pasoCritico,{
+        fields: [pasoCriticoTotipoInstalacion.pasoCritico],
+        references: [pasoCritico.id],
+    }),
+})
+);
+
 
 function createInsertSchema(Clientes: any) {
     throw new Error('Function not implemented.')

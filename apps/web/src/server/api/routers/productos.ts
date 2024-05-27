@@ -5,11 +5,12 @@ import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
 import { productos } from '~/server/db/schema'
 
 export const productosRouter = createTRPCRouter({
-    create: publicProcedure.input(z.object({ name: z.string().min(1), description: z.string(), barcode: z.string() })).mutation(async ({ ctx, input }) => {
+    create: publicProcedure.input(z.object({ name: z.string().min(1), description: z.string(), barcode: z.string(), categoria: z.string() })).mutation(async ({ ctx, input }) => {
         // simulate a slow db call
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
         await ctx.db.insert(productos).values({
+            tipoDeInstalacion_id: input.categoria,
             Nombre:input.name,
             Codigo_de_barras: input.barcode,
             Descripcion: input.description

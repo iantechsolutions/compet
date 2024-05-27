@@ -5,13 +5,13 @@ import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
 import { fotos } from '~/server/db/schema'
 
 export const fotosRouter = createTRPCRouter({
-    create: publicProcedure.input(z.object({ Link: z.string().min(1), Instalacion: z.number()})).mutation(async ({ ctx, input }) => {
+    create: publicProcedure.input(z.object({ Link: z.string().min(1), Instalacion: z.string()})).mutation(async ({ ctx, input }) => {
         // simulate a slow db call
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
         await ctx.db.insert(fotos).values({
-            Link:input.Link,
-            Instalacion: input.Instalacion
+          Link: input.Link,
+          Instalacion: input.Instalacion
         })
     }),
 
@@ -33,7 +33,7 @@ export const fotosRouter = createTRPCRouter({
       return channel;
     }),
 
-    update: publicProcedure.input(z.object({Id:z.string(), Link: z.string().min(1), Instalacion: z.number() })).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({Id:z.string(), Link: z.string().min(1), Instalacion: z.string() })).mutation(async ({ ctx, input }) => {
       await db
         .update(fotos)
         .set({

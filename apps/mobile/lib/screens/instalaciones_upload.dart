@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:mplikelanding/components/critic_steps/instalacion_masilla.dart';
+import 'package:mplikelanding/components/critic_steps/tubo_campo.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -8,11 +10,14 @@ import 'package:path_provider/path_provider.dart';
 // ignore: depend_on_referenced_packages
 import 'package:anadea_stepper/anadea_stepper.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:image_picker/image_picker.dart';
+import '../components/critic_steps/qr_scan.dart';
+import '../components/critic_steps/safety_measures.dart';
+import '../components/critic_steps/dimensiones_cable.dart';
+import '../components/critic_steps/corte_semiconductora.dart';
 
 class InstalacionesUploadScreen extends StatefulWidget {
-  final String idInstalacion;
-
-  InstalacionesUploadScreen({Key? key, required this.idInstalacion})
+  InstalacionesUploadScreen({Key? key, String idInstalacion = ""})
       : super(key: key);
 
   @override
@@ -27,7 +32,7 @@ void changeTextFieldValue(String newValue) {
 
 class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
   CameraController? controller;
-  List<XFile> images = [];
+  List<XFile?> images = [];
   bool showPreview = false;
 
   @override
@@ -36,6 +41,8 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
     initCamera();
     _controller.text = "Codigo de barras";
   }
+
+  final ImagePicker picker = ImagePicker();
 
   Future<void> initCamera() async {
     final cameras = await availableCameras();
@@ -59,21 +66,11 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
       return;
     }
 
-    final XFile file = await controller!.takePicture();
+    final XFile? image = await picker.pickImage(source: ImageSource.camera);
 
     setState(() {
-      images.add(file);
+      images.add(image);
       showPreview = true;
-    });
-  }
-
-  Future<void> toggleCameraPreview() async {
-    if (controller == null || !controller!.value.isInitialized) {
-      return;
-    }
-
-    setState(() {
-      showPreview = !showPreview;
     });
   }
 
@@ -87,7 +84,7 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
     }
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Subir imagenes'),
+          title: const Text('Registro de Instalación'),
           foregroundColor: Colors.black,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         ),
@@ -116,125 +113,33 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
   List<AStep> getSteps() => [
         AStep(
           isActive: currentStep >= 0,
-          title: const Text("Scaneo del codigo de barras"),
-          content: Container(
-            child: Column(
-              children: <Widget>[
-                const Text("Escanea el codigo de barras del equipo a instalar"),
-                ShadButton(
-                  onPressed: () async {
-                    var res = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const SimpleBarcodeScannerPage(),
-                        ));
-                    print(res);
-                    setState(() {
-                      if (res is String) {
-                        result = res;
-                        changeTextFieldValue(res);
-                      }
-                    });
-                  },
-                  text: const Text('Abrir scanner'),
-                ),
-                const Text("O ingresalo a mano si no puedes escanearlo"),
-                // Row(children: <Widget>[
-                TextField(
-                  decoration: const InputDecoration(
-                    hintText: "Codigo de barras",
-                  ),
-                  controller: _controller,
-                  onChanged: (value) {
-                    setState(() {
-                      result = value;
-                    });
-                  },
-                  onTap: () {
-                    _controller.text = "";
-                  },
-                ),
-                ShadButton(
-                  onPressed: () {
-                    print("comprobacion");
-                  },
-                  text: const Text('Comprobar'),
-                ),
-                // ])
-              ],
-            ),
-          ),
+          title: const Text("Paso 1"),
+          content: BarcodeScannerComponent(),
         ),
         AStep(
             isActive: currentStep >= 1,
-            title: const Text("Medidas de seguridad"),
-            content: Container(
-              child: const Column(
-                children: <Widget>[
-                  Text(
-                      "Asegurese de que los cables esten desconectados de la fuente de energia"),
-                  Text(
-                      "Asegurese de tener las herramientas necesarias para realizar el empalme"),
-                  Text(
-                      "Asegurese de que los cables esten en buen estado y no presenten cortes o deterioro"),
-                ],
-              ),
-            )),
+            title: const Text("Paso 2"),
+            content: SafetyInstructionsComponent()),
         AStep(
             isActive: currentStep >= 2,
-            title: const Text("Registro de cables"),
-            content: Container(
-              height: 100,
-              child: ListView(
-                children: <Widget>[
-                  Container(
-                    child: showPreview
-                        ? Container(
-                            width: 100.0,
-                            height: 150.0,
-                            child: CameraPreview(controller!),
-                          )
-                        : GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount:
-                                  3, // change this number to modify the number of items in a row
-                              mainAxisSpacing: 10.0,
-                              crossAxisSpacing: 10.0,
-                            ),
-                            itemCount: images.length,
-                            itemBuilder: (context, index) {
-                              return Image.file(File(images[index].path),
-                                  width: 100.0,
-                                  height: 100.0,
-                                  fit: BoxFit.fill);
-                            },
-                          ),
-                  ),
-                  Text("Tome una imagen de los cables a unir, ya pelados"),
-                  ShadButton(
-                    text: Icon(showPreview ? Icons.camera : Icons.camera_alt),
-                    onPressed: () {
-                      if (showPreview) {
-                        toggleCameraPreview();
-                      } else {
-                        takePicture();
-                      }
-                    },
-                  ),
-                ],
-              ),
-            )),
+            title: const Text("Paso 3"),
+            content: DimensionesCaptureComponent()),
         AStep(
             isActive: currentStep >= 3,
-            title: const Text("Registro de union"),
-            content:
-                Container(child: Text("Saque foto de la union de piezas"))),
+            title: const Text("Paso 4"),
+            content: SemiconductoraCaptureComponent()),
         AStep(
             isActive: currentStep >= 4,
-            title: const Text("Resultado Final"),
-            content: Container(child: Text("Saque foto del resultado final"))),
+            title: const Text("Paso 5"),
+            content: MasillaCaptureComponent()),
+        AStep(
+            isActive: currentStep >= 5,
+            title: const Text("Paso 6"),
+            content: TuboCampoCaptureComponent()),
+        AStep(
+            isActive: currentStep >= 6,
+            title: const Text("Paso 7"),
+            content: MasillaCaptureComponent()),
       ];
 
   @override

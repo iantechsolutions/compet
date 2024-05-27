@@ -40,9 +40,7 @@ class MyApp extends StatelessWidget {
             return RecipeBloc(tursoRepository);
           }),
           BlocProvider<ClienteBloc>(create: (context) {
-            final tursoRepository =
-                RepositoryProvider.of<TursoRepository>(context);
-            return ClienteBloc(tursoRepository);
+            return ClienteBloc();
           }),
           BlocProvider<EmpalmistaBloc>(create: (context) {
             final tursoRepository =
@@ -81,12 +79,12 @@ class MyApp extends StatelessWidget {
             '/instalaciones': (context) =>
                 const InstalacionsScreen(), // This should be your admin home screen
             '/empalmistaUser': (context) => const EmpalmistaUserScreen(),
+            '/uploadScreen': (context) => InstalacionesUploadScreen(),
             '/new-recipe': (context) =>
                 const NewRecipeScreen(), //New recipe screen
+
             '/instalaciones/:idInstalacion': (context) =>
-                InstalacionesUploadScreen(
-                    idInstalacion:
-                        ModalRoute.of(context)!.settings.arguments as String),
+                InstalacionesUploadScreen(),
             RecipeDetailsScreen.routeName: (context) => //Recipe details screen
                 const RecipeDetailsScreen(),
           },

@@ -408,8 +408,9 @@ class TursoRestAPIClient {
           "${columns[0]}": instalacion[0],
           "${columns[1]}": instalacion[1],
           "${columns[2]}": instalacion[2],
-          "${columns[3]}":
-              DateTime.parse((instalacion)[3]).millisecondsSinceEpoch,
+          "${columns[3]}": ((instalacion[3] != null)
+              ? DateTime.parse(instalacion[3]).millisecondsSinceEpoch
+              : null),
           "${columns[4]}": ((instalacion[4] != null)
               ? DateTime.parse(instalacion[4]).millisecondsSinceEpoch
               : null),

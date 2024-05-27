@@ -7,15 +7,15 @@ import { pasoCritico, tipoInstalaciones } from '~/server/db/schema'
 
 
 export const tipoInstalacionesRouter = createTRPCRouter({
-    create: publicProcedure.input(z.object({ pasoCritico: z.string(), description: z.string()
+    create: publicProcedure.input(z.object({ description: z.string()
         })).mutation(async ({ ctx, input }) => {
         // simulate a slow db call
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
-        await ctx.db.insert(tipoInstalaciones).values({
-            pasoCritico:input.pasoCritico,
+        const result = await ctx.db.insert(tipoInstalaciones).values({
             description: input.description,
-        })
+        }).returning();
+        return result;
     }),
 
     list: publicProcedure.query(({ ctx }) => {
@@ -36,13 +36,13 @@ export const tipoInstalacionesRouter = createTRPCRouter({
       return channel;
     }),
 
-    update: publicProcedure.input(z.object({Id:z.string(), pasoCritico: z.string(), description: z.string()
+    update: publicProcedure.input(z.object({Id:z.string(), description: z.string()
 })).mutation(async ({ ctx, input }) => {
       await db
         .update(tipoInstalaciones)
         .set({
             id: input.Id,
-            pasoCritico: input.pasoCritico,
+            
             description: input.description,
         })
         .where(eq(tipoInstalaciones.id, input.Id));

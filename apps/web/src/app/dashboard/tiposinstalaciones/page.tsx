@@ -2,24 +2,26 @@ import { api } from "~/trpc/server"
 import LayoutContainer from "~/components/layout-container";
 import { Title } from "~/components/title";
 import { List, ListTile } from "~/components/list";
-import { AddEmpalmistaDialog } from "./add-empalmista-dialog";
+import { AddTipoInstalacionDialog } from "./add-tipo-dialog";
+
+  
 
 export default async function Home(){
-
-    const empalmistas = await api.empalmistas.list();
+    const criticsteps = await api.tipoInstalaciones.list();
     return(
       <LayoutContainer>
       <section className="space-y-2">
         <div className="flex justify-between">
-          <Title>Empalmistas</Title>
-          <AddEmpalmistaDialog />
+          <Title>Categorias de productos</Title>
+          <AddTipoInstalacionDialog />
         </div>
         <List>
-          {empalmistas.map((empalmistas) => {
+          {criticsteps.map((Paso) => {
             return (
               <ListTile
-                key={empalmistas.Id}
-                title={empalmistas.Nombre}
+                key={Paso.id}
+                leading={Paso.description}
+                href={`/dashboard/tiposinstalaciones/${Paso.id}`}
               />
             );
           })}

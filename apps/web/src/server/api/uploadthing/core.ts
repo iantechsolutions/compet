@@ -5,7 +5,7 @@ import { db } from "~/server/db";
 import * as schema from "~/server/db/schema";
 import { eq } from "drizzle-orm";
 import dayjs from "dayjs";
-import { uploadRouter } from "../routers/uploadthing";
+// import { uploadRouter } from "../routers/uploadthing";
 
 const f = createUploadthing();
 

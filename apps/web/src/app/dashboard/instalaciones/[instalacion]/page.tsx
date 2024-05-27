@@ -29,7 +29,7 @@ export default function Page() {
         router.back();
     }
     const pathname = usePathname().split('/')[usePathname().split('/').length - 1];
-    const {data:instalacion,isLoading} = api.instalaciones.get.useQuery({Id: parseInt(pathname?.toString()!)});
+    const {data:instalacion,isLoading} = api.instalaciones.get.useQuery({Id: pathname?.toString()!});
     console.log(instalacion);
     return (
         <div>

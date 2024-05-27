@@ -65,7 +65,7 @@ class HomeScreenState extends State<EmpalmistasScreen> {
                   children: state.empalmistas.map((empalmista) => [
                         ShadTableCell(
                             child: Text(
-                          empalmista.id.toString(),
+                          "",
                           style: const TextStyle(
                               fontWeight: FontWeight.w500, color: Colors.black),
                         )),

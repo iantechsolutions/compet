@@ -33,6 +33,7 @@ export function AddInstalacionDialog() {
     setEmpalmista(value);
   }
   const handleClienteChange = (value : any) => {
+    console.log(value);
     setCliente(value);
   }
   const handleProductoChange = (value : any) => {
@@ -45,12 +46,17 @@ const { data: pedidos } = api.pedidos.list.useQuery(undefined);
 
 async function handleCreate() {
     try {
+        const clienteT = clientes?.find((categoriaT) => categoriaT.Id.toLowerCase() === cliente);
+        const pedidoT = pedidos?.find((categoriaT) => categoriaT.Id.toLowerCase() === producto);
+        const empalmistaT = empalmistas?.find((categoriaT) => categoriaT.Id.toLowerCase() === empalmista);
+
         await createInstalacion({
-          Cliente:parseInt(cliente),
-          Pedido:parseInt(producto),
-          Empalmista: parseInt(empalmista),
+          Cliente:clienteT!.Id,
+          Pedido:pedidoT!.Id,
+          Empalmista: empalmistaT!.Id,
           FechaAlta: new Date().getTime(),
-          Estado: 0
+          Estado: "Pendiente",
+          tipoInstalacion: "default",
         });
 
         toast.success("Instalacion creada correctamente");

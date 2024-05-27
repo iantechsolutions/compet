@@ -10,6 +10,8 @@ import { pedidosRouter } from './routers/pedidos'
 import { productosPedidosRouter } from './routers/productospedidos'
 import { pasoCriticoRouter } from './routers/pasoCritico-router'
 import { tipoInstalacionesRouter } from './routers/tipoInstalaciones-router'
+import { pasocriticototipoinstalacionRouter } from './routers/pasocriticototipoinstalacion-router'
+import { pasoCriticoTotipoInstalacion } from '../db/schema'
 
 /**
  * This is the primary router for your server.
@@ -27,6 +29,7 @@ export const appRouter = createTRPCRouter({
     pedidos:pedidosRouter,
     pasoCritico: pasoCriticoRouter,
     tipoInstalaciones: tipoInstalacionesRouter,
+    pasoCriticoTotipoInstalacion: pasocriticototipoinstalacionRouter,
     sellCheck: sellerProcedure.query(({ ctx }) => {
         // falla si no es seller
     }),

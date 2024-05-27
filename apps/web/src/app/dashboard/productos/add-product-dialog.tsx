@@ -1,5 +1,5 @@
 "use client";
-
+import { ComboboxDemo } from "~/components/ui/combobox";
 import { Loader2Icon, PlusCircleIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -16,6 +16,7 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 // import { asTRPCError } from "~/lib/errors";
 import { api } from "~/trpc/react";
+import { set } from "zod";
 
 export function AddProductoDialog() {
   const { mutateAsync: createProduct, isPending } =
@@ -28,10 +29,19 @@ export function AddProductoDialog() {
   const [open, setOpen] = useState(false);
 
   const router = useRouter();
+  const { data: categorias} = api.tipoInstalaciones.list.useQuery(undefined);
 
-  async function handleCreate() {
+  const [categoria,setCategoria] = useState("");
+  const handleCategoriaChange= (value : any) => {
+    console.log(value);
+    setCategoria(value);
+  }
+
+  async function handleCreate() { 
     try {
+      const categoriaItem = categorias?.find((categoriaT) => categoriaT.id.toLowerCase() === categoria);
       await createProduct({
+        categoria: categoriaItem!.id,
         name,
         description,
         barcode
@@ -84,6 +94,19 @@ export function AddProductoDialog() {
               placeholder="..."
               value={barcode}
               onChange={(e) => setBarcode(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label>Categoria de producto</Label><br/>
+            <ComboboxDemo
+              title="Seleccionar categoria..."
+              placeholder="Categoria"
+              options={categorias?.map((categoria) => ({
+                value: categoria.id,
+                onChange:{handleCategoriaChange},
+                label: categoria.description || "",
+              })) ?? []}
+              onSelectionChange={handleCategoriaChange}
             />
           </div>
           <DialogFooter>
