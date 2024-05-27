@@ -22,7 +22,7 @@ export const fotosRouter = createTRPCRouter({
     get: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        Id: z.number(),
       }),
     )
     .query(async ({ input }) => {
@@ -46,7 +46,7 @@ export const fotosRouter = createTRPCRouter({
     delete: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        Id: z.number(),
       }),
     )
     .mutation(async ({ input }) => {

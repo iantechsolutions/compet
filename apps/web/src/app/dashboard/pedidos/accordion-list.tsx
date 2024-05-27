@@ -21,14 +21,14 @@ import {
 interface Pedido {
     Fecha_de_creacion: string;
     cliente: {
-      Nombre: string;
+    Nombre: string;
     };
     Estado: string;
     productos: {
-      Id: string;
-      Nombre: string;
-      Descripcion: string;
-      Cantidad: number;
+    Id: number;
+    Nombre: string;
+    Descripcion: string;
+    Cantidad: number;
     }[];
   }
 interface AccordionListProps {
