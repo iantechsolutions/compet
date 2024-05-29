@@ -12,7 +12,7 @@ export default async function Home(){
       <LayoutContainer>
       <section className="space-y-2">
         <div className="flex justify-between">
-          <Title>Empalmistas</Title>
+          <Title>Pedidos</Title>
           <AddPedidoDialog />
         </div>
         <List>

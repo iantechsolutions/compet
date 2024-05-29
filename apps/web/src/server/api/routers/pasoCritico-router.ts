@@ -1,64 +1,74 @@
-import { z } from 'zod'
-import { db } from '~/server/db'
+import { z } from "zod";
+import { db } from "~/server/db";
 import { asc, eq } from "drizzle-orm";
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
-import { pasoCritico } from '~/server/db/schema'
-
-
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { pasoCritico } from "~/server/db/schema";
 
 export const pasoCriticoRouter = createTRPCRouter({
-    create: publicProcedure.input(z.object({ detalle: z.string(), description: z.string(), 
-        useCamera: z.boolean() })).mutation(async ({ ctx, input }) => {
-        // simulate a slow db call
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+  create: publicProcedure
+    .input(
+      z.object({
+        detalle: z.string(),
+        description: z.string(),
+        useCamera: z.boolean(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // simulate a slow db call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        await ctx.db.insert(pasoCritico).values({
-            detalle:input.detalle,
-            description: input.description,
-            useCamera: input.useCamera
-        })
+      await ctx.db.insert(pasoCritico).values({
+        detalle: input.detalle,
+        description: input.description,
+        useCamera: input.useCamera,
+      });
     }),
 
-    list: publicProcedure.query(({ ctx }) => {
-        return ctx.db.query.pasoCritico.findMany()
-    }),
+  list: publicProcedure.query(({ ctx }) => {
+    return ctx.db.query.pasoCritico.findMany();
+  }),
 
-    get: publicProcedure
+  get: publicProcedure
     .input(
       z.object({
         Id: z.number(),
-      }),
+      })
     )
     .query(async ({ input }) => {
       const channel = await db.query.pasoCritico.findFirst({
-        where: eq(pasoCritico.Id, input.Id)
+        where: eq(pasoCritico.Id, input.Id),
       });
 
       return channel;
     }),
 
-    update: publicProcedure.input(z.object({Id:z.number(), detalle: z.string(), description: z.string(),
-         useCamera: z.boolean() })).mutation(async ({ ctx, input }) => {
+  update: publicProcedure
+    .input(
+      z.object({
+        Id: z.number(),
+        detalle: z.string(),
+        description: z.string(),
+        useCamera: z.boolean(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
       await db
         .update(pasoCritico)
         .set({
-            detalle: input.detalle,
-            description: input.description,
+          detalle: input.detalle,
+          description: input.description,
           useCamera: input.useCamera,
         })
         .where(eq(pasoCritico.Id, input.Id));
     }),
 
-    delete: publicProcedure
+  delete: publicProcedure
     .input(
       z.object({
         Id: z.number(),
-      }),
+      })
     )
     .mutation(async ({ input }) => {
-      await db
-        .delete(pasoCritico)
-        .where(eq(pasoCritico.Id, input.Id));
+      await db.delete(pasoCritico).where(eq(pasoCritico.Id, input.Id));
     }),
-
-})
+});

@@ -34,6 +34,7 @@ export function AddInstalacionDialog() {
   }
   const handleClienteChange = (value : any) => {
     setCliente(value);
+    console.log(cliente)
   }
   const handleProductoChange = (value : any) => {
     setProducto(value);
@@ -48,6 +49,7 @@ async function handleCreate() {
         await createInstalacion({
           Cliente:parseInt(cliente),
           Pedido:parseInt(producto),
+          tipoInstalacion: 1,
           Empalmista: parseInt(empalmista),
           FechaAlta: new Date().getTime(),
           Estado: 0
@@ -81,6 +83,7 @@ async function handleCreate() {
               label: empalmista.Nombre || "",
             })) ?? []}
             onSelectionChange={handleEmpalmistaChange}
+
           />
         </div>
         <div>

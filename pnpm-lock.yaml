@@ -23,7 +23,7 @@ importers:
         version: link:tooling/typescript
       turbo:
         specifier: latest
-        version: 1.13.2
+        version: 1.13.3
 
   apps/web:
     dependencies:
@@ -59,16 +59,16 @@ importers:
         version: 5.29.0(react@18.2.0)
       '@trpc/client':
         specifier: next
-        version: 11.0.0-rc.340(@trpc/server@11.0.0-rc.340)
+        version: 11.0.0-rc.382(@trpc/server@11.0.0-rc.382)
       '@trpc/next':
         specifier: next
-        version: 11.0.0-rc.340(@tanstack/react-query@5.29.0)(@trpc/client@11.0.0-rc.340)(@trpc/react-query@11.0.0-rc.340)(@trpc/server@11.0.0-rc.340)(next@14.1.4)(react-dom@18.2.0)(react@18.2.0)
+        version: 11.0.0-rc.382(@tanstack/react-query@5.29.0)(@trpc/client@11.0.0-rc.382)(@trpc/react-query@11.0.0-rc.382)(@trpc/server@11.0.0-rc.382)(next@14.1.4)(react-dom@18.2.0)(react@18.2.0)
       '@trpc/react-query':
         specifier: next
-        version: 11.0.0-rc.340(@tanstack/react-query@5.29.0)(@trpc/client@11.0.0-rc.340)(@trpc/server@11.0.0-rc.340)(react-dom@18.2.0)(react@18.2.0)
+        version: 11.0.0-rc.382(@tanstack/react-query@5.29.0)(@trpc/client@11.0.0-rc.382)(@trpc/server@11.0.0-rc.382)(react-dom@18.2.0)(react@18.2.0)
       '@trpc/server':
-        specifier: next
-        version: 11.0.0-rc.340
+        specifier: 11.0.0-rc.382
+        version: 11.0.0-rc.382
       '@uploadthing/react':
         specifier: ^6.5.4
         version: 6.5.4(next@14.1.4)(react@18.2.0)(uploadthing@6.10.3)
@@ -105,6 +105,9 @@ importers:
       react:
         specifier: 18.2.0
         version: 18.2.0
+      react-barcode:
+        specifier: ^1.5.3
+        version: 1.5.3(react@18.2.0)
       react-dom:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
@@ -1865,21 +1868,21 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@trpc/client@11.0.0-rc.340(@trpc/server@11.0.0-rc.340):
-    resolution: {integrity: sha512-q2ecZW58LM9pKpzRt+um9Jh33Nmjt7qDZu3xsjMFD61QLE6M/Tply7lC02iqZzrXzTGxR0w2+dLdkkrSlITOKQ==}
+  /@trpc/client@11.0.0-rc.382(@trpc/server@11.0.0-rc.382):
+    resolution: {integrity: sha512-O+MSRed5r8AJJ+j3peZkd/b7WINEkhKaFilRuPH8VQsrlMZToxUzQl9aShPIgnOhhQGxvWqdh2lXwUvrFCea/A==}
     peerDependencies:
-      '@trpc/server': 11.0.0-rc.340+d1652d1bc
+      '@trpc/server': 11.0.0-rc.382+94f198fec
     dependencies:
-      '@trpc/server': 11.0.0-rc.340
+      '@trpc/server': 11.0.0-rc.382
     dev: false
 
-  /@trpc/next@11.0.0-rc.340(@tanstack/react-query@5.29.0)(@trpc/client@11.0.0-rc.340)(@trpc/react-query@11.0.0-rc.340)(@trpc/server@11.0.0-rc.340)(next@14.1.4)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-eMjVxNruE0ZdpoSIuOyjuM38Mf9CgXVgpnbFt+mp+hasJQpUlHIUj+EVuoAs+KqYo+9V/LBqIZNs774vgNf9MQ==}
+  /@trpc/next@11.0.0-rc.382(@tanstack/react-query@5.29.0)(@trpc/client@11.0.0-rc.382)(@trpc/react-query@11.0.0-rc.382)(@trpc/server@11.0.0-rc.382)(next@14.1.4)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-0gpoxaIQ2WPVAK9iYrcd8NzaL0BhPgLJG/Gv5PlrFSb4qdKM91/+U2ze5i189pV66azhDs+qe2+QeiLO4pOMGQ==}
     peerDependencies:
       '@tanstack/react-query': ^5.25.0
-      '@trpc/client': 11.0.0-rc.340+d1652d1bc
-      '@trpc/react-query': 11.0.0-rc.340+d1652d1bc
-      '@trpc/server': 11.0.0-rc.340+d1652d1bc
+      '@trpc/client': 11.0.0-rc.382+94f198fec
+      '@trpc/react-query': 11.0.0-rc.382+94f198fec
+      '@trpc/server': 11.0.0-rc.382+94f198fec
       next: '*'
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
@@ -1890,32 +1893,32 @@ packages:
         optional: true
     dependencies:
       '@tanstack/react-query': 5.29.0(react@18.2.0)
-      '@trpc/client': 11.0.0-rc.340(@trpc/server@11.0.0-rc.340)
-      '@trpc/react-query': 11.0.0-rc.340(@tanstack/react-query@5.29.0)(@trpc/client@11.0.0-rc.340)(@trpc/server@11.0.0-rc.340)(react-dom@18.2.0)(react@18.2.0)
-      '@trpc/server': 11.0.0-rc.340
+      '@trpc/client': 11.0.0-rc.382(@trpc/server@11.0.0-rc.382)
+      '@trpc/react-query': 11.0.0-rc.382(@tanstack/react-query@5.29.0)(@trpc/client@11.0.0-rc.382)(@trpc/server@11.0.0-rc.382)(react-dom@18.2.0)(react@18.2.0)
+      '@trpc/server': 11.0.0-rc.382
       next: 14.1.4(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /@trpc/react-query@11.0.0-rc.340(@tanstack/react-query@5.29.0)(@trpc/client@11.0.0-rc.340)(@trpc/server@11.0.0-rc.340)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-3c+KWh3+KN+T0gBKSnxzGfrHlX1NRK5u+v4BqFWLTBg0ADi2eVOgSpTaToF/WEea616kacmPh5ptJeK8SmyBKQ==}
+  /@trpc/react-query@11.0.0-rc.382(@tanstack/react-query@5.29.0)(@trpc/client@11.0.0-rc.382)(@trpc/server@11.0.0-rc.382)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-VlYe+ufYy/hWQFpBEG2MHKsGrGmt2oqqPBO4lHWBpuCcQnzttvsW+LkBkMoy6qZqFcrGyQJC8KQXHO6njmfmZQ==}
     peerDependencies:
       '@tanstack/react-query': ^5.25.0
-      '@trpc/client': 11.0.0-rc.340+d1652d1bc
-      '@trpc/server': 11.0.0-rc.340+d1652d1bc
+      '@trpc/client': 11.0.0-rc.382+94f198fec
+      '@trpc/server': 11.0.0-rc.382+94f198fec
       react: '>=18.2.0'
       react-dom: '>=18.2.0'
     dependencies:
       '@tanstack/react-query': 5.29.0(react@18.2.0)
-      '@trpc/client': 11.0.0-rc.340(@trpc/server@11.0.0-rc.340)
-      '@trpc/server': 11.0.0-rc.340
+      '@trpc/client': 11.0.0-rc.382(@trpc/server@11.0.0-rc.382)
+      '@trpc/server': 11.0.0-rc.382
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /@trpc/server@11.0.0-rc.340:
-    resolution: {integrity: sha512-fKzFeAzFbsezC8Jx6gIy4AjlzNvQy4aFc2LT0qIq7hNWYCkuv3gQ7ROgcIF4dUI0rfPC3Gt/y8PQjE+GayAhvA==}
+  /@trpc/server@11.0.0-rc.382:
+    resolution: {integrity: sha512-a3A0osTgFhbClRjE+fZ3nA3TEjupnWM23L4hidjecg3xN+QghwYTjwXJcYXPsdKyT6PhFtzWBKJxShmsZRElZw==}
     dev: false
 
   /@types/better-sqlite3@7.6.9:
@@ -2989,6 +2992,7 @@ packages:
 
   /glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
+    deprecated: Glob versions prior to v9 are no longer supported
     dependencies:
       fs.realpath: 1.0.0
       inflight: 1.0.6
@@ -3175,6 +3179,10 @@ packages:
     dependencies:
       argparse: 2.0.1
     dev: true
+
+  /jsbarcode@3.11.6:
+    resolution: {integrity: sha512-G5TKGyKY1zJo0ZQKFM1IIMfy0nF2rs92BLlCz+cU4/TazIc4ZH+X1GYeDRt7TKjrYqmPfTjwTBkU/QnQlsYiuA==}
+    dev: false
 
   /json-diff@0.9.0:
     resolution: {integrity: sha512-cVnggDrVkAAA3OvFfHpFEhOnmcsUpleEKq4d4O8sQWWSH40MBrWstKigVB1kGrgLWzuom+7rRdaCsnBD6VyObQ==}
@@ -3609,6 +3617,14 @@ packages:
     engines: {node: '>=14'}
     dev: true
 
+  /prop-types@15.8.1:
+    resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
+    dependencies:
+      loose-envify: 1.4.0
+      object-assign: 4.1.1
+      react-is: 16.13.1
+    dev: false
+
   /punycode@2.3.0:
     resolution: {integrity: sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==}
     engines: {node: '>=6'}
@@ -3621,6 +3637,16 @@ packages:
   /queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
+  /react-barcode@1.5.3(react@18.2.0):
+    resolution: {integrity: sha512-EJPUwuERKpApcQ9qXzdVZzddFYRT7+3R/jJ3OrTfW6m2iq+WT+CBaVB7DsQazhPRXDfMcx9+dmMmzjsmveOViQ==}
+    peerDependencies:
+      react: ^16.0.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      jsbarcode: 3.11.6
+      prop-types: 15.8.1
+      react: 18.2.0
+    dev: false
+
   /react-dom@18.2.0(react@18.2.0):
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}
     peerDependencies:
@@ -3629,6 +3655,10 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
+
+  /react-is@16.13.1:
+    resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
     dev: false
 
   /react-remove-scroll-bar@2.3.6(@types/react@18.2.61)(react@18.2.0):
@@ -3745,6 +3775,7 @@ packages:
 
   /rimraf@3.0.2:
     resolution: {integrity: sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==}
+    deprecated: Rimraf versions prior to v4 are no longer supported
     hasBin: true
     dependencies:
       glob: 7.2.3
@@ -4000,64 +4031,64 @@ packages:
     resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
     dev: false
 
-  /turbo-darwin-64@1.13.2:
-    resolution: {integrity: sha512-CCSuD8CfmtncpohCuIgq7eAzUas0IwSbHfI8/Q3vKObTdXyN8vAo01gwqXjDGpzG9bTEVedD0GmLbD23dR0MLA==}
+  /turbo-darwin-64@1.13.3:
+    resolution: {integrity: sha512-glup8Qx1qEFB5jerAnXbS8WrL92OKyMmg5Hnd4PleLljAeYmx+cmmnsmLT7tpaVZIN58EAAwu8wHC6kIIqhbWA==}
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-darwin-arm64@1.13.2:
-    resolution: {integrity: sha512-0HySm06/D2N91rJJ89FbiI/AodmY8B3WDSFTVEpu2+8spUw7hOJ8okWOT0e5iGlyayUP9gr31eOeL3VFZkpfCw==}
+  /turbo-darwin-arm64@1.13.3:
+    resolution: {integrity: sha512-/np2xD+f/+9qY8BVtuOQXRq5f9LehCFxamiQnwdqWm5iZmdjygC5T3uVSYuagVFsZKMvX3ycySwh8dylGTl6lg==}
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-64@1.13.2:
-    resolution: {integrity: sha512-7HnibgbqZrjn4lcfIouzlPu8ZHSBtURG4c7Bedu7WJUDeZo+RE1crlrQm8wuwO54S0siYqUqo7GNHxu4IXbioQ==}
+  /turbo-linux-64@1.13.3:
+    resolution: {integrity: sha512-G+HGrau54iAnbXLfl+N/PynqpDwi/uDzb6iM9hXEDG+yJnSJxaHMShhOkXYJPk9offm9prH33Khx2scXrYVW1g==}
     cpu: [x64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-arm64@1.13.2:
-    resolution: {integrity: sha512-sUq4dbpk6SNKg/Hkwn256Vj2AEYSQdG96repio894h5/LEfauIK2QYiC/xxAeW3WBMc6BngmvNyURIg7ltrePg==}
+  /turbo-linux-arm64@1.13.3:
+    resolution: {integrity: sha512-qWwEl5VR02NqRyl68/3pwp3c/olZuSp+vwlwrunuoNTm6JXGLG5pTeme4zoHNnk0qn4cCX7DFrOboArlYxv0wQ==}
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-64@1.13.2:
-    resolution: {integrity: sha512-DqzhcrciWq3dpzllJR2VVIyOhSlXYCo4mNEWl98DJ3FZ08PEzcI3ceudlH6F0t/nIcfSItK1bDP39cs7YoZHEA==}
+  /turbo-windows-64@1.13.3:
+    resolution: {integrity: sha512-Nudr4bRChfJzBPzEmpVV85VwUYRCGKecwkBFpbp2a4NtrJ3+UP1VZES653ckqCu2FRyRuS0n03v9euMbAvzH+Q==}
     cpu: [x64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-arm64@1.13.2:
-    resolution: {integrity: sha512-WnPMrwfCXxK69CdDfS1/j2DlzcKxSmycgDAqV0XCYpK/812KB0KlvsVAt5PjEbZGXkY88pCJ1BLZHAjF5FcbqA==}
+  /turbo-windows-arm64@1.13.3:
+    resolution: {integrity: sha512-ouJCgsVLd3icjRLmRvHQDDZnmGzT64GBupM1Y+TjtYn2LVaEBoV6hicFy8x5DUpnqdLy+YpCzRMkWlwhmkX7sQ==}
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo@1.13.2:
-    resolution: {integrity: sha512-rX/d9f4MgRT3yK6cERPAkfavIxbpBZowDQpgvkYwGMGDQ0Nvw1nc0NVjruE76GrzXQqoxR1UpnmEP54vBARFHQ==}
+  /turbo@1.13.3:
+    resolution: {integrity: sha512-n17HJv4F4CpsYTvKzUJhLbyewbXjq1oLCi90i5tW1TiWDz16ML1eDG7wi5dHaKxzh5efIM56SITnuVbMq5dk4g==}
     hasBin: true
     optionalDependencies:
-      turbo-darwin-64: 1.13.2
-      turbo-darwin-arm64: 1.13.2
-      turbo-linux-64: 1.13.2
-      turbo-linux-arm64: 1.13.2
-      turbo-windows-64: 1.13.2
-      turbo-windows-arm64: 1.13.2
+      turbo-darwin-64: 1.13.3
+      turbo-darwin-arm64: 1.13.3
+      turbo-linux-64: 1.13.3
+      turbo-linux-arm64: 1.13.3
+      turbo-windows-64: 1.13.3
+      turbo-windows-arm64: 1.13.3
     dev: true
 
   /type-check@0.4.0:

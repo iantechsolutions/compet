@@ -67,6 +67,12 @@ export default function Sidebar() {
                                 >
                                     Instalaciones
                                 </SidenavItem>
+                                <SidenavItem
+                                    icon={<DrillIcon />}
+                                    href="/dashboard/barcode"
+                                >
+                                    Barcode
+                                </SidenavItem>
                             </Sidenav>
     )
 }
