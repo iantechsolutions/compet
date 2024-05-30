@@ -48,11 +48,15 @@ export default function Home() {
     }
     setSelectedIds(ids);
 
+
+    //
     try {
-      await createBarcodes({
-        descripcion: "",
-        productoSeleccionado: 0
-      });
+      for (let i = desde; i <= hasta; i++) {
+        await createBarcodes({
+          descripcion: "",
+          productoSeleccionado: 0
+        });
+      }
       toast.success("Códigos de barra creados correctamente");
       router.refresh();
       setOpen(false);
