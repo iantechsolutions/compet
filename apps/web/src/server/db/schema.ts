@@ -210,6 +210,10 @@ export const productos = createTable(
   })
 );
 
+export const productosRelation = relations(productos, ({ many }) => ({
+  productos: many(CodigoBarras),
+}));
+
 export const documentUploads = createTable(
   "document_upload",
   {
@@ -290,3 +294,13 @@ export const pasoCritico = createTable("paso_critico", {
 function createInsertSchema(Clientes: any) {
   throw new Error("Function not implemented.");
 }
+
+export const CodigoBarras = createTable("CodigoBarras", {
+  Id: int("id").notNull().primaryKey(),
+  productoSeleccionado: int("ProductoSeleccionado"),
+  descripcion: text("Descripcion", { length: 256 }),
+});
+
+export const CodigoBarrassRelation = relations(CodigoBarras, ({ one }) => ({
+  CodigoBarras: one(productos),
+}));

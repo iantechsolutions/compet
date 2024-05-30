@@ -1,20 +1,27 @@
 "use client";
-import LayoutContainer from "~/components/layout-container";
-import { Title } from "~/components/title";
+
 import { api } from "~/trpc/react";
-import { Button } from "~/components/ui/button";
+
 import { useState } from "react";
-import Barcode from 'react-barcode';
-import { Input } from "~/components/ui/input";
-import Link from "next/link";
+
 
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import LayoutContainer from "~/components/layout-container";
+import { Title } from "~/components/title";
+import { Button } from "~/components/ui/button";
+import Link from "next/link";
+import { Input } from "~/components/ui/input";
+import { Barcode } from "lucide-react";
 
 export default function Home() {
 
-  const { data: tipos, isLoading, error } = api.tipoInstalaciones.list.useQuery();
+  const { data: productos, isLoading, error } = api.productos.list.useQuery();
 
+  const { mutateAsync: createBarcodes, isPending } =
+    api.CodigoBarras.create.useMutation();
 
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   
@@ -22,13 +29,33 @@ export default function Home() {
   const [desde, setDesde] = useState<number>(0);
   const [hasta, setHasta] = useState<number>(0);
   
+
+  const [open, setOpen] = useState(false);
+
+  const router = useRouter();
+  
   const handleAddIds = () => {
     const ids = [];
     for (let i = desde; i <= hasta; i++) {
       ids.push(i);
-    }
-    setSelectedIds(ids);
-  };
+      }
+      setSelectedIds(ids);
+      
+        try {
+          createBarcodes({
+            descripcion: "",
+            productoSeleccionado: 0
+          });
+    
+          toast.success("Cliente creado correctamente");
+          router.refresh();
+          setOpen(false);
+        } catch (e) {
+          console.log(e);
+        }
+      }
+    
+    
   
   const generatePDF = () => {
     const input = document.getElementById('barcode-section');
@@ -55,7 +82,7 @@ export default function Home() {
   }
   
   
-  const validIds = selectedIds.filter(id => tipos?.filter(tipo => tipo.Id === id));
+  const validIds = selectedIds.filter(id => productos?.filter(productos => productos.Id === id));
   
   
  
@@ -109,7 +136,7 @@ export default function Home() {
         <div id="barcode-section" className="mt-4 grid grid-cols-4 gap-4">
           {validIds.map((id) => (
             <div key={id}>
-              <Barcode value={id.toString()} />
+              <Barcode values={id.toString()} />
             </div>
           ))}
         </div>
