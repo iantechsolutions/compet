@@ -6,7 +6,12 @@ import { pasoCritico, tipoInstalaciones } from "~/server/db/schema";
 
 export const tipoInstalacionesRouter = createTRPCRouter({
   create: publicProcedure
-    .input(z.object({ pasoCritico: z.number(), description: z.string() }))
+    .input(
+      z.object({
+        pasoCritico: z.number(),
+        description: z.string(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       // simulate a slow db call
       await new Promise((resolve) => setTimeout(resolve, 1000));
