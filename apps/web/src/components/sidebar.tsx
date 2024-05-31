@@ -84,6 +84,12 @@ export default function Sidebar() {
                                 >
                                     Pasos Criticos
                                 </SidenavItem>
+                                <SidenavItem
+                                    icon={<DrillIcon />}
+                                    href="/dashboard/barcode"
+                                >
+                                    Barcode
+                                </SidenavItem>
                             </Sidenav>
     )
 }

@@ -1,29 +1,29 @@
-import { z } from 'zod'
-import { db } from '~/server/db'
+import { z } from "zod";
+import { db } from "~/server/db";
 import { asc, eq } from "drizzle-orm";
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
-import { productosPedidos } from '~/server/db/schema'
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { productosPedidos } from "~/server/db/schema";
 
 export const productosPedidosRouter = createTRPCRouter({
     create: publicProcedure.input(z.object({Pedido: z.string(),Producto:z.string(),Cantidad:z.number(),Nombre:z.string(),Descripcion:z.string(),CodigoBarras:z.string()})).mutation(async ({ ctx, input }) => {
         // simulate a slow db call
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
-        await ctx.db.insert(productosPedidos).values({
-            Pedido: input.Pedido,
-            Producto: input.Producto,
-            Cantidad: input.Cantidad,
-            Nombre: input.Nombre,
-            Descripcion: input.Descripcion,
-            Codigo_de_barras: input.CodigoBarras
-        })
+      await ctx.db.insert(productosPedidos).values({
+        Pedido: input.Pedido,
+        Producto: input.Producto,
+        Cantidad: input.Cantidad,
+        Nombre: input.Nombre,
+        Descripcion: input.Descripcion,
+        Codigo_de_barras: input.CodigoBarras,
+      });
     }),
 
-    list: publicProcedure.query(({ ctx }) => {
-        return ctx.db.query.productosPedidos.findMany()
-    }),
+  list: publicProcedure.query(({ ctx }) => {
+    return ctx.db.query.productosPedidos.findMany();
+  }),
 
-    get: publicProcedure
+  get: publicProcedure
     .input(
       z.object({
         Id: z.string(),
@@ -31,7 +31,7 @@ export const productosPedidosRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       const channel = await db.query.productosPedidos.findFirst({
-        where: eq(productosPedidos.Id, input.Id)
+        where: eq(productosPedidos.Id, input.Id),
       });
 
       return channel;
@@ -41,17 +41,17 @@ export const productosPedidosRouter = createTRPCRouter({
       await db
         .update(productosPedidos)
         .set({
-            Pedido: input.Pedido,
-            Producto: input.Producto,
-            Cantidad: input.Cantidad,
-            Nombre: input.Nombre,
-            Descripcion: input.Descripcion,
-            Codigo_de_barras: input.CodigoBarras
+          Pedido: input.Pedido,
+          Producto: input.Producto,
+          Cantidad: input.Cantidad,
+          Nombre: input.Nombre,
+          Descripcion: input.Descripcion,
+          Codigo_de_barras: input.CodigoBarras,
         })
         .where(eq(productosPedidos.Id, input.Id));
     }),
 
-    delete: publicProcedure
+  delete: publicProcedure
     .input(
       z.object({
         Id: z.string(),
@@ -62,5 +62,4 @@ export const productosPedidosRouter = createTRPCRouter({
         .delete(productosPedidos)
         .where(eq(productosPedidos.Id, input.Id));
     }),
-
-})
+});

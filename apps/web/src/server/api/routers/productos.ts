@@ -1,8 +1,8 @@
-import { z } from 'zod'
-import { db } from '~/server/db'
+import { z } from "zod";
+import { db } from "~/server/db";
 import { asc, eq } from "drizzle-orm";
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
-import { productos } from '~/server/db/schema'
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { productos } from "~/server/db/schema";
 
 export const productosRouter = createTRPCRouter({
     create: publicProcedure.input(z.object({ name: z.string().min(1), description: z.string(), barcode: z.string(), categoria: z.string() })).mutation(async ({ ctx, input }) => {
@@ -17,11 +17,11 @@ export const productosRouter = createTRPCRouter({
         })
     }),
 
-    list: publicProcedure.query(({ ctx }) => {
-        return ctx.db.query.productos.findMany()
-    }),
+  list: publicProcedure.query(({ ctx }) => {
+    return ctx.db.query.productos.findMany();
+  }),
 
-    get: publicProcedure
+  get: publicProcedure
     .input(
       z.object({
         Id: z.string(),
@@ -29,7 +29,7 @@ export const productosRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       const channel = await db.query.productos.findFirst({
-        where: eq(productos.Id, input.Id)
+        where: eq(productos.Id, input.Id),
       });
 
       return channel;
@@ -46,16 +46,13 @@ export const productosRouter = createTRPCRouter({
         .where(eq(productos.Id, input.Id));
     }),
 
-    delete: publicProcedure
+  delete: publicProcedure
     .input(
       z.object({
         Id: z.string(),
       }),
     )
     .mutation(async ({ input }) => {
-      await db
-        .delete(productos)
-        .where(eq(productos.Id, input.Id));
+      await db.delete(productos).where(eq(productos.Id, input.Id));
     }),
-
-})
+});

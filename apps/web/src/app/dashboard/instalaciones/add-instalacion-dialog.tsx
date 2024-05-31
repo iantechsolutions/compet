@@ -35,6 +35,7 @@ export function AddInstalacionDialog() {
   const handleClienteChange = (value : any) => {
     console.log(value);
     setCliente(value);
+    console.log(cliente)
   }
   const handleProductoChange = (value : any) => {
     setProducto(value);
@@ -87,6 +88,7 @@ async function handleCreate() {
               label: empalmista.Nombre || "",
             })) ?? []}
             onSelectionChange={handleEmpalmistaChange}
+
           />
         </div>
         <div>

@@ -1,10 +1,8 @@
-import { z } from 'zod'
-import { db } from '~/server/db'
+import { z } from "zod";
+import { db } from "~/server/db";
 import { asc, eq } from "drizzle-orm";
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
-import { pasoCritico, tipoInstalaciones } from '~/server/db/schema'
-
-
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { pasoCritico, tipoInstalaciones } from "~/server/db/schema";
 
 export const tipoInstalacionesRouter = createTRPCRouter({
     create: publicProcedure.input(z.object({ description: z.string()
@@ -18,11 +16,11 @@ export const tipoInstalacionesRouter = createTRPCRouter({
         return result;
     }),
 
-    list: publicProcedure.query(({ ctx }) => {
-        return ctx.db.query.tipoInstalaciones.findMany()
-    }),
+  list: publicProcedure.query(({ ctx }) => {
+    return ctx.db.query.tipoInstalaciones.findMany();
+  }),
 
-    get: publicProcedure
+  get: publicProcedure
     .input(
       z.object({
         Id: z.string(),
@@ -48,7 +46,7 @@ export const tipoInstalacionesRouter = createTRPCRouter({
         .where(eq(tipoInstalaciones.id, input.Id));
     }),
 
-    delete: publicProcedure
+  delete: publicProcedure
     .input(
       z.object({
         Id: z.string(),
@@ -59,5 +57,4 @@ export const tipoInstalacionesRouter = createTRPCRouter({
         .delete(tipoInstalaciones)
         .where(eq(tipoInstalaciones.id, input.Id));
     }),
-
-})
+});

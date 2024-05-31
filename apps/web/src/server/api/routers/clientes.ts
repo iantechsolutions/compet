@@ -1,24 +1,26 @@
-import { z } from 'zod'
-import { db, schema } from '~/server/db'
+import { z } from "zod";
+import { db, schema } from "~/server/db";
 import { asc, eq } from "drizzle-orm";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from '~/server/api/trpc'
-import { clientes } from '~/server/db/schema'
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
+import { clientes } from "~/server/db/schema";
 
 export const clientesRouter = createTRPCRouter({
   create: protectedProcedure
-  .input(z.object( {Direccion: z.string(), Nombre: z.string() }))
-  .mutation(async ({ input }) => {
-    
-    await db.insert(clientes).values(input);
-
-  }),
-
-    list: publicProcedure.query(async ({}) => {
-        const clientes = await db.query.clientes.findMany();
-        return clientes;
+    .input(z.object({ Direccion: z.string(), Nombre: z.string() }))
+    .mutation(async ({ input }) => {
+      await db.insert(clientes).values(input);
     }),
 
-    get: protectedProcedure
+  list: publicProcedure.query(async ({}) => {
+    const clientes = await db.query.clientes.findMany();
+    return clientes;
+  }),
+
+  get: protectedProcedure
     .input(
       z.object({
         clienteId: z.string(),
@@ -42,16 +44,13 @@ export const clientesRouter = createTRPCRouter({
         .where(eq(clientes.Id, input.Id));
     }),
 
-    delete: publicProcedure
+  delete: publicProcedure
     .input(
       z.object({
         Id: z.string(),
       }),
     )
     .mutation(async ({ input }) => {
-      await db
-        .delete(clientes)
-        .where(eq(clientes.Id, input.Id));
+      await db.delete(clientes).where(eq(clientes.Id, input.Id));
     }),
-
-})
+});

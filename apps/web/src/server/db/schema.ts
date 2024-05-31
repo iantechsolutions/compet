@@ -1,41 +1,41 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { Description } from '@radix-ui/react-dialog'
-import { isNotNull, relations, sql } from 'drizzle-orm'
-import { index, int, sqliteTableCreator, text } from 'drizzle-orm/sqlite-core'
-import {nanoid} from 'nanoid'
-import { number, string, z } from 'zod'
+import { Description } from "@radix-ui/react-dialog";
+import { isNotNull, relations, sql } from "drizzle-orm";
+import { index, int, sqliteTableCreator, text } from "drizzle-orm/sqlite-core";
+import { nanoid } from "nanoid";
+import { number, string, z } from "zod";
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
  * database instance for multiple projects.
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const createTable = sqliteTableCreator((name) => `web_${name}`)
+export const createTable = sqliteTableCreator((name) => `web_${name}`);
 
 export function createId() {
-    return nanoid();
-  }
+  return nanoid();
+}
 
 export const users = createTable(
-    'user',
-    {
-        Id: text("id", { length: 255 })
+  "user",
+  {
+    Id: text("id", { length: 255 })
         .notNull()
         .primaryKey()
         .$default(()=>createId()),
-        email: text('email', { length: 256 }).unique().notNull(),
-        name: text('name', { length: 256 }),
-        picture: text('picture'),
-        client: int('client', { mode: 'boolean' }).default(false),
-        company: int('company', { mode: 'boolean' }).default(false),
-        splicer: int('splicer', { mode: 'boolean' }).default(false),
-    },
-    (example) => ({
-        userIndex: index('user_data_idx').on(example.name),
-    }),
-)
+    email: text("email", { length: 256 }).unique().notNull(),
+    name: text("name", { length: 256 }),
+    picture: text("picture"),
+    client: int("client", { mode: "boolean" }).default(false),
+    company: int("company", { mode: "boolean" }).default(false),
+    splicer: int("splicer", { mode: "boolean" }).default(false),
+  },
+  (example) => ({
+    userIndex: index("user_data_idx").on(example.name),
+  })
+);
 
 // export const posts = createTable(
 //     'post',
@@ -92,12 +92,11 @@ export const fotos = createTable(
 )
 
 export const fotosRelation = relations(fotos, ({ one }) => ({
-    post: one(instalaciones, {
-      fields: [fotos.Instalacion],
-      references: [instalaciones.Id],
-    }),
-  }));
-
+  post: one(instalaciones, {
+    fields: [fotos.Instalacion],
+    references: [instalaciones.Id],
+  }),
+}));
 
 export const instalaciones = createTable(
     'Instalacion',
@@ -120,18 +119,20 @@ export const instalaciones = createTable(
     }),
 )
 
-export const instalacionesRelations = relations(instalaciones, ({ one,many }) => ({
-    pedido: one(pedidos,{
-        fields: [instalaciones.Pedido],
-        references: [pedidos.Id],
+export const instalacionesRelations = relations(
+  instalaciones,
+  ({ one, many }) => ({
+    pedido: one(pedidos, {
+      fields: [instalaciones.Pedido],
+      references: [pedidos.Id],
     }),
-    empalmista: one(empalmistas,{
-        fields: [instalaciones.Empalmista],
-        references: [empalmistas.Id],
+    empalmista: one(empalmistas, {
+      fields: [instalaciones.Empalmista],
+      references: [empalmistas.Id],
     }),
-    cliente: one(clientes,{
-        fields: [instalaciones.Cliente],
-        references: [clientes.Id],
+    cliente: one(clientes, {
+      fields: [instalaciones.Cliente],
+      references: [clientes.Id],
     }),
     tipoInstalacion: one(tipoInstalaciones,{
         fields: [instalaciones.tipoInstalacion],
@@ -159,14 +160,13 @@ export const instalacionesRelations = relations(instalaciones, ({ one,many }) =>
     }
 )
 
-export const pedidosRelations = relations(pedidos, ({ one,many }) => ({
-    cliente: one(clientes,{
-        fields: [pedidos.Cliente],
-        references: [clientes.Id],
-    }),
-    productos: many(productosPedidos)
-  }));
-
+export const pedidosRelations = relations(pedidos, ({ one, many }) => ({
+  cliente: one(clientes, {
+    fields: [pedidos.Cliente],
+    references: [clientes.Id],
+  }),
+  productos: many(productosPedidos),
+}));
 
 export const productosPedidos = createTable(
     'ProductosPedidos',
@@ -187,19 +187,19 @@ export const productosPedidos = createTable(
     }),
 )
 
-export const productosPedidosRelation = relations(productosPedidos, ({ one }) => ({
+export const productosPedidosRelation = relations(
+  productosPedidos,
+  ({ one }) => ({
     pedido: one(pedidos, {
       fields: [productosPedidos.Pedido],
       references: [pedidos.Id],
     }),
     producto: one(productos, {
-        fields: [productosPedidos.Producto],
-        references: [productos.Id],
+      fields: [productosPedidos.Producto],
+      references: [productos.Id],
     }),
-      
-}));
-
-
+  })
+);
 
 export const productos = createTable(
     'Producto',
@@ -275,17 +275,16 @@ export const documentUploads = createTable(
     fileName: text("fileName", { length: 255 }).notNull(),
     fileSize: int("fileSize").notNull(),
     rowsCount: int("rowsCount"),
-  
-    confirmed: int('confirmed', { mode: 'boolean' }).notNull().default(false),
-    confirmedAt: int('confirmedAt', { mode: 'timestamp' }),
-  
+
+    confirmed: int("confirmed", { mode: "boolean" }).notNull().default(false),
+    confirmedAt: int("confirmedAt", { mode: "timestamp" }),
+
     documentType: text("documentType", { length: 255 }).$type<"txt" | null>(),
-  
-    createdAt : int('createdAt', { mode: 'timestamp' }),
-    updatedAt: int('updatedAt', { mode: 'timestamp' }),
-});
 
-
+    createdAt: int("createdAt", { mode: "timestamp" }),
+    updatedAt: int("updatedAt", { mode: "timestamp" }),
+  }
+);
 
 export const tipoInstalaciones = createTable("tipo_instalaciones", {
     id: text("id", { length: 255 })
@@ -338,5 +337,15 @@ export const pasoCriticoTotipoInstalacionRelations = relations(pasoCriticoTotipo
 
 
 function createInsertSchema(Clientes: any) {
-    throw new Error('Function not implemented.')
+  throw new Error("Function not implemented.");
 }
+
+export const CodigoBarras = createTable("CodigoBarras", {
+  Id: int("id").notNull().primaryKey(),
+  productoSeleccionado: int("ProductoSeleccionado"),
+  descripcion: text("Descripcion", { length: 256 }),
+});
+
+export const CodigoBarrassRelation = relations(CodigoBarras, ({ one }) => ({
+  CodigoBarras: one(productos),
+}));

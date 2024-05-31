@@ -1,10 +1,10 @@
-import { z } from 'zod'
-import { db } from '~/server/db'
+import { z } from "zod";
+import { db } from "~/server/db";
 import { asc, eq } from "drizzle-orm";
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
-import { clientes, empalmistas, pedidos, productos } from '~/server/db/schema'
-import { date } from 'drizzle-orm/mysql-core';
-import { PgTimestampBuilder } from 'drizzle-orm/pg-core';
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { clientes, empalmistas, pedidos, productos } from "~/server/db/schema";
+import { date } from "drizzle-orm/mysql-core";
+import { PgTimestampBuilder } from "drizzle-orm/pg-core";
 
 export const pedidosRouter = createTRPCRouter({
     // Producto: z.number(),Empalmista: z.number(),FechaAlta: z.number(),FechaInst: z.number(),FechaVeri: z.number(),Estado: z.number(),Cliente: z.number()
@@ -26,16 +26,16 @@ export const pedidosRouter = createTRPCRouter({
       return result;
     }),
 
-    list: publicProcedure.query(({ ctx }) => {
-        return ctx.db.query.pedidos.findMany({
-          with:{
-            productos: true,
-            cliente: true
-          }
-        })
-    }),
+  list: publicProcedure.query(({ ctx }) => {
+    return ctx.db.query.pedidos.findMany({
+      with: {
+        productos: true,
+        cliente: true,
+      },
+    });
+  }),
 
-    get: publicProcedure
+  get: publicProcedure
     .input(
       z.object({
         Id: z.string(),
@@ -44,10 +44,10 @@ export const pedidosRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const channel = await db.query.pedidos.findFirst({
         where: eq(pedidos.Id, input.Id),
-        with:{
+        with: {
           productos: true,
-          cliente: true
-        }
+          cliente: true,
+        },
       });
 
       return channel;
@@ -58,25 +58,28 @@ export const pedidosRouter = createTRPCRouter({
       await db
         .update(pedidos)
         .set({
-            Cliente: input.Cliente,
-            Estado: input.Estado,
-            Fecha_de_aprobacion: input.Fecha_de_aprobacion !== undefined ? new Date(input.Fecha_de_aprobacion) : undefined,
-            Fecha_de_creacion: new Date(input.FechaCreacion),
-            Fecha_de_envio: input.Fecha_de_envio !== undefined ? new Date(input.Fecha_de_envio) : undefined,
+          Cliente: input.Cliente,
+          Estado: input.Estado,
+          Fecha_de_aprobacion:
+            input.Fecha_de_aprobacion !== undefined
+              ? new Date(input.Fecha_de_aprobacion)
+              : undefined,
+          Fecha_de_creacion: new Date(input.FechaCreacion),
+          Fecha_de_envio:
+            input.Fecha_de_envio !== undefined
+              ? new Date(input.Fecha_de_envio)
+              : undefined,
         })
         .where(eq(pedidos.Id, input.Id));
     }),
 
-    delete: publicProcedure
+  delete: publicProcedure
     .input(
       z.object({
         Id: z.string(),
       }),
     )
     .mutation(async ({ input }) => {
-      await db
-        .delete(pedidos)
-        .where(eq(pedidos.Id, input.Id));
+      await db.delete(pedidos).where(eq(pedidos.Id, input.Id));
     }),
-
-})
+});

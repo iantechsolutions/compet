@@ -19,14 +19,14 @@ import { Label } from "~/components/ui/label";
 import { api } from "~/trpc/react";
 
 export function AddClienteDialog() {
-  const { mutateAsync: createChannel, isPending } =
+  const { mutateAsync: createClient, isPending } =
     api.clientes.create.useMutation();
 
   const userinfo = useUserInfo();
 
   const [direccion, setDireccion] = useState("");
   const [name, setName] = useState("");
-  const [number, setNumber] = useState("");
+
 
   const [open, setOpen] = useState(false);
 
@@ -34,7 +34,7 @@ export function AddClienteDialog() {
 
   async function handleCreate() {
     try {
-      await createChannel({
+      await createClient({
         Nombre: name,
         Direccion: direccion,
       });

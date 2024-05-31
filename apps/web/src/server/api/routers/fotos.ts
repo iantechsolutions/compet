@@ -1,8 +1,8 @@
-import { z } from 'zod'
-import { db } from '~/server/db'
+import { z } from "zod";
+import { db } from "~/server/db";
 import { asc, eq } from "drizzle-orm";
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
-import { fotos } from '~/server/db/schema'
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { fotos } from "~/server/db/schema";
 
 export const fotosRouter = createTRPCRouter({
     create: publicProcedure.input(z.object({ Link: z.string().min(1), Instalacion: z.string()})).mutation(async ({ ctx, input }) => {
@@ -15,11 +15,11 @@ export const fotosRouter = createTRPCRouter({
         })
     }),
 
-    list: publicProcedure.query(({ ctx }) => {
-        return ctx.db.query.fotos.findMany()
-    }),
+  list: publicProcedure.query(({ ctx }) => {
+    return ctx.db.query.fotos.findMany();
+  }),
 
-    get: publicProcedure
+  get: publicProcedure
     .input(
       z.object({
         Id: z.string(),
@@ -27,7 +27,7 @@ export const fotosRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       const channel = await db.query.fotos.findFirst({
-        where: eq(fotos.Id, input.Id)
+        where: eq(fotos.Id, input.Id),
       });
 
       return channel;
@@ -43,16 +43,13 @@ export const fotosRouter = createTRPCRouter({
         .where(eq(fotos.Id, input.Id));
     }),
 
-    delete: publicProcedure
+  delete: publicProcedure
     .input(
       z.object({
         Id: z.string(),
       }),
     )
     .mutation(async ({ input }) => {
-      await db
-        .delete(fotos)
-        .where(eq(fotos.Id, input.Id));
+      await db.delete(fotos).where(eq(fotos.Id, input.Id));
     }),
-
-})
+});

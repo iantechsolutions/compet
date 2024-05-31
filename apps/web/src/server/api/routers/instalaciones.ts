@@ -1,10 +1,15 @@
-import { z } from 'zod'
-import { db } from '~/server/db'
+import { z } from "zod";
+import { db } from "~/server/db";
 import { asc, eq } from "drizzle-orm";
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
-import { clientes, empalmistas, instalaciones, productos } from '~/server/db/schema'
-import { date } from 'drizzle-orm/mysql-core';
-import { PgTimestampBuilder } from 'drizzle-orm/pg-core';
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import {
+  clientes,
+  empalmistas,
+  instalaciones,
+  productos,
+} from "~/server/db/schema";
+import { date } from "drizzle-orm/mysql-core";
+import { PgTimestampBuilder } from "drizzle-orm/pg-core";
 
 export const instalacionesRouter = createTRPCRouter({
     // Producto: z.number(),Empalmista: z.number(),FechaAlta: z.number(),FechaInst: z.number(),FechaVeri: z.number(),Estado: z.number(),Cliente: z.number()
@@ -16,21 +21,21 @@ export const instalacionesRouter = createTRPCRouter({
         )
     }),
 
-    list: publicProcedure.query(({ ctx }) => {
-        return ctx.db.query.instalaciones.findMany({
-          with:{
-            empalmista: true,
-            pedido: {
-              with:{
-                productos: true
-              }
-            },
-            cliente: true
-          }
-        })
-    }),
+  list: publicProcedure.query(({ ctx }) => {
+    return ctx.db.query.instalaciones.findMany({
+      with: {
+        empalmista: true,
+        pedido: {
+          with: {
+            productos: true,
+          },
+        },
+        cliente: true,
+      },
+    });
+  }),
 
-    get: publicProcedure
+  get: publicProcedure
     .input(
       z.object({
         Id: z.string(),
@@ -39,15 +44,15 @@ export const instalacionesRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const channel = await db.query.instalaciones.findFirst({
         where: eq(instalaciones.Id, input.Id),
-        with:{
+        with: {
           empalmista: true,
           pedido: {
-            with:{
-              productos: true
-            }
+            with: {
+              productos: true,
+            },
           },
-          cliente: true
-        }
+          cliente: true,
+        },
       });
 
       return channel;
@@ -58,27 +63,24 @@ export const instalacionesRouter = createTRPCRouter({
         .update(instalaciones)
         .set({
           Pedido: input.Pedido,
-          Empalmista:input.Empalmista,
-          Fecha_de_alta : new Date(input.FechaAlta),
+          Empalmista: input.Empalmista,
+          Fecha_de_alta: new Date(input.FechaAlta),
           Fecha_de_instalacion: new Date(input.FechaInst),
           Fecha_de_verificacion: new Date(input.FechaVeri),
           Estado: input.Estado,
           Cliente: input.Cliente,
-          tipoInstalacion: input.tipoInstalacion
+          tipoInstalacion: input.tipoInstalacion,
         })
         .where(eq(empalmistas.Id, input.Id));
     }),
 
-    delete: publicProcedure
+  delete: publicProcedure
     .input(
       z.object({
         Id: z.string(),
       }),
     )
     .mutation(async ({ input }) => {
-      await db
-        .delete(instalaciones)
-        .where(eq(instalaciones.Id, input.Id));
+      await db.delete(instalaciones).where(eq(instalaciones.Id, input.Id));
     }),
-
-})
+});

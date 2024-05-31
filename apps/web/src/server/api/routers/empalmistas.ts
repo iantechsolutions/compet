@@ -1,24 +1,26 @@
-import { z } from 'zod'
-import { db } from '~/server/db'
+import { z } from "zod";
+import { db } from "~/server/db";
 import { asc, eq } from "drizzle-orm";
-import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
-import { empalmistas } from '~/server/db/schema'
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { empalmistas } from "~/server/db/schema";
 
 export const empalmistasRouter = createTRPCRouter({
-    create: publicProcedure.input(z.object({ name: z.string().min(1)})).mutation(async ({ ctx, input }) => {
-        // simulate a slow db call
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+  create: publicProcedure
+    .input(z.object({ name: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      // simulate a slow db call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-        await ctx.db.insert(empalmistas).values({
-            Nombre:input.name,
-        })
+      await ctx.db.insert(empalmistas).values({
+        Nombre: input.name,
+      });
     }),
 
-    list: publicProcedure.query(({ ctx }) => {
-        return ctx.db.query.empalmistas.findMany()
-    }),
+  list: publicProcedure.query(({ ctx }) => {
+    return ctx.db.query.empalmistas.findMany();
+  }),
 
-    get: publicProcedure
+  get: publicProcedure
     .input(
       z.object({
         Id: z.string(),
@@ -26,7 +28,7 @@ export const empalmistasRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       const channel = await db.query.clientes.findFirst({
-        where: eq(empalmistas.Id, input.Id)
+        where: eq(empalmistas.Id, input.Id),
       });
 
       return channel;
@@ -41,16 +43,13 @@ export const empalmistasRouter = createTRPCRouter({
         .where(eq(empalmistas.Id, input.Id));
     }),
 
-    delete: publicProcedure
+  delete: publicProcedure
     .input(
       z.object({
         Id: z.string(),
       }),
     )
     .mutation(async ({ input }) => {
-      await db
-        .delete(empalmistas)
-        .where(eq(empalmistas.Id, input.Id));
+      await db.delete(empalmistas).where(eq(empalmistas.Id, input.Id));
     }),
-
-})
+});
