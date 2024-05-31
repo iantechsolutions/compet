@@ -52,10 +52,10 @@ export default function Home() {
     //
     try {
       for (let i = desde; i <= hasta; i++) {
-        await createBarcodes({
-          descripcion: "",
-          productoSeleccionado: 0
-        });
+        // await createBarcodes({
+        //   descripcion: "",
+        //   productoSeleccionado: 0
+        // });
       }
       toast.success("Códigos de barra creados correctamente");
       router.refresh();
@@ -65,18 +65,35 @@ export default function Home() {
     }
   }
 
+
+  
   const generatePDF = () => {
-    const input = document.getElementById('barcode-section');
-    if (input) {
-      html2canvas(input).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF();
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save('barcodes.pdf');
+    const input = document.getElementsByClassName('Barcode');
+    
+    const rows = hasta - desde;
+    const cols = 4;
+  
+    if (input.length > 0) {
+      const pdf = new jsPDF();
+      
+      Array.from(input).forEach(codigo => {
+        if (codigo instanceof HTMLElement) { // Comprobación de tipo
+          for (let i = 0; i < 4; i++) {
+            html2canvas(codigo).then(canvas => {
+              const imgData = canvas.toDataURL('image/png');
+              const imgProps = { width: canvas.width, height: canvas.height };
+              const pdfWidth = pdf.internal.pageSize.getWidth();
+              const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+              
+              if (cols * rows >= 68) {
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+              }
+            });
+          }
+        }
       });
+  
+      pdf.save('barcodes.pdf');
     }
   };
 
@@ -126,10 +143,10 @@ export default function Home() {
           </div>
         </div>
 
-        <div id="barcode-section" className="p-10 mt-4 grid grid-cols-8 gap-4">
+        <div className="p-10 mt-4 grid grid-cols-8 gap-4">
           {selectedIds.map((id) => (
-            <div key={id} className="border-black border-2 p-3 flex-col flex items-center">
-              <Barcode width={50} height={50} values={id.toString()} />
+            <div key={id} className="Barcode border-black border-2 p-3 flex-col flex items-center">
+              <Barcode  width={50} height={50} values={id.toString()} />
               <h1>{id}</h1>
             </div>
           ))}
