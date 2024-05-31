@@ -26,7 +26,7 @@ export const productosPedidosRouter = createTRPCRouter({
     get: publicProcedure
     .input(
       z.object({
-        Id: z.number(),
+        Id: z.string(),
       }),
     )
     .query(async ({ input }) => {
@@ -54,7 +54,7 @@ export const productosPedidosRouter = createTRPCRouter({
     delete: publicProcedure
     .input(
       z.object({
-        Id: z.number(),
+        Id: z.string(),
       }),
     )
     .mutation(async ({ input }) => {

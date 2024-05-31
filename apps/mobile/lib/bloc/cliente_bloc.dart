@@ -35,11 +35,13 @@ class ClienteBloc extends Bloc<ClienteEvent, ClienteState> {
   }
 
   Future<List<Cliente>> _getClientesFromApi() async {
-    final response = await http.get(Uri.parse(
-        '$_baseUrl/clients')); // replace '/clients' with your endpoint
+    print("url");
+    print('$_baseUrl/clientes');
+    final response = await http.get(Uri.parse('$_baseUrl/clientes'));
 
     if (response.statusCode == 200) {
       // If the server returns a 200 OK response, parse the JSON.
+      print(response.body);
       Iterable list = json.decode(response.body);
       return list.map((model) => Cliente.fromJson(model)).toList();
     } else {
@@ -50,7 +52,7 @@ class ClienteBloc extends Bloc<ClienteEvent, ClienteState> {
 
   Future<Cliente?> _getClienteFromApi({required String id}) async {
     final response = await http.get(Uri.parse(
-        '$_baseUrl/clients/$id')); // replace '/clients' with your endpoint
+        '$_baseUrl/clientes/$id')); // replace '/clients' with your endpoint
 
     if (response.statusCode == 200) {
       // If the server returns a 200 OK response, parse the JSON.

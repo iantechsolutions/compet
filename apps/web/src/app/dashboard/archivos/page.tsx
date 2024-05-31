@@ -23,7 +23,7 @@ export default function UploadPage() {
       {errorMessage && <p className="text-red-500">{errorMessage}</p>}
 
       <UploadDropzone
-        input={{ instalacionId: 1}}
+        input={{ instalacionId: ""}}
         endpoint="imageuploader"
         config={{
           mode: "manual",

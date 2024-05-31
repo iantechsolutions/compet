@@ -25,12 +25,12 @@ export const tipoInstalacionesRouter = createTRPCRouter({
     get: publicProcedure
     .input(
       z.object({
-        Id: z.number(),
+        Id: z.string(),
       }),
     )
     .query(async ({ input }) => {
       const channel = await db.query.tipoInstalaciones.findFirst({
-        where: eq(tipoInstalaciones.Id, input.Id)
+        where: eq(tipoInstalaciones.id, input.Id)
       });
 
       return channel;
@@ -45,19 +45,19 @@ export const tipoInstalacionesRouter = createTRPCRouter({
             
             description: input.description,
         })
-        .where(eq(tipoInstalaciones.Id, input.Id));
+        .where(eq(tipoInstalaciones.id, input.Id));
     }),
 
     delete: publicProcedure
     .input(
       z.object({
-        Id: z.number(),
+        Id: z.string(),
       }),
     )
     .mutation(async ({ input }) => {
       await db
         .delete(tipoInstalaciones)
-        .where(eq(tipoInstalaciones.Id, input.Id));
+        .where(eq(tipoInstalaciones.id, input.Id));
     }),
 
 })

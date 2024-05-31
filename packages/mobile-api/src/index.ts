@@ -22,19 +22,19 @@ appv1.get('/user/info', (c) => {
     return c.json({ user })
 })
 
-appv1.get('/productos', (c) => {
-    const productos = c.get('productos') 
-    console.log("productosget")
-    console.log(c.get('productos'))
+// appv1.get('/productos', (c) => {
+//     const productos = c.get('productos') 
+//     console.log("productosget")
+//     console.log(c.get('productos'))
     
-    console.log("productos")
-    console.log(productos)
-    return c.json(productos)
-});
+//     console.log("productos")
+//     console.log(productos)
+//     return c.json(productos)
+// });
 
 
-appv1.post('/productos', async (c) => {
-    const body = await c.req.parseBody();
-    const file = body['file']
+// appv1.post('/productos', async (c) => {
+//     const body = await c.req.parseBody();
+//     const file = body['file']
     
-});
+// });

@@ -37,7 +37,7 @@ export default function Page() {
             <br/>
             <p>Cliente: {instalacion?.cliente.Nombre}</p>
             <p>Empalmista: {instalacion?.empalmista?.Nombre}</p>
-            <p>Fecha de alta: {dateToDMY(instalacion?.Fecha_de_alta)}</p>
+            <p>Fecha de alta: {dateToDMY(instalacion?.Fecha_de_alta ?? undefined)}</p>
             <p>Fecha de instalacion: {dateToDMY(undefined)}</p>
             <p>Fecha de verificacion: {dateToDMY(undefined)}</p>
             <p>Listado productos pedido: {instalacion?.pedido.Id}</p>

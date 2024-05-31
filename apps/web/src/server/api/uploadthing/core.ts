@@ -41,7 +41,7 @@ export const ourFileRouter = {
       const uploadId = createId();
 
       await db.insert(schema.responseDocumentUploads).values({
-        id: uploadId,
+        Id: uploadId,
         userId: "",
         fileUrl: file.url,
         fileName: file.name,
@@ -60,7 +60,7 @@ export const ourFileRouter = {
   })
     .input(
       z.object({
-        instalacionId: z.number(),
+        instalacionId: z.string(),
       }),
     )
     // Set permissions and file types for this FileRoute

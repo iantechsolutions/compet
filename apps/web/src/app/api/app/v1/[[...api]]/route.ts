@@ -3,6 +3,7 @@ import { Context, Hono } from 'hono'
 import { appv1 } from 'mobile-api'
 import { api } from '~/trpc/server'
 import { createRouteHandler } from "uploadthing/server";
+import { ourFileRouter } from '../../uploadthing/core';
 import { utapi } from '~/server/uploadthing';
 import { UploadthingComponentProps } from '@uploadthing/react';
 import { error } from 'console';
@@ -72,19 +73,20 @@ appv1.post('/productos', async (c) => {
 // })
 
 app.get('/clientes', async (c) =>{
+    console.log("aca pipa")
     const clients = await api.clientes.list();
     return c.json({clients})
 })
 app.get('/clientes/:Id', async (c) =>{
     const Id = c.req.param('Id');
     const clients = await api.clientes.get({
-        clienteId: parseInt(Id)
+        clienteId: Id
     });
     return c.json({clients})
 });
 
 app.delete('/clientes/delete/:Id', async (c) => {
-    const Id = parseInt(c.req.param('Id'))
+    const Id = c.req.param('Id')
     const clientes = await api.clientes.delete({
         Id
     });
@@ -93,7 +95,7 @@ app.delete('/clientes/delete/:Id', async (c) => {
 app.put('/clientes/update/:Id', async (c) => {
    
     const db = await api.clientes.get({
-        clienteId: parseInt(c.req.param('Id'))
+        clienteId: c.req.param('Id')
     });
     if(db?.Nombre != undefined && db.Direccion != undefined)
         {
@@ -117,17 +119,18 @@ app.post('/clientes/post', async (c) => {
 
 app.get('/productos', async (c) =>{
     const productos = await api.productos.list();
+    console.log(productos);
     return c.json({productos})
 })
 app.get('/productos/:Id', async (c) =>{
-    const Id = parseInt(c.req.param('Id'))
+    const Id = c.req.param('Id')
     const products = await api.productos.get({
         Id: Id,
     });
     return c.json({products})
 });
 app.delete('/productos/delete/:Id', async (c) => {
-    const Id = parseInt(c.req.param('Id'))
+    const Id = c.req.param('Id')
      await api.productos.delete({
         Id
     });
@@ -135,7 +138,7 @@ app.delete('/productos/delete/:Id', async (c) => {
 });
 
 app.put('/productos/update/:Id', async (c) => {
-    const Id = parseInt(c.req.param('Id'))
+    const Id = c.req.param('Id')
     const db = await api.productos.get({
         Id: Id
     });
@@ -153,9 +156,10 @@ app.put('/productos/update/:Id', async (c) => {
 
 app.post('/productos/post', async (c) => {
     const result = await api.productos.create({
-        name: '1',
-        description: '1',
-        barcode: '1'
+        barcode: "",
+        description: "",
+        categoria:  "",
+        name: ""
     });
     return c.json("Succesful")
 });
@@ -168,7 +172,7 @@ app.get('/pedidos', async (c) =>{
 app.get('/pedidos/:Id', async (c) =>{
     const Id = c.req.param('Id');
     const pedidos = await api.pedidos.get({
-        Id: parseInt(Id)
+        Id: Id
     });
     return c.json({pedidos})
 });
@@ -177,7 +181,7 @@ app.get('/pedidos/:Id', async (c) =>{
 app.delete('/pedidos/delete/:Id', async (c) => {
     const Id = c.req.param('Id');
     const pedidos = await api.pedidos.delete({
-        Id: parseInt(Id)
+        Id: Id
     });
     return c.text("Succefuled delete")
 });
@@ -185,7 +189,7 @@ app.delete('/pedidos/delete/:Id', async (c) => {
 app.put('/pedidos/update/:Id', async (c) => {
    
     const db = await api.pedidos.get({
-        Id: parseInt(c.req.param('Id'))
+        Id: c.req.param('Id')
     });
     if(db?.cliente != null  && db.Fecha_de_creacion != null && db.Estado != undefined)
         {
@@ -202,7 +206,7 @@ app.put('/pedidos/update/:Id', async (c) => {
 
 app.post('/pedidos/post', async (c) => {
     const result = await api.pedidos.create({
-        Cliente: 1,
+        Cliente: "",
         FechaCreacion: 0,
         Estado: '1'
     });
@@ -216,14 +220,14 @@ app.get('/instalaciones', async (c) =>{
     return c.json({instalaciones})
 })
 app.get('/instalaciones/:Id', async (c) =>{
-    const Id = parseInt(c.req.param('Id'))
+    const Id = c.req.param('Id')
     const instalaciones = await api.instalaciones.get({
         Id: Id,
     });
     return c.json({instalaciones})
 });
 app.delete('/instalaciones/delete/:Id', async (c) => {
-    const Id = parseInt(c.req.param('Id'))
+    const Id = c.req.param('Id')
     const instalaciones = await api.instalaciones.delete({
         Id: Id
     });
@@ -233,7 +237,7 @@ app.delete('/instalaciones/delete/:Id', async (c) => {
 app.put('/instalaciones/update/:Id', async (c) => {
    
     const db = await api.instalaciones.get({
-        Id: parseInt(c.req.param('Id'))
+        Id: c.req.param('Id')
     });
     if(db?.Empalmista != null  && db.Fecha_de_alta != null && db.Fecha_de_verificacion != undefined && db.Fecha_de_instalacion != undefined)
         {
@@ -243,10 +247,10 @@ app.put('/instalaciones/update/:Id', async (c) => {
         Empalmista: db.Empalmista,
         Pedido: db.Pedido,
         Estado: db.Estado,
-        tipoInstalacion: db.tipoInstalacion,
-        FechaAlta: db.Fecha_de_alta,
-        FechaVeri: db.Fecha_de_verificacion,
-        FechaInst: db.Fecha_de_instalacion
+        tipoInstalacion: db.tipoInstalacion ?? "",
+        FechaAlta: db.Fecha_de_alta.getTime(),
+        FechaVeri: db.Fecha_de_verificacion.getTime(),
+        FechaInst: db.Fecha_de_instalacion.getTime()
     })
         return c.json(db)
     }
@@ -254,14 +258,14 @@ app.put('/instalaciones/update/:Id', async (c) => {
 
 app.post('/instalaciones/post', async (c) => {
     const result = await api.instalaciones.create({
-        Cliente: 1,
-        Empalmista: 1,
-        Pedido: 1,
-        Estado: 0,
+        Cliente: "",
+        Empalmista: "",
+        Pedido: "",
+        Estado: "Pendiente",
         FechaAlta: 0,
         FechaInst: 0,
         FechaVeri: 0,
-        tipoInstalacion: 1
+        tipoInstalacion: ""
     });
     return c.json("Succesful")
 });
@@ -272,7 +276,7 @@ app.get('/fotos', async (c) =>{
     return c.json({fotos})
 })
 app.get('/fotos/:Id', async (c) =>{
-    const Id = parseInt(c.req.param('Id'))
+    const Id = c.req.param('Id')
     const fotos = await api.fotos.get({
         Id: Id,
     });
@@ -280,7 +284,7 @@ app.get('/fotos/:Id', async (c) =>{
 });
 
 app.delete('/fotos/delete/:Id', async (c) => {
-    const Id = parseInt(c.req.param('Id'))
+    const Id = c.req.param('Id')
     const fotos = await api.fotos.delete({
         Id: Id
     });
@@ -290,7 +294,7 @@ app.delete('/fotos/delete/:Id', async (c) => {
 app.put('/fotos/update/:Id', async (c) => {
    
     const db = await api.fotos.get({
-        Id: parseInt(c.req.param('Id'))
+        Id: c.req.param('Id')
     });
     if(db?.Instalacion != null  && db.Link != null)
         {
@@ -306,7 +310,7 @@ app.put('/fotos/update/:Id', async (c) => {
 app.post('/fotos/post', async (c) => {
     const result = await api.fotos.create({
         Link: "",
-        Instalacion: 0
+        Instalacion: ""
     });
     return c.json("Succesful")
 });
@@ -316,7 +320,7 @@ app.get('/empalmistas', async (c) =>{
     return c.json({empalmistas})
 })
 app.get('/empalmistas/:Id', async (c) =>{
-    const Id = parseInt(c.req.param('Id'))
+    const Id = c.req.param('Id')
     const empalmistas = await api.empalmistas.get({
         Id: Id,
     });
@@ -324,7 +328,7 @@ app.get('/empalmistas/:Id', async (c) =>{
 });
 
 app.delete('/empalmistas/delete/:Id', async (c) => {
-    const Id = parseInt(c.req.param('Id'))
+    const Id = c.req.param('Id')
     const empalmistas = await api.empalmistas.delete({
         Id: Id
     });
@@ -334,7 +338,7 @@ app.delete('/empalmistas/delete/:Id', async (c) => {
 app.put('/empalmistas/update/:Id', async (c) => {
    
     const db = await api.empalmistas.get({
-        Id: parseInt(c.req.param('Id'))
+        Id: c.req.param('Id')
     });
     if(db?.Nombre != null)
         {
@@ -374,14 +378,14 @@ app.get('/tipoinstalaciones', async (c) =>{
     return c.json({tipoInstalaciones})
 })
 app.get('/tipoinstalaciones/:Id', async (c) =>{
-    const Id = parseInt(c.req.param('Id'))
+    const Id = c.req.param('Id')
     const tipoInstalaciones = await api.tipoInstalaciones.get({
         Id: Id,
     });
     return c.json({tipoInstalaciones})
 });
 app.delete('/tipoInstalaciones/:Id', async (c) => {
-    const Id = parseInt(c.req.param('Id'))
+    const Id = c.req.param('Id')
     const tipoInstalaciones = await api.tipoInstalaciones.delete({
         Id: Id
     });
@@ -391,14 +395,13 @@ app.delete('/tipoInstalaciones/:Id', async (c) => {
 app.put('/tipoInstalaciones/:Id', async (c) => {
    
     const db = await api.tipoInstalaciones.get({
-        Id: parseInt(c.req.param('Id'))
+        Id: c.req.param('Id')
     });
     if(db?.description != null)
         {
     await api.tipoInstalaciones.update({
-        Id: db.Id,
+        Id: db.id,
         description: db.description,
-        pasoCritico: db.pasoCritico
     })
         return c.json(db)
     }
@@ -407,7 +410,6 @@ app.put('/tipoInstalaciones/:Id', async (c) => {
 app.post('/tipoInstalaciones', async (c) => {
     const result = await api.tipoInstalaciones.create({
         description: "",
-        pasoCritico: 1
         });
     return c.json("Succesful")
 });
@@ -419,14 +421,14 @@ app.get('/pasocritico', async (c) =>{
     return c.json({pasoCritico})
 })
 app.get('/pasocritico/:Id', async (c) =>{
-    const Id = parseInt(c.req.param('Id'))
+    const Id = c.req.param('Id')
     const pasoCritico = await api.pasoCritico.get({
         Id: Id,
     });
     return c.json({pasoCritico})
 });
 app.delete('/pasoCritico/delete/:Id', async (c) => {
-    const Id = parseInt(c.req.param('Id'))
+    const Id = c.req.param('Id')
     const pasoCritico = await api.pasoCritico.delete({
         Id: Id
     });
@@ -436,12 +438,12 @@ app.delete('/pasoCritico/delete/:Id', async (c) => {
 app.put('/pasoCritico/update/:Id', async (c) => {
    
     const db = await api.pasoCritico.get({
-        Id: parseInt(c.req.param('Id'))
+        Id: c.req.param('Id')
     });
     if(db?.description != null && db?.useCamera != null)
         {
     await api.pasoCritico.update({
-        Id: db.Id,
+        Id: db.id,
         description: db.description,
         detalle: db.detalle,
         useCamera: db.useCamera
@@ -460,26 +462,7 @@ app.post('/pasoCritico/post', async (c) => {
 });
 app.route('/', appv1)
 
-
-
-    app.post( async (request: any, reply: any) => {
-        const input = request.body;
-        if (!input.imagedata || !input.fileName) {
-            return reply.json({ error: 'Missing image data or file name' }, 400);
-        }
-
-        const uploaded = await utapi.uploadFiles(
-            new File([input.imagedata], input.fileName, { type: "image/png" }),
-        );
-
-        if (!uploaded) {
-            return reply.json({ error: 'Failed to upload image' }, 500);
-        }
-
-        return reply.json({ message: 'Image uploaded successfully', data: uploaded }, 200);
-    }
-    );
-
+ 
 
 
 
