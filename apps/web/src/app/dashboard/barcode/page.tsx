@@ -70,27 +70,38 @@ export default function Home() {
   const generatePDF = () => {
     const input = document.getElementsByClassName('Barcode');
     
-    const rows = hasta - desde;
-    const cols = 4;
+    let rows = 0;
+    let cols = 0;
   
     if (input.length > 0) {
       const pdf = new jsPDF();
       
       Array.from(input).forEach(codigo => {
-        if (codigo instanceof HTMLElement) { // Comprobación de tipo
-          for (let i = 0; i < 4; i++) {
+        if (codigo instanceof HTMLElement) {
+          
             html2canvas(codigo).then(canvas => {
               const imgData = canvas.toDataURL('image/png');
               const imgProps = { width: canvas.width, height: canvas.height };
               const pdfWidth = pdf.internal.pageSize.getWidth();
               const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+              pdf.addImage(imgData, 'PNG', rows*5, cols*5,pdfWidth,pdfHeight);
+              console.log(pdfWidth)
+              console.log(pdfHeight)
+
               
+              if(rows<= 4){
+                rows+=1
+              }
+              else{
+                cols+=1
+                rows=0
+              }
               if (cols * rows >= 68) {
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.addPage();
               }
             });
           }
-        }
+        
       });
   
       pdf.save('barcodes.pdf');
