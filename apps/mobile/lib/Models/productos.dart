@@ -4,7 +4,7 @@ import 'dart:convert';
 Producto productoFromJson(String str) => Producto.fromJson(json.decode(str));
 
 class Producto extends Equatable {
-  final int id;
+  final String id;
   final String nombre;
   final String codigoDeBarras;
   final String descripcion;

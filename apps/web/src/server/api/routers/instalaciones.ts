@@ -31,6 +31,11 @@ export const instalacionesRouter = createTRPCRouter({
           },
         },
         cliente: true,
+        tipoInstalacion:{
+          with:{
+            pasoCriticoTotipoInstalacion:true,
+          }
+        }
       },
     });
   }),

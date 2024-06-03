@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 Cliente clienteFromJson(String str) => Cliente.fromJson(json.decode(str));
 
 class Cliente extends Equatable {
-  final int id;
+  final String id;
   final String nombre;
   final String direccion;
 

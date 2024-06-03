@@ -47,9 +47,9 @@ const { data: pedidos } = api.pedidos.list.useQuery(undefined);
 
 async function handleCreate() {
     try {
-        const clienteT = clientes?.find((categoriaT) => categoriaT.Id.toLowerCase() === cliente);
-        const pedidoT = pedidos?.find((categoriaT) => categoriaT.Id.toLowerCase() === producto);
-        const empalmistaT = empalmistas?.find((categoriaT) => categoriaT.Id.toLowerCase() === empalmista);
+        const clienteT = clientes?.find((categoriaT) => categoriaT.Id === cliente);
+        const pedidoT = pedidos?.find((categoriaT) => categoriaT.Id === producto);
+        const empalmistaT = empalmistas?.find((categoriaT) => categoriaT.Id === empalmista);
 
         await createInstalacion({
           Cliente:clienteT!.Id,

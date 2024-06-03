@@ -66,7 +66,6 @@ export default function Home() {
   }
 
 
-  
   const generatePDF = () => {
     const input = document.getElementsByClassName('Barcode');
     
@@ -76,30 +75,30 @@ export default function Home() {
     if (input.length > 0) {
       const pdf = new jsPDF();
       
-      Array.from(input).forEach(codigo => {
+      Array.from(input).forEach(async codigo => {
         if (codigo instanceof HTMLElement) {
           
-            html2canvas(codigo).then(canvas => {
+          const canvas = await html2canvas(codigo);
+          
               const imgData = canvas.toDataURL('image/png');
               const imgProps = { width: canvas.width, height: canvas.height };
               const pdfWidth = pdf.internal.pageSize.getWidth();
               const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
               pdf.addImage(imgData, 'PNG', rows*5, cols*5,pdfWidth,pdfHeight);
-              console.log(pdfWidth)
-              console.log(pdfHeight)
-
+              pdf.addPage(); 
               
-              if(rows<= 4){
-                rows+=1
+              console.log(imgProps)
+              console.log(imgData)
+              
+              if(cols<= 4){
+                cols+=1
               }
               else{
-                cols+=1
-                rows=0
+                rows+=1
+                cols=0
               }
-              if (cols * rows >= 68) {
-                pdf.addPage();
-              }
-            });
+              // if (cols * rows >= 68) {
+              // }
           }
         
       });
@@ -126,9 +125,9 @@ export default function Home() {
           <Button onClick={handleAddIds}>
             Generar IDs
           </Button>
-          <Button>
+          {/* <Button>
             <Link href="/dashboard/barcode/1">Asociar códigos de barra</Link>
-          </Button>
+          </Button> */}
           <Button onClick={generatePDF}>Generar PDF</Button>
         </div>
         <div className="flex space-x-4">

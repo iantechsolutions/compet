@@ -27,7 +27,6 @@ declare module 'hono' {
 }
 
 app.use(async (c, next) => {
-    console.log("llega")
     const authorizationHeader = c.req.header('Authorization')
 
     if (!authorizationHeader) {
@@ -54,10 +53,15 @@ app.use(async (c, next) => {
 
     c.set('user', user)
 
-    next()
+    await next()
 })
 
 app.route('/', appv1)
+
+
+
+
+
 
 appv1.post('/productos', async (c) => {
     const body = await c.req.parseBody();
@@ -72,11 +76,18 @@ appv1.post('/productos', async (c) => {
 //     next()
 // })
 
-app.get('/clientes', async (c) =>{
-    console.log("aca pipa")
-    const clients = await api.clientes.list();
-    return c.json({clients})
-})
+
+
+app.get('/clientes', async (c) => {
+    try {
+        const clients = await api.clientes.list();
+        return c.json({clients})
+    } catch (error) {
+        console.error(error);
+        return c.status(500);
+    }
+});
+
 app.get('/clientes/:Id', async (c) =>{
     const Id = c.req.param('Id');
     const clients = await api.clientes.get({
@@ -265,7 +276,7 @@ app.post('/instalaciones/post', async (c) => {
         FechaAlta: 0,
         FechaInst: 0,
         FechaVeri: 0,
-        tipoInstalacion: ""
+        tipoInstalacion: "",
     });
     return c.json("Succesful")
 });

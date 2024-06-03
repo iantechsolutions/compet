@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useUserInfo } from './auth-provider/auth-provider-client'
 import { Button } from './ui/button'
 import {
+    BarcodeIcon,
     DrillIcon,
     LayoutDashboardIcon,
     ListChecks,
@@ -85,7 +86,7 @@ export default function Sidebar() {
                                     Pasos Criticos
                                 </SidenavItem>
                                 <SidenavItem
-                                    icon={<DrillIcon />}
+                                    icon={<BarcodeIcon />}
                                     href="/dashboard/barcode"
                                 >
                                     Barcode

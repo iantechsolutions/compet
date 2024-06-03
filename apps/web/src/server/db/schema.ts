@@ -106,6 +106,7 @@ export const instalaciones = createTable(
         .primaryKey()
         .$default(()=>createId()),
         Pedido: text('Pedido').notNull().references(()=>pedidos.Id),
+        Producto_pedido: text('Producto_pedido').references(()=>productosPedidos.Id),
         Empalmista: text('Empalmista').references(()=>empalmistas.Id),
         Fecha_de_alta: int('FechaAlta', { mode: 'timestamp' }).default(sql`CURRENT_TIMESTAMP`),
         Fecha_de_instalacion:int('FechaInstal', { mode: 'timestamp' }),
@@ -137,6 +138,10 @@ export const instalacionesRelations = relations(
     tipoInstalacion: one(tipoInstalaciones,{
         fields: [instalaciones.tipoInstalacion],
         references: [tipoInstalaciones.id],
+    }),
+    productoPedido: one(productosPedidos, {
+      fields: [instalaciones.Producto_pedido],
+      references: [productosPedidos.Id],
     }),
     fotos: many(fotos),
     documentos: many(documentUploads),
@@ -178,6 +183,7 @@ export const productosPedidos = createTable(
         Pedido: text('Pedido').notNull().references(()=>pedidos.Id),
         Producto: text('Producto').notNull().references(()=>productos.Id),
         Cantidad: int('Cantidad').notNull(),
+        CantidadScaneada: int('Cantidad').notNull(),
         Nombre: text('Nombre', { length: 256 }),
         Descripcion: text('Descripcion',{length: 256}),
         Codigo_de_barras: text('BarCode', { length: 256 }),

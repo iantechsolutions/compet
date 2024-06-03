@@ -1,47 +1,52 @@
+import 'package:auth0_flutter/auth0_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:mplikelanding/Models/instalaciones.dart';
-import 'package:mplikelanding/repositories/turso_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-
+import 'package:mplikelanding/components/auth_service.dart';
+import 'package:mplikelanding/constants.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 part 'instalacion_event.dart';
 part 'instalacion_state.dart';
 
 class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
-  final TursoRepository _tursoRepository;
-  InstalacionBloc(TursoRepository tursoRepository)
-      : _tursoRepository = tursoRepository,
-        super(InstalacionInitial()) {
+  final String _baseUrl = Constants.BASE_URL; // replace with your API URL
+  final storage = const FlutterSecureStorage();
+
+  InstalacionBloc() : super(InstalacionInitial()) {
     on<InstalacionEvent>((event, emit) async {
       emit(Loading());
       if (event is Initial || event is RefreshInstalacions) {
         print('Fetching instalacions...');
-        List<Instalacion> instalacions =
-            await _tursoRepository.getInstalaciones();
+        List<Instalacion> instalacions = await _getInstalacionsFromApi();
         print('Fetched ${instalacions.length} instalacions');
         emit(InstalacionsFetched(instalaciones: instalacions));
       }
       if (event is DetailsInitial) {
         print('Fetching instalacion details...');
-        Instalacion? instalacion =
-            await _tursoRepository.getInstalacion(id: event.instalacionId);
-        print('Fetched instalacion: ${instalacion?.id}');
-        emit(instalacion != null
-            ? InstalacionFetched(instalacion: instalacion)
-            : InstalacionNotFound());
+        // Fetch details from API
       }
-      // if (event is AddInstalacion) {
-      //   print('Adding instalacion...');
-      //   bool added = await _tursoRepository.addInstalacion(instalacion: event.instalacion);
-      //   print('Instalacion added: $added');
-      //   emit(added ? InstalacionAdditionSuccess() : InstalacionAdditionFailure());
-      // }
-      // if (event is DeleteInstalacion) {
-      //   print('Deleting instalacion...');
-      //   bool deleted =
-      //       await _tursoRepository.deleteInstalacion(instalacion: event.instalacion);
-      //   print('Instalacion deleted: $deleted');
-      //   emit(deleted ? InstalacionDeletionSuccess() : InstalacionDeletionFailure());
-      // }
     });
+  }
+
+  Future<List<Instalacion>> _getInstalacionsFromApi() async {
+    String? accessToken = await storage.read(key: "credenciales");
+    final response = await http.get(
+      Uri.parse('$_baseUrl/instalaciones'),
+      headers: <String, String>{'Authorization': "Bearer $accessToken" ?? ""},
+    );
+    if (response.statusCode == 200) {
+      // If the server returns a 200 OK response, parse the JSON.
+      Map<String, dynamic> map = json.decode(response.body);
+      print(map);
+      print(response.body);
+      Iterable list = map['instalaciones'];
+      return list.map((model) => Instalacion.fromJson(model)).toList();
+    } else {
+      // If the server returns an unsuccessful response code, throw an exception.
+      throw Exception('Failed to load pedidos');
+    }
+    // Fetch data from API
   }
 }

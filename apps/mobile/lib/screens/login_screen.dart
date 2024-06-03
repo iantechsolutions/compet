@@ -2,7 +2,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:mplikelanding/components/auth_service.dart';
 import 'package:shadcn_ui/shadcn_ui.dart'; // Ensure this package is correctly imported
+// ignore: depend_on_referenced_packages
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -13,6 +16,8 @@ class LoginScreen extends StatefulWidget {
 
 class LoginScreenState extends State<LoginScreen> {
   Credentials? _credentials;
+  final storage = new FlutterSecureStorage();
+
   late Auth0 auth0;
 
   @override
@@ -57,6 +62,9 @@ class LoginScreenState extends State<LoginScreen> {
       onPressed: () async {
         final credentials =
             await auth0.webAuthentication(scheme: 'demo').login(useHTTPS: true);
+        print(credentials?.accessToken);
+        await storage.write(
+            key: "credenciales", value: credentials?.accessToken);
         setState(() {
           _credentials = credentials;
         });
@@ -73,6 +81,7 @@ class LoginScreenState extends State<LoginScreen> {
       children: [
         actionButton("Entrar como empalmista", '/uploadScreen'),
         actionButton("Listado clientes", '/clientes'),
+        actionButton("Listado pedidos", '/pedidos'),
         actionButton("Listado empalmistas", '/empalmistasLista'),
         actionButton("Listado instalaciones", '/instalaciones'),
         logoutButton(),
@@ -100,6 +109,8 @@ class LoginScreenState extends State<LoginScreen> {
     return ShadButton.destructive(
       onPressed: () async {
         await auth0.webAuthentication(scheme: 'demo').logout();
+        await storage.delete(key: "credenciales");
+
         setState(() {
           _credentials = null;
         });

@@ -6,6 +6,7 @@ import 'package:uuid/v4.dart';
 import 'package:mplikelanding/data_sources/turso_rest_api_client.dart';
 
 import '../Models/clientes.dart';
+import '../Models/producto_pedido.dart';
 import '../Models/empalmistas.dart';
 import '../Models/fotos.dart';
 import '../Models/instalaciones.dart';
@@ -55,6 +56,11 @@ class TursoRepository {
 // For Producto
   Future<List<Producto>> getProductos() async {
     final productos = await _tursoRestAPIClient.getProductoList();
+    return productos;
+  }
+
+  Future<List<ProductoPedido>> getProductosPedidos() async {
+    final productos = await _tursoRestAPIClient.getProductosPedidosList();
     return productos;
   }
 

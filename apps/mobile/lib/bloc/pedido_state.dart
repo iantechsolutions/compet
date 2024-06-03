@@ -14,7 +14,7 @@ class Loading extends PedidoState {}
 class PedidosFetched extends PedidoState {
   const PedidosFetched({required this.pedidoes});
 
-  final List<Pedido> pedidoes;
+  final List<Pedido?> pedidoes;
 
   @override
   List<Object> get props => [pedidoes];

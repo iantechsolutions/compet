@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:mplikelanding/Models/pedidos.dart';
+import 'package:mplikelanding/Models/producto_pedido.dart';
 import 'package:mplikelanding/Models/recipes.dart';
 import 'package:uuid/v4.dart';
 
@@ -284,7 +285,7 @@ class TursoRestAPIClient {
     try {
       final response =
           await runQuery(sql: "SELECT * FROM web_Empalmista", arguments: []);
-
+      print(response.body);
       final json = jsonDecode(response.body);
 
       if (!json[0].containsKey("results")) throw ResultsNotFound();
@@ -298,7 +299,6 @@ class TursoRestAPIClient {
           "${columns[1]}": empalmista[1],
         };
       }));
-
       return List<Empalmista>.from(
           results.map((result) => Empalmista.fromJson(result)));
     } on Exception catch (e) {
@@ -400,7 +400,6 @@ class TursoRestAPIClient {
       if (!json[0].containsKey("results")) throw ResultsNotFound();
 
       List<dynamic> columns = json[0]["results"]["columns"];
-      print("aca");
       print(json[0]["results"]["rows"][0][4]);
       final results = List<Map<String, dynamic>>.from(
           json[0]["results"]["rows"].map((dynamic instalacion) {
@@ -589,6 +588,40 @@ class TursoRestAPIClient {
     } on Exception catch (e) {
       print(e.toString());
       return null;
+    }
+  }
+
+  //ProductosPedidos
+  Future<List<ProductoPedido>> getProductosPedidosList() async {
+    try {
+      print("getProductosPedidosList");
+      final response = await runQuery(
+          sql: "SELECT * FROM web_ProductosPedidos", arguments: []);
+
+      final json = jsonDecode(response.body);
+
+      if (!json[0].containsKey("results")) throw ResultsNotFound();
+
+      List<dynamic> columns = json[0]["results"]["columns"];
+
+      final results = List<Map<String, dynamic>>.from(
+          json[0]["results"]["rows"].map((dynamic cliente) {
+        return {
+          "${columns[0]}": cliente[0],
+          "${columns[1]}": cliente[1],
+          "${columns[2]}": cliente[2],
+          "${columns[3]}": cliente[3],
+          "${columns[4]}": cliente[4],
+          "${columns[5]}": cliente[5],
+          "${columns[6]}": cliente[6],
+        };
+      }));
+
+      return List<ProductoPedido>.from(
+          results.map((result) => ProductoPedido.fromJson(result)));
+    } on Exception catch (e) {
+      print(e.toString());
+      return <ProductoPedido>[];
     }
   }
 }

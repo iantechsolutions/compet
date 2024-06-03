@@ -38,7 +38,7 @@ export function AddPedidoDialog() {
   const [cliente, setCliente] = useState("");
   const [productoSeleccion, setProducto] = useState("");
   const [cantidad, setCantidad] = useState(1);
-  const [productCounts, setProductCounts] = useState<Record<number, number>>({});
+  const [productCounts, setProductCounts] = useState<Record<string, number>>({});
 
   const [open, setOpen] = useState(false);
   const router = useRouter();
@@ -54,7 +54,7 @@ export function AddPedidoDialog() {
   }
   
 
-  const handleProductCountChange = (productId: number, count: number) => {
+  const handleProductCountChange = (productId: string, count: number) => {
     setProductCounts(prevCounts => ({
       ...prevCounts,
       [productId]: count
@@ -63,7 +63,7 @@ export function AddPedidoDialog() {
 
   async function handleCreate() {
     try {
-      const idCliente = clientes?.find((producto) => producto.Id.toLowerCase() === cliente)?.Id;
+      const idCliente = clientes?.find((producto) => producto.Id === cliente)?.Id;
       const result = await createPedido({
         Cliente: idCliente!,
         Estado: "Pendiente",
@@ -72,10 +72,12 @@ export function AddPedidoDialog() {
       const id = result[0]!.Id;
       if(id){
         for (const [productId, count] of Object.entries(productCounts)) {
-            const desc = productos?.find((producto) => producto.Id.toLowerCase() === productId)?.Descripcion;
-            const idProd = productos?.find((producto) => producto.Id.toLowerCase() === productId)?.Id;
-            const nombre = productos?.find((producto) => producto.Id.toLowerCase() === productId)?.Nombre;
-            const codigo = productos?.find((producto) => producto.Id.toLowerCase() === productId)?.Codigo_de_barras;
+            console.log(productos);
+            console.log(productId);
+            const desc = productos?.find((producto) => producto.Id === productId)?.Descripcion;
+            const idProd = productos?.find((producto) => producto.Id === productId)?.Id;
+            const nombre = productos?.find((producto) => producto.Id === productId)?.Nombre;
+            const codigo = productos?.find((producto) => producto.Id === productId)?.Codigo_de_barras;
             await createProductoPedido({
                 Pedido: id,
                 Producto: idProd!,
@@ -125,7 +127,7 @@ export function AddPedidoDialog() {
             })) ?? []}
             onSelectionChange={handleClienteChange}
           />
-          <Label className="relative top-2" htmlFor="name">Producto</Label>
+          {/* <Label className="relative top-2" htmlFor="name">Producto</Label>
           <ComboboxDemo
             title="Seleccionar producto..."
             placeholder="Producto"
@@ -142,9 +144,9 @@ export function AddPedidoDialog() {
                 value={cantidad}
                 onChange={e => setCantidad(Number(e.target.value))}
             />
-
-          </div>
-          {/* <div>
+          */}
+          </div> 
+          <div>
           <Table>
             <TableHeader>
                 <TableRow>
@@ -162,7 +164,7 @@ export function AddPedidoDialog() {
                             <Input
                                 type="number"
                                 min="0"
-                                value={productCounts[producto.Id] || 0}
+                                value={productCounts[producto.Id] || ""}
                                 onChange={e => handleProductCountChange(producto.Id, Number.parseInt(e.target.value))}
                             />
                         </TableCell>
@@ -170,10 +172,10 @@ export function AddPedidoDialog() {
                 ))}
             </TableBody>
             </Table>
-          </div> */}
+          </div>
           <DialogFooter>
-            <Button disabled={isPending} onClick={handleCreate}>
-              {isPending && (
+            <Button disabled={isPending || isPendingProducto} onClick={handleCreate}>
+              {(isPending || isPendingProducto) && (
                 <Loader2Icon className="mr-2 animate-spin" size={20} />
               )}
               Agregar pedido

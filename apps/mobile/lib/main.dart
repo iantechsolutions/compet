@@ -14,6 +14,7 @@ import 'package:mplikelanding/screens/listado_empalmista_screen.dart';
 import 'package:mplikelanding/screens/instalaciones_screen.dart';
 import 'package:mplikelanding/screens/login_screen.dart';
 import 'package:mplikelanding/screens/new_recipe_screen.dart';
+import 'package:mplikelanding/screens/pedidos_screen.dart';
 import 'package:mplikelanding/screens/recipe_details.dart';
 import 'package:mplikelanding/screens/recipe_screen.dart';
 import 'package:mplikelanding/screens/clientes_screen.dart';
@@ -48,14 +49,10 @@ class MyApp extends StatelessWidget {
             return EmpalmistaBloc(tursoRepository);
           }),
           BlocProvider<InstalacionBloc>(create: (context) {
-            final tursoRepository =
-                RepositoryProvider.of<TursoRepository>(context);
-            return InstalacionBloc(tursoRepository);
+            return InstalacionBloc();
           }),
           BlocProvider<PedidoBloc>(create: (context) {
-            final tursoRepository =
-                RepositoryProvider.of<TursoRepository>(context);
-            return PedidoBloc(tursoRepository);
+            return PedidoBloc();
           }),
         ],
         child: ShadApp.material(
@@ -72,8 +69,8 @@ class MyApp extends StatelessWidget {
             '/': (context) => const LoginScreen(),
             '/adminScreen': (context) =>
                 const HomeScreen(), // This should be your admin home screen
-            '/clientes': (context) =>
-                const ClientesScreen(), // This should be your admin home screen
+            '/clientes': (context) => const ClientesScreen(),
+            '/pedidos': (context) => const PedidosScreen(),
             '/empalmistasLista': (context) =>
                 const EmpalmistasScreen(), // This should be your admin home screen
             '/instalaciones': (context) =>

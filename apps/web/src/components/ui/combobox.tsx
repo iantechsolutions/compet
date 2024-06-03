@@ -18,29 +18,6 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover"
 
-const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-]
-
 export interface ComboboxProps {
     title: string;
     placeholder: string;
@@ -83,8 +60,8 @@ export interface ComboboxProps {
                   key={option.value}
                   value={option.value}
                   onSelect={(currentValue) => {
-                    handleSelectionChange(currentValue)
-                    setValue(currentValue === value ? "" : currentValue)
+                    handleSelectionChange(option.value)
+                    setValue(currentValue === value ? "" : option.value)
                     setOpen(false)
                   }}
                 >

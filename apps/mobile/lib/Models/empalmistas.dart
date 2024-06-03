@@ -5,7 +5,7 @@ Empalmista empalmistaFromJson(String str) =>
     Empalmista.fromJson(json.decode(str));
 
 class Empalmista extends Equatable {
-  final int id;
+  final String id;
   final String nombre;
 
   const Empalmista({
@@ -14,7 +14,7 @@ class Empalmista extends Equatable {
   });
 
   factory Empalmista.fromJson(Map<String, dynamic> json) => Empalmista(
-        id: json["Id"],
+        id: json["id"],
         nombre: json["Nombre"],
       );
 
