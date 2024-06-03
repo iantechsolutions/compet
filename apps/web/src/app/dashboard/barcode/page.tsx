@@ -11,13 +11,15 @@ import { Title } from "~/components/title";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
 import { Input } from "~/components/ui/input";
-import { Barcode } from "lucide-react";
+import { Barcode, Loader2Icon } from "lucide-react";
 
 export default function Home() {
   const { data: productos, isLoading, error } = api.productos.list.useQuery();
   const { data: CodigoBarras } = api.CodigoBarras.list.useQuery();
   const { mutateAsync: createBarcodes, isPending } = api.CodigoBarras.create.useMutation();
 
+
+  
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [ultimaId, setUltimaId] = useState<number | undefined>(undefined);
   const [desde, setDesde] = useState<number>(0);
@@ -66,8 +68,7 @@ export default function Home() {
   }
 
 
-  
-  const generatePDF = () => {
+ const generatePDF = async ()  => {
     const input = document.getElementsByClassName('Barcode');
     
     let rows = 0;
@@ -76,37 +77,42 @@ export default function Home() {
     if (input.length > 0) {
       const pdf = new jsPDF();
       
-      Array.from(input).forEach(codigo => {
+      await Promise.all(Array.from(input).map(async codigo => {
         if (codigo instanceof HTMLElement) {
           
-            html2canvas(codigo).then(canvas => {
+          
+  
+          const canvas = await html2canvas(codigo);
+          
               const imgData = canvas.toDataURL('image/png');
               const imgProps = { width: canvas.width, height: canvas.height };
               const pdfWidth = pdf.internal.pageSize.getWidth();
               const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-              pdf.addImage(imgData, 'PNG', rows*5, cols*5,pdfWidth,pdfHeight);
-              console.log(pdfWidth)
-              console.log(pdfHeight)
+              pdf.addImage(imgData, 'PNG', rows*20, cols*20,(rows+1)*20,(cols+1)*20);
 
               
-              if(rows<= 4){
+              console.log(imgProps)
+              console.log(imgData)
+              
+              if(rows<= 8){
                 rows+=1
               }
               else{
                 cols+=1
                 rows=0
               }
-              if (cols * rows >= 68) {
-                pdf.addPage();
-              }
-            });
-          }
-        
-      });
-  
+            }
+            if(cols*rows >= 68){
+              pdf.addPage();
+            }
+          }));
+          
+          
+      
       pdf.save('barcodes.pdf');
     }
   };
+  
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -129,7 +135,11 @@ export default function Home() {
           <Button>
             <Link href="/dashboard/barcode/1">Asociar códigos de barra</Link>
           </Button>
-          <Button onClick={generatePDF}>Generar PDF</Button>
+          <Button disabled={isPending} onClick={generatePDF}>
+                {isPending && <Loader2Icon className="mr-2 animate-spin" size={20} />}
+                Descargar PDF
+              </Button>
+          
         </div>
         <div className="flex space-x-4">
           <div>
