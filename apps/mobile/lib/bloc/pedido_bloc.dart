@@ -43,7 +43,9 @@ class PedidoBloc extends Bloc<PedidoEvent, PedidoState> {
     if (response.statusCode == 200) {
       // If the server returns a 200 OK response, parse the JSON.
       Map<String, dynamic> map = json.decode(response.body);
+      print(map.entries);
       Iterable list = map['pedidos'];
+      list.map((model) => print(model.toString()));
       return list.map((model) => Pedido.fromJson(model)).toList();
     } else {
       // If the server returns an unsuccessful response code, throw an exception.

@@ -11,7 +11,7 @@ class ProductoPedido extends Equatable {
   final int cantidad;
   final String nombre;
   final String descripcion;
-  final String codigoDeBarras;
+  final String tipoInstalacion;
   int cantidadScaneada;
 
   ProductoPedido({
@@ -22,21 +22,41 @@ class ProductoPedido extends Equatable {
     required this.cantidadScaneada,
     this.nombre = '',
     this.descripcion = '',
-    this.codigoDeBarras = '',
+    this.tipoInstalacion = '',
   });
 
-  factory ProductoPedido.fromJson(Map<String, dynamic> json) => ProductoPedido(
+  factory ProductoPedido.fromJson(Map<String, dynamic> json) {
+    try {
+      return ProductoPedido(
         id: json["Id"],
         pedido: json["Pedido"],
         producto: json["Producto"],
         cantidad: json["Cantidad"],
-        cantidadScaneada: json["CantidadScaneada"] ?? json["Cantidad"],
+        cantidadScaneada: json["CantidadScaneada"] ?? 0,
         nombre: json["Nombre"],
         descripcion: json["Descripcion"],
-        codigoDeBarras: json["Codigo_de_barras"],
+        tipoInstalacion: json["tipoInstalacion"],
       );
+    } catch (e) {
+      try {
+        return ProductoPedido(
+          id: json["Id"],
+          pedido: json["Pedido"],
+          producto: json["Producto"],
+          cantidad: json["Cantidad"],
+          cantidadScaneada: 0,
+          nombre: json["Nombre"],
+          descripcion: json["Descripcion"],
+          tipoInstalacion: json["tipoInstalacion"],
+        );
+      } catch (e) {
+        print('Error occurred while parsing ProductoPedido from JSON: $json');
+        throw e;
+      }
+    }
+  }
 
   @override
   List<Object?> get props =>
-      [id, pedido, producto, cantidad, nombre, descripcion, codigoDeBarras];
+      [id, pedido, producto, cantidad, nombre, descripcion, tipoInstalacion];
 }

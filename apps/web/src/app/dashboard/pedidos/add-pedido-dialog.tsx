@@ -77,14 +77,14 @@ export function AddPedidoDialog() {
             const desc = productos?.find((producto) => producto.Id === productId)?.Descripcion;
             const idProd = productos?.find((producto) => producto.Id === productId)?.Id;
             const nombre = productos?.find((producto) => producto.Id === productId)?.Nombre;
-            const codigo = productos?.find((producto) => producto.Id === productId)?.Codigo_de_barras;
+            const tipoDeInstalacion_id = productos?.find((producto) => producto.Id === productId)?.tipoDeInstalacion_id;
             await createProductoPedido({
                 Pedido: id,
                 Producto: idProd!,
                 Cantidad: count,
                 Descripcion: desc ?? "",
                 Nombre: nombre ?? "",
-                CodigoBarras: "Codigo: " + codigo
+                tipoInstalacion: tipoDeInstalacion_id ?? "",
             });
         };
         // const prod = productos?.find((producto) => producto.Id === productoSeleccion);

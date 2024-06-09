@@ -28,9 +28,9 @@ export const users = createTable(
     email: text("email", { length: 256 }).unique().notNull(),
     name: text("name", { length: 256 }),
     picture: text("picture"),
-    client: int("client", { mode: "boolean" }).default(false),
-    company: int("company", { mode: "boolean" }).default(false),
-    splicer: int("splicer", { mode: "boolean" }).default(false),
+    client: int("client", { mode: "boolean" }).default(true),
+    company: int("company", { mode: "boolean" }).default(true),
+    splicer: int("splicer", { mode: "boolean" }).default(true),
   },
   (example) => ({
     userIndex: index("user_data_idx").on(example.name),
@@ -112,8 +112,9 @@ export const instalaciones = createTable(
         Fecha_de_instalacion:int('FechaInstal', { mode: 'timestamp' }),
         Fecha_de_verificacion:int('FechaVeri', { mode: 'timestamp' }),
         Estado: text('Estado').notNull(),
+        Codigo_de_barras: text("BarCode"),
         Cliente: text('Cliente').notNull().references(()=>clientes.Id),
-        tipoInstalacion: text('tipoInstalacion',{ length: 255 }),
+        tipoInstalacionId: text('tipoInstalacion',{ length: 255 }),
     },
     (example) => ({
         instalationsIndex: index('instalations_idx').on(example.Pedido),
@@ -136,7 +137,7 @@ export const instalacionesRelations = relations(
       references: [clientes.Id],
     }),
     tipoInstalacion: one(tipoInstalaciones,{
-        fields: [instalaciones.tipoInstalacion],
+        fields: [instalaciones.tipoInstalacionId],
         references: [tipoInstalaciones.id],
     }),
     productoPedido: one(productosPedidos, {
@@ -183,10 +184,10 @@ export const productosPedidos = createTable(
         Pedido: text('Pedido').notNull().references(()=>pedidos.Id),
         Producto: text('Producto').notNull().references(()=>productos.Id),
         Cantidad: int('Cantidad').notNull(),
-        CantidadScaneada: int('Cantidad').notNull(),
+        CantidadScaneada: int('CantidadScaneada').notNull().default(0),
         Nombre: text('Nombre', { length: 256 }),
         Descripcion: text('Descripcion',{length: 256}),
-        Codigo_de_barras: text('BarCode', { length: 256 }),
+        tipoInstalacion: text('tipo_instalacion', { length: 256 }),
     },
     (example) => ({
         instalationsIndex: index('pedidosproductos_idx').on(example.Producto),
@@ -334,7 +335,7 @@ export const pasoCriticoTotipoInstalacionRelations = relations(pasoCriticoTotipo
         fields: [pasoCriticoTotipoInstalacion.tipoInstalacion],
         references: [tipoInstalaciones.id],
     }),
-    pasoCritico: one(pasoCritico,{
+    pasoCriticoData: one(pasoCritico,{
         fields: [pasoCriticoTotipoInstalacion.pasoCritico],
         references: [pasoCritico.id],
     }),

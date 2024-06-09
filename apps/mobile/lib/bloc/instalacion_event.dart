@@ -10,12 +10,12 @@ abstract class InstalacionEvent extends Equatable {
 class Initial extends InstalacionEvent {}
 
 class DetailsInitial extends InstalacionEvent {
-  const DetailsInitial({required this.instalacionId});
+  const DetailsInitial({required this.barcode});
 
-  final String instalacionId;
+  final String barcode;
 
   @override
-  List<Object> get props => [instalacionId];
+  List<Object> get props => [barcode];
 }
 
 class RefreshInstalacions extends InstalacionEvent {}

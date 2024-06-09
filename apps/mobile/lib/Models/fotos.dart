@@ -4,12 +4,12 @@ import 'dart:convert';
 Foto fotoFromJson(String str) => Foto.fromJson(json.decode(str));
 
 class Foto extends Equatable {
-  final int id;
+  final String? id;
   final String? link;
-  final int instalacion;
+  final String instalacion;
 
   const Foto({
-    required this.id,
+    this.id,
     this.link,
     required this.instalacion,
   });
@@ -19,6 +19,13 @@ class Foto extends Equatable {
         link: json["Link"],
         instalacion: json["Instalacion"],
       );
+
+  // Added toJson method
+  Map<String, dynamic> toJson() => {
+        "Id": id,
+        "Link": link,
+        "Instalacion": instalacion,
+      };
 
   @override
   List<Object?> get props => [id, link, instalacion];

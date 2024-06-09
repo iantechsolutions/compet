@@ -1,8 +1,9 @@
+// core.ts (make sure this is correctly imported)
 import { createUploadthing, type FileRouter } from "uploadthing/server";
- 
+
 const f = createUploadthing();
- 
-export const ourFileRouter = {
+
+export const ourFileRouter: FileRouter = {
   imageUploader: f({
     image: {
       maxFileSize: "4MB",
@@ -11,6 +12,6 @@ export const ourFileRouter = {
   }).onUploadComplete((data) => {
     console.log("upload completed", data);
   }),
-} satisfies FileRouter;
- 
+};
+
 export type OurFileRouter = typeof ourFileRouter;

@@ -1,32 +1,22 @@
-import { api } from "~/trpc/server"
+"use client"
+import { api } from "~/trpc/react";
 import LayoutContainer from "~/components/layout-container";
 import { Title } from "~/components/title";
-import { List, ListTile } from "~/components/list";
 import { AddInstalacionDialog } from "./add-instalacion-dialog";
-  
+import instalacionTabs from './instalacion-tabs';
 
-export default async function Home(){
-    const instalaciones = await api.instalaciones.list();
-    return(
-      <LayoutContainer>
+export default function Home() {
+  // const instalaciones = await api.instalaciones.list();
+  const { data: instalaciones} = api.instalaciones.list.useQuery(undefined);
+  return (
+    <LayoutContainer>
       <section className="space-y-2">
         <div className="flex justify-between">
           <Title>Instalaciones</Title>
           <AddInstalacionDialog />
         </div>
-        <List>
-          {instalaciones.map((instalacion) => {
-            return (
-              <ListTile
-                key={instalacion.Id}
-                leading={instalacion.empalmista?.Nombre}
-                title={instalacion.cliente?.Nombre}
-                href={`/dashboard/instalaciones/${instalacion.Id}`}
-              />
-            );
-          })}
-        </List>
+        {instalacionTabs({instalaciones})}
       </section>
     </LayoutContainer>
-    )
+  );
 }

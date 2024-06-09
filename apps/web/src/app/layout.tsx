@@ -39,7 +39,10 @@ export default function RootLayout({
             <body className={`font-sans ${inter.variable}`}>
                 <AuthProviderSSR>
                     <TRPCReactProvider>
-                        <Header title={<h1>COMPET</h1>}>
+                        <Header title=
+                        // {<img src='https://utfs.io/f/c58b7189-5fb3-4b5b-b1c6-2f1adec6c663-hcebrm.png' className='p-r-4 py-6 p-y-6 m-5' width={200}  alt='logo' />}
+                        {<img src='https://utfs.io/f/7d166dbd-2612-4e52-868f-195c79c458b9-ew43jv.png' className='p-r-4' alt='logo' width={160} />}
+                        >
                             <div className='pl-64 pt-11'>
                                 {children}
                             </div>

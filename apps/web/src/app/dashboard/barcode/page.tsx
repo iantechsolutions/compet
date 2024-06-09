@@ -128,7 +128,7 @@ export default function Home() {
           {/* <Button>
             <Link href="/dashboard/barcode/1">Asociar códigos de barra</Link>
           </Button> */}
-          <Button onClick={generatePDF}>Generar PDF</Button>
+          <Button onClick={generatePDF} disabled={true}>Generar PDF</Button>
         </div>
         <div className="flex space-x-4">
           <div>

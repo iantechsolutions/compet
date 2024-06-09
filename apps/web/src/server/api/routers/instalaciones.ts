@@ -10,10 +10,11 @@ import {
 } from "~/server/db/schema";
 import { date } from "drizzle-orm/mysql-core";
 import { PgTimestampBuilder } from "drizzle-orm/pg-core";
+import { RouterOutputs } from "../root";
 
 export const instalacionesRouter = createTRPCRouter({
     // Producto: z.number(),Empalmista: z.number(),FechaAlta: z.number(),FechaInst: z.number(),FechaVeri: z.number(),Estado: z.number(),Cliente: z.number()
-    create: publicProcedure.input(z.object({ Pedido: z.string(),tipoInstalacion: z.string(),Empalmista: z.string(),FechaAlta: z.number(),FechaInst: z.number().optional(),FechaVeri: z.number().optional(),Estado: z.string(),Cliente: z.string()})).mutation(async ({ ctx, input }) => {
+    create: publicProcedure.input(z.object({ Pedido: z.string(),tipoInstalacionId: z.string(),Empalmista: z.string(),FechaAlta: z.number(),FechaInst: z.number().optional(),FechaVeri: z.number().optional(),Estado: z.string(),Cliente: z.string(),Producto_pedido:z.string(),Codigo_de_barras:z.string()})).mutation(async ({ ctx, input }) => {
         // simulate a slow db call
         await new Promise((resolve) => setTimeout(resolve, 1000))
         await ctx.db.insert(instalaciones).values(
@@ -57,13 +58,47 @@ export const instalacionesRouter = createTRPCRouter({
             },
           },
           cliente: true,
+          fotos:true,
         },
       });
 
       return channel;
     }),
 
-    update: publicProcedure.input(z.object({Id:z.string(), tipoInstalacion: z.string(), Pedido: z.string(),Empalmista: z.string(),FechaAlta: z.number(),FechaInst: z.number(),FechaVeri: z.number(),Estado: z.string(),Cliente: z.string() })).mutation(async ({ ctx, input }) => {
+    getBarCode: publicProcedure
+    .input(
+      z.object({
+        barcode: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const channel = await db.query.instalaciones.findFirst({
+        where: eq(instalaciones.Codigo_de_barras, input.barcode),
+        with: {
+          empalmista: true,
+          pedido: {
+            with: {
+              productos: true,
+            },
+          },
+          tipoInstalacion:{
+            with:{
+              pasoCriticoTotipoInstalacion:{
+                with:{
+                  pasoCriticoData:true,
+                },
+              },
+            },
+          },
+          cliente: true,
+        },
+      });
+      return channel;
+    }),
+
+
+
+    update: publicProcedure.input(z.object({Id:z.string(), tipoInstalacion: z.string(), Pedido: z.string(),Empalmista: z.string(),FechaAlta: z.number(),FechaInst: z.number(),FechaVeri: z.number(),Estado: z.string(),Cliente: z.string(),Producto_pedido:z.string(), Codigo_de_barras:z.string() })).mutation(async ({ ctx, input }) => {
       await db
         .update(instalaciones)
         .set({
@@ -74,9 +109,9 @@ export const instalacionesRouter = createTRPCRouter({
           Fecha_de_verificacion: new Date(input.FechaVeri),
           Estado: input.Estado,
           Cliente: input.Cliente,
-          tipoInstalacion: input.tipoInstalacion,
+          tipoInstalacionId: input.tipoInstalacion,
         })
-        .where(eq(empalmistas.Id, input.Id));
+        .where(eq(instalaciones.Id, input.Id));
     }),
 
   delete: publicProcedure
@@ -89,3 +124,5 @@ export const instalacionesRouter = createTRPCRouter({
       await db.delete(instalaciones).where(eq(instalaciones.Id, input.Id));
     }),
 });
+
+export type Instalaciones = RouterOutputs["instalaciones"]["list"][number];

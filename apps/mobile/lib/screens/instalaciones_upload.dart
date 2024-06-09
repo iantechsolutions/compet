@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:mplikelanding/components/critic_steps/instalacion_masilla.dart';
+import 'package:http/http.dart' as http;
 import 'package:mplikelanding/components/critic_steps/tubo_campo.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:flutter/material.dart';
@@ -11,77 +14,51 @@ import 'package:path_provider/path_provider.dart';
 import 'package:anadea_stepper/anadea_stepper.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:image_picker/image_picker.dart';
+import '../Models/fotos.dart';
+import '../Models/instalaciones.dart';
 import '../components/critic_steps/qr_scan.dart';
 import '../components/critic_steps/safety_measures.dart';
 import '../components/critic_steps/dimensiones_cable.dart';
 import '../components/critic_steps/corte_semiconductora.dart';
+import '../constants.dart';
 
 class InstalacionesUploadScreen extends StatefulWidget {
-  InstalacionesUploadScreen({Key? key, String idInstalacion = ""})
+  final Instalacion instalacion;
+
+  InstalacionesUploadScreen({Key? key, required this.instalacion})
       : super(key: key);
 
   @override
   _InstalacionesScreenState createState() => _InstalacionesScreenState();
 }
 
-final TextEditingController _controller = TextEditingController();
-void changeTextFieldValue(String newValue) {
-  // Update the value of the TextField
-  _controller.text = newValue;
-}
-
 class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
-  CameraController? controller;
+  final ImagePicker _picker = ImagePicker();
   List<XFile?> images = [];
+  final String _baseUrl = Constants.BASE_URL; // replace with your API URL
+  final storage = const FlutterSecureStorage();
   bool showPreview = false;
+  Future<void> takePicture() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.camera);
+    if (image != null) {
+      setState(() {
+        images.add(image);
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    initCamera();
-    _controller.text = "Codigo de barras";
   }
 
   final ImagePicker picker = ImagePicker();
-
-  Future<void> initCamera() async {
-    final cameras = await availableCameras();
-    final firstCamera = cameras.first;
-
-    controller = CameraController(
-      firstCamera,
-      ResolutionPreset.medium,
-    );
-
-    controller!.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
-    });
-  }
-
-  Future<void> takePicture() async {
-    if (controller == null || !controller!.value.isInitialized) {
-      return;
-    }
-
-    final XFile? image = await picker.pickImage(source: ImageSource.camera);
-
-    setState(() {
-      images.add(image);
-      showPreview = true;
-    });
-  }
 
   String result = "";
   int currentStep = 0;
 
   @override
   Widget build(BuildContext context) {
-    if (controller == null || !controller!.value.isInitialized) {
-      return Container();
-    }
     return Scaffold(
         appBar: AppBar(
           title: const Text('Registro de Instalación'),
@@ -94,12 +71,33 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
             AStepper(
           type: AStepperType.horizontal,
           physics: const ClampingScrollPhysics(),
-          steps: getSteps(),
+          steps: getcosos(),
           currentStep: currentStep,
-          onStepContinue: () {
-            final isLastStep = currentStep == getSteps().length - 1;
+          onStepContinue: () async {
+            print("se activa");
+            final isLastStep = currentStep == getcosos().length - 1;
+            String? accessToken = await storage.read(key: "credenciales");
+            images.map((e) async {
+              List<int> bytes = await e!.readAsBytes();
+              String base64 = base64Encode(bytes);
+              Foto foto = Foto(
+                  link: base64,
+                  instalacion: widget.instalacion.id ?? "",
+                  id: "");
+              print("instalacionId");
+              print(widget.instalacion.id);
+              print("base64");
+              print(base64.substring(0, 100) + "...");
+              final response = await http.post(
+                  Uri.parse('$_baseUrl/instalaciones/upload'),
+                  headers: <String, String>{
+                    'Authorization': "Bearer $accessToken"
+                  },
+                  body: jsonEncode(foto.toJson()));
+            }).toList();
             if (isLastStep) {
               print("Completed");
+              Navigator.pop(context); // Go back to the previous screen
             } else {
               images.clear();
               setState(() => currentStep += 1);
@@ -110,41 +108,104 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
         ));
   }
 
+  List<AStep> getcosos() {
+    List<AStep>? steps = widget
+        .instalacion.tipoInstalacionData?.pasoCriticoTotipoInstalacion
+        ?.map((pasocritico) {
+      int? index = widget
+          .instalacion.tipoInstalacionData?.pasoCriticoTotipoInstalacion
+          ?.indexOf(pasocritico);
+      if (pasocritico.pasoCriticoData != null &&
+          pasocritico.pasoCriticoData?.usesCamera == true) {
+        return AStep(
+            title: Text(pasocritico.pasoCriticoData?.description ??
+                "Paso ${(index ?? 0) + 1}"),
+            content: Container(
+              height: 500,
+              child: Column(
+                children: [
+                  Text(pasocritico.pasoCriticoData?.detalle ?? ""),
+                  ElevatedButton(
+                    onPressed: takePicture,
+                    child: const Text('Tomar una foto'),
+                  ),
+                  const SizedBox(height: 8.0),
+                  Expanded(
+                    flex: 3,
+                    child: images.isEmpty
+                        ? const Center(
+                            child: Text('Ninguna imagen tomada todavia'))
+                        : GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 8.0,
+                              crossAxisSpacing: 8.0,
+                            ),
+                            itemCount: images.length,
+                            itemBuilder: (context, index) {
+                              return Image.file(
+                                File(images[index]!.path),
+                                width: 100.0,
+                                height: 100.0,
+                                fit: BoxFit.fill,
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
+            ));
+      } else {
+        return AStep(
+            title: Text(pasocritico.pasoCriticoData?.description ??
+                "Paso ${(index ?? 0) + 1}"),
+            content: Container(
+              height: 500,
+              child: Column(
+                children: [
+                  Text(pasocritico.pasoCriticoData?.detalle ?? ""),
+                ],
+              ),
+            ));
+      }
+    }).toList();
+    if (steps != null) {
+      return steps;
+    } else {
+      return [];
+    }
+  }
+
   List<AStep> getSteps() => [
         AStep(
-          isActive: currentStep >= 0,
-          title: const Text("Paso 1"),
-          content: BarcodeScannerComponent(),
-        ),
+            isActive: currentStep >= 0,
+            title: const Text("Paso 1"),
+            content: SafetyInstructionsComponent()),
         AStep(
             isActive: currentStep >= 1,
             title: const Text("Paso 2"),
-            content: SafetyInstructionsComponent()),
+            content: DimensionesCaptureComponent()),
         AStep(
             isActive: currentStep >= 2,
             title: const Text("Paso 3"),
-            content: DimensionesCaptureComponent()),
+            content: SemiconductoraCaptureComponent()),
         AStep(
             isActive: currentStep >= 3,
             title: const Text("Paso 4"),
-            content: SemiconductoraCaptureComponent()),
+            content: MasillaCaptureComponent()),
         AStep(
             isActive: currentStep >= 4,
             title: const Text("Paso 5"),
-            content: MasillaCaptureComponent()),
+            content: TuboCampoCaptureComponent()),
         AStep(
             isActive: currentStep >= 5,
             title: const Text("Paso 6"),
-            content: TuboCampoCaptureComponent()),
-        AStep(
-            isActive: currentStep >= 6,
-            title: const Text("Paso 7"),
             content: MasillaCaptureComponent()),
       ];
 
   @override
   void dispose() {
-    controller?.dispose();
     super.dispose();
   }
 }

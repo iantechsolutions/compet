@@ -86,7 +86,7 @@ class PedidosScreenState extends State<PedidosScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => RegisterPedidoScreen(
-                                    idPedido: cliente?.id.toString() ?? "",
+                                    pedido: cliente,
                                     productos: cliente?.productos,
                                   ),
                                 ),

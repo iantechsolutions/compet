@@ -8,7 +8,6 @@ import 'package:mplikelanding/bloc/instalacion_bloc.dart';
 import 'package:mplikelanding/bloc/pedido_bloc.dart';
 import 'package:mplikelanding/bloc/recipe_bloc.dart';
 import 'package:mplikelanding/repositories/turso_repository.dart';
-import 'package:mplikelanding/screens/empalmista_screen.dart';
 import 'package:mplikelanding/screens/instalaciones_upload.dart';
 import 'package:mplikelanding/screens/listado_empalmista_screen.dart';
 import 'package:mplikelanding/screens/instalaciones_screen.dart';
@@ -19,6 +18,8 @@ import 'package:mplikelanding/screens/recipe_details.dart';
 import 'package:mplikelanding/screens/recipe_screen.dart';
 import 'package:mplikelanding/screens/clientes_screen.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import 'screens/barcode_scan.dart';
 
 void main() {
   runApp(const MyApp());
@@ -75,15 +76,22 @@ class MyApp extends StatelessWidget {
                 const EmpalmistasScreen(), // This should be your admin home screen
             '/instalaciones': (context) =>
                 const InstalacionsScreen(), // This should be your admin home screen
-            '/empalmistaUser': (context) => const EmpalmistaUserScreen(),
-            '/uploadScreen': (context) => InstalacionesUploadScreen(),
+            '/uploadScreen': (context) => InstalacionScannerScreen(),
             '/new-recipe': (context) =>
                 const NewRecipeScreen(), //New recipe screen
-
-            '/instalaciones/:idInstalacion': (context) =>
-                InstalacionesUploadScreen(),
             RecipeDetailsScreen.routeName: (context) => //Recipe details screen
                 const RecipeDetailsScreen(),
+          },
+          onGenerateRoute: (settings) {
+            var pathElements = settings.name?.split('/');
+            // if (pathElements?[1] == 'instalaciones') {
+            //   var idInstalacion = pathElements?[2];
+            //   return MaterialPageRoute(
+            //     builder: (BuildContext context) => InstalacionesUploadScreen(
+            //         idInstalacion: idInstalacion ?? ""),
+            //   );
+            // }
+            return null;
           },
         ),
       ),

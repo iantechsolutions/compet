@@ -39,7 +39,7 @@ export function AddProductoDialog() {
 
   async function handleCreate() { 
     try {
-      const categoriaItem = categorias?.find((categoriaT) => categoriaT.id.toLowerCase() === categoria);
+      const categoriaItem = categorias?.find((categoriaT) => categoriaT.id === categoria);
       await createProduct({
         categoria: categoriaItem!.id,
         name,
@@ -87,7 +87,7 @@ export function AddProductoDialog() {
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
-          <div>
+          {/* <div>
             <Label htmlFor="description">Codigo de barras del producto</Label>
             <Input
               id="barcode"
@@ -95,7 +95,7 @@ export function AddProductoDialog() {
               value={barcode}
               onChange={(e) => setBarcode(e.target.value)}
             />
-          </div>
+          </div> */}
           <div>
             <Label>Categoria de producto</Label><br/>
             <ComboboxDemo

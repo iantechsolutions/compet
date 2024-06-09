@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:simple_barcode_scanner/simple_barcode_scanner.dart'; // Ensure you have this package or any barcode scanner package
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
+
+import '../../bloc/instalacion_bloc.dart';
+import '../../screens/instalaciones_upload.dart'; // Ensure you have this package or any barcode scanner package
 
 class BarcodeScannerComponent extends StatefulWidget {
+  final Function(String) onBarcodeScanned;
+  BarcodeScannerComponent({required this.onBarcodeScanned});
+
   @override
   _BarcodeScannerComponentState createState() =>
       _BarcodeScannerComponentState();
@@ -13,10 +20,29 @@ class _BarcodeScannerComponentState extends State<BarcodeScannerComponent> {
 
   void changeTextFieldValue(String value) {
     _controller.text = value;
+    widget.onBarcodeScanned(value);
   }
 
   @override
   Widget build(BuildContext context) {
+    final instalacionBloc = BlocProvider.of<InstalacionBloc>(context);
+    void checkBarCode(String scan) {
+      instalacionBloc.stream.listen((state) {
+        if (state is InstalacionFetched) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  InstalacionesUploadScreen(instalacion: state.instalacion),
+            ),
+          );
+        } else {
+          print("No Reconocido");
+        }
+      });
+      instalacionBloc.add(DetailsInitial(barcode: scan));
+    }
+
     return Container(
       child: Column(
         children: <Widget>[
@@ -55,7 +81,7 @@ class _BarcodeScannerComponentState extends State<BarcodeScannerComponent> {
           ),
           ShadButton(
             onPressed: () {
-              print("comprobacion");
+              checkBarCode(_controller.text);
             },
             text: const Text('Comprobar'),
           ),

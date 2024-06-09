@@ -25,7 +25,14 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
       }
       if (event is DetailsInitial) {
         print('Fetching instalacion details...');
-        // Fetch details from API
+        Instalacion instalacion =
+            await _getInstalacionFromBarCode(event.barcode);
+        print('Fetched ${instalacion}');
+        emit(InstalacionFetched(instalacion: instalacion));
+      }
+      if (event is AddInstalacion) {
+        print('Creating instalacion...');
+        await _createInstalacion(event.instalacion);
       }
     });
   }
@@ -48,5 +55,56 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
       throw Exception('Failed to load pedidos');
     }
     // Fetch data from API
+  }
+
+  Future<Instalacion> _getInstalacionFromBarCode(String barcode) async {
+    String? accessToken = await storage.read(key: "credenciales");
+    print('$_baseUrl/instalaciones/barcode/$barcode');
+    print(accessToken);
+    final response = await http.get(
+      Uri.parse('$_baseUrl/instalaciones/barcode/$barcode'),
+      headers: <String, String>{'Authorization': "Bearer $accessToken" ?? ""},
+    );
+    if (response.statusCode == 200) {
+      print(response.body);
+      // If the server returns a 200 OK response, parse the JSON.
+      Map<String, dynamic> map = json.decode(response.body);
+      print("map");
+      print(map);
+      print(map['instalaciones']);
+      // Iterable list = ;
+      Instalacion instalacion = Instalacion.fromJson(map['instalaciones']);
+      print("se");
+      return instalacion;
+    } else {
+      // If the server returns an unsuccessful response code, throw an exception.
+      throw Exception('Failed to load pedidos');
+    }
+    // Fetch data from API
+  }
+
+  Future<void> _createInstalacion(Map<String, dynamic> instalacion) async {
+    String? accessToken = await storage.read(key: "credenciales");
+    print("aca");
+    var coso = jsonEncode(instalacion);
+    print(coso);
+    print("accessToken");
+    print(accessToken);
+    final response = await http.post(
+      Uri.parse('$_baseUrl/instalaciones/post'),
+      body: coso,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer $accessToken"
+      },
+    );
+    print("response");
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> map = json.decode(response.body);
+    } else {
+      // If the server returns an unsuccessful response code, throw an exception.
+      throw Exception('Failed to create instalacion');
+    }
   }
 }
