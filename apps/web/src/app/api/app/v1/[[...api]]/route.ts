@@ -5,7 +5,6 @@ import { api } from '~/trpc/server'
 import * as fs from 'fs';
 import * as path from 'path';
 import { createRouteHandler } from "uploadthing/server";
-import { ourFileRouter } from '../../uploadthing/core';
 import { utapi } from '~/server/uploadthing';
 import { UploadthingComponentProps } from '@uploadthing/react';
 import { error } from 'console';

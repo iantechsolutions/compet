@@ -95,7 +95,9 @@ export default function AccordionList({ pedidos }: AccordionListProps) {
                 Pedido : pedido.Id,
                 Estado: "",
                 Empalmista: "",
-                tipoInstalacion: "default",
+                tipoInstalacionId:"",
+                Producto_pedido: "",
+                Codigo_de_barras: "",
             })
         
         }

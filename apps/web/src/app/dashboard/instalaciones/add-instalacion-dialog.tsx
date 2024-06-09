@@ -57,7 +57,10 @@ async function handleCreate() {
           Empalmista: empalmistaT!.Id,
           FechaAlta: new Date().getTime(),
           Estado: "Pendiente",
-          tipoInstalacion: "default",
+          Producto_pedido: "",
+          Codigo_de_barras: "",
+          tipoInstalacionId: "",
+
         });
 
         toast.success("Instalacion creada correctamente");
