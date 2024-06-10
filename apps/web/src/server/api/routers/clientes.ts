@@ -16,10 +16,7 @@ export const clientesRouter = createTRPCRouter({
     }),
 
   list: publicProcedure.query(async ({}) => {
-    console.log("db inicio");
     const clientes = await db.query.clientes.findMany();
-    console.log("db fin");
-    console.log(clientes);
     return clientes;
   }),
 

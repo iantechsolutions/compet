@@ -115,8 +115,10 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
   Future<void> _editInstalacion(Map<String, dynamic> instalacion) async {
     String? accessToken = await storage.read(key: "credenciales");
     var coso = jsonEncode(instalacion);
+    print("url");
+    print('$_baseUrl/instalaciones/update/' + instalacion['Id']);
     final response = await http.put(
-      Uri.parse('$_baseUrl/instalaciones/update/' + instalacion['id']),
+      Uri.parse('$_baseUrl/instalaciones/update/' + instalacion['Id']),
       body: coso,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',

@@ -49,10 +49,11 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
           if (res != -1 && res != result) {
             instalacionBloc.add(AddInstalacion(instalacion: {
               "Pedido": widget.pedido?.id,
-              "Empalmista": "FqA4-9Og9feIcUiGJpNGd",
+              //CAMBIAR ESTO
+              "Empalmista": "RVYm3m9OoStGnokd6Tt5P",
               "Producto_pedido": product?.id,
-              "Fecha_de_alta": DateTime.now().toIso8601String(),
-              "Estado": "pendiente",
+              "Fecha_de_alta": DateTime.now().millisecondsSinceEpoch,
+              "Estado": "Pendiente",
               "Cliente": widget.pedido?.cliente,
               "Codigo_de_barras": res,
               "tipoInstalacion": product?.tipoInstalacion,

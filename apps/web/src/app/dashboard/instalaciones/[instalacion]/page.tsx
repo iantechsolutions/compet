@@ -106,7 +106,7 @@ export default function Page() {
                         />
                     ))}
                 </div>
-                {instalacion?.Estado !== "Aprobada" && instalacion?.Estado !== "Rechazada" && (
+                {instalacion?.Estado === "Completada"  && (
                     <div className="mt-6 flex space-x-4">
                         <Button onClick={approveInstalacion} className="bg-green-500 hover:bg-green-600 text-white">
                             Aprobar

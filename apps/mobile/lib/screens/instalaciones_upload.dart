@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:mplikelanding/bloc/instalacion_bloc.dart';
 import 'package:mplikelanding/components/critic_steps/instalacion_masilla.dart';
 import 'package:http/http.dart' as http;
 import 'package:mplikelanding/components/critic_steps/tubo_campo.dart';
@@ -59,6 +61,7 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final instalacionBloc = BlocProvider.of<InstalacionBloc>(context);
     return Scaffold(
         appBar: AppBar(
           title: const Text('Registro de Instalación'),
@@ -96,6 +99,19 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
                   body: jsonEncode(foto.toJson()));
             }).toList();
             if (isLastStep) {
+              instalacionBloc.add(EditInstalacion(instalacion: {
+                "Id": widget.instalacion.id,
+                "Pedido": widget.instalacion.pedido,
+                "Empalmista": widget.instalacion.empalmista,
+                "Producto_pedido": widget.instalacion.producto_pedido,
+                "Fecha_de_alta":
+                    widget.instalacion.fechaDeAlta?.millisecondsSinceEpoch,
+                "Fecha_de_verificacion": DateTime.now().millisecondsSinceEpoch,
+                "Estado": "Completada",
+                "Cliente": widget.instalacion.cliente,
+                "Codigo_de_barras": widget.instalacion.Codigo_de_barras,
+                "tipoInstalacion": widget.instalacion.tipoInstalacion,
+              }));
               print("Completed");
               Navigator.pop(context); // Go back to the previous screen
             } else {

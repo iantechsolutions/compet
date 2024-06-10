@@ -248,10 +248,27 @@ app.delete('/instalaciones/delete/:Id', async (c) => {
     return c.text("Succefuled delete")
 });
 
+app.post('/instalaciones/post', async (c) => {
+    console.log(1);
+    const body = await c.req.json();
+    console.log("body",body);
+    const result = await api.instalaciones.create({
+        Cliente: body.Cliente?.toString() ?? "",
+        Empalmista: body.Empalmista?.toString() ?? "",
+        Pedido: body.Pedido?.toString() ?? "",
+        Estado: body.Estado?.toString() || "Pendiente",
+        FechaAlta: parseInt(body.Fecha_de_alta?.toString() ?? "0"),
+        Producto_pedido: body.Producto_pedido?.toString() ?? "",
+        Codigo_de_barras: body.Codigo_de_barras?.toString() ?? "",
+        tipoInstalacionId: body.tipoInstalacion?.toString() ?? "",
+    });
+    return c.json("Succesful")
+});
+
 app.put('/instalaciones/update/:Id', async (c) => {
     const Id = c.req.param('Id'); // Step 1: Extract the Id from URL parameters.
     const body = await c.req.json(); // Step 2: Parse the request body.
-
+    console.log("llego");
     // Step 3: Check if the instalacion with the given Id exists.
     const db = await api.instalaciones.get({ Id });
     if (!db) {
@@ -277,23 +294,7 @@ app.put('/instalaciones/update/:Id', async (c) => {
     return c.json(updated);
 });
 
-app.post('/instalaciones/post', async (c) => {
-    const body = await c.req.json();
-    console.log("body",body);
-    const result = await api.instalaciones.create({
-        Cliente: body.Cliente?.toString() ?? "",
-        Empalmista: body.Empalmista?.toString() ?? "",
-        Pedido: body.Pedido?.toString() ?? "",
-        Estado: body.Estado?.toString() || "Pendiente",
-        FechaAlta: parseInt(body.Fecha_de_alta?.toString() ?? "0"),
-        Producto_pedido: body.Producto_pedido?.toString() ?? "",
-        Codigo_de_barras: body.Codigo_de_barras?.toString() ?? "aa",
-        // FechaInst: parseInt(body.FechaInst?.toString() ?? "0"),
-        // FechaVeri: parseInt(body.FechaVeri?.toString() ?? "0"),
-        tipoInstalacionId: body.tipoInstalacion?.toString() ?? "",
-    });
-    return c.json("Succesful")
-});
+
 
 
 app.get('/fotos', async (c) =>{

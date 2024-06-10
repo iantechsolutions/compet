@@ -29,11 +29,21 @@ class _BarcodeScannerComponentState extends State<BarcodeScannerComponent> {
     void checkBarCode(String scan) {
       instalacionBloc.stream.listen((state) {
         if (state is InstalacionFetched) {
+          print("aca sip");
+          print(state.instalacion.pedido);
+          print(state.instalacion.empalmista);
+          print(state.instalacion.producto_pedido);
+          print(state.instalacion.fechaDeAlta);
+          print(state.instalacion.cliente);
+          print(state.instalacion.Codigo_de_barras);
+          print(state.instalacion.tipoInstalacion);
           instalacionBloc.add(EditInstalacion(instalacion: {
+            "Id": state.instalacion.id,
             "Pedido": state.instalacion.pedido,
             "Empalmista": state.instalacion.empalmista,
             "Producto_pedido": state.instalacion.producto_pedido,
-            "Fecha_de_alta": state.instalacion.fechaDeAlta?.toIso8601String(),
+            "Fecha_de_alta":
+                state.instalacion.fechaDeAlta?.millisecondsSinceEpoch,
             "Estado": "En progreso",
             "Cliente": state.instalacion.cliente,
             "Codigo_de_barras": state.instalacion.Codigo_de_barras,
