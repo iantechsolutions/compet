@@ -3,6 +3,9 @@ import LayoutContainer from "~/components/layout-container";
 import { Title } from "~/components/title";
 import { List, ListTile } from "~/components/list";
 import { AddClienteDialog } from "./add-client-dialog";
+import router from "next/router";
+import { toast } from "sonner";
+import { DeleteClientButton } from "~/components/deletebutton";
 
 export default async function Home(){
     const clients = await api.clientes.list();
@@ -20,6 +23,8 @@ export default async function Home(){
                 key={clients.Id}
                 leading={clients.Direccion}
                 title={clients.Nombre}
+                button={<AddClienteDialog client={clients} />}
+                deleteButton={<DeleteClientButton clientId={clients.Id} />}
               />
             );
           })}

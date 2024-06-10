@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2Icon, PlusCircleIcon } from "lucide-react";
+import { Loader2Icon, PlusCircleIcon, Edit3Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -15,31 +15,47 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { RouterOutputs } from "~/server/api/root";
 // import { asTRPCError } from "~/lib/errors";
 import { api } from "~/trpc/react";
 
-export function AddClienteDialog() {
-  const { mutateAsync: createClient, isPending } =
+type ClientType = RouterOutputs['clientes']['list'][number];
+
+interface AddClienteDialogProps {
+  client?: ClientType;
+}
+
+export function AddClienteDialog({ client }: AddClienteDialogProps) {
+  const { mutateAsync: createClient, isPending: isCreating } =
     api.clientes.create.useMutation();
+  const { mutateAsync: updateClient, isPending: isUpdating } =
+    api.clientes.update.useMutation();
 
   const userinfo = useUserInfo();
 
-  const [direccion, setDireccion] = useState("");
-  const [name, setName] = useState("");
-
+  const [direccion, setDireccion] = useState(client?.Direccion || "");
+  const [name, setName] = useState(client?.Nombre || "");
 
   const [open, setOpen] = useState(false);
 
   const router = useRouter();
 
-  async function handleCreate() {
+  async function handleSave() {
     try {
-      await createClient({
-        Nombre: name,
-        Direccion: direccion,
-      });
-
-      toast.success("Cliente creado correctamente");
+      if (client) {
+        await updateClient({
+          Id: client.Id,
+          name: name,
+          direccion: direccion,
+        });
+        toast.success("Cliente actualizado correctamente");
+      } else {
+        await createClient({
+          Nombre: name,
+          Direccion: direccion,
+        });
+        toast.success("Cliente creado correctamente");
+      }
       router.refresh();
       setOpen(false);
     } catch (e) {
@@ -50,13 +66,24 @@ export function AddClienteDialog() {
   return (
     <>
       <Button onClick={() => setOpen(true)}>
-        <PlusCircleIcon className="mr-2" size={20} />
-        Agregar cliente
+        {client ? (
+          <>
+            <Edit3Icon className="mr-2" size={20} />
+            Editar cliente
+          </>
+        ) : (
+          <>
+            <PlusCircleIcon className="mr-2" size={20} />
+            Agregar cliente
+          </>
+        )}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Agregar nuevo cliente</DialogTitle>
+            <DialogTitle>
+              {client ? "Editar cliente" : "Agregar nuevo cliente"}
+            </DialogTitle>
             {/* <DialogDescription>
                     
                 </DialogDescription> */}
@@ -80,11 +107,11 @@ export function AddClienteDialog() {
             />
           </div>
           <DialogFooter>
-            <Button disabled={isPending} onClick={handleCreate}>
-              {isPending && (
+            <Button disabled={isCreating || isUpdating} onClick={handleSave}>
+              {(isCreating || isUpdating) && (
                 <Loader2Icon className="mr-2 animate-spin" size={20} />
               )}
-              Agregar cliente
+              {client ? "Actualizar cliente" : "Agregar cliente"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -37,35 +37,44 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
 
       setState(() {
         if (res is String) {
-          if (res != -1 && res != result) {
-            instalacionBloc.add(AddInstalacion(instalacion: {
-              "Pedido": widget.pedido?.id,
-              "Empalmista": "FqA4-9Og9feIcUiGJpNGd",
-              "Producto_pedido": product?.id,
-              "Fecha_de_alta": DateTime.now().toIso8601String(),
-              "Estado": "pendiente",
-              "Cliente": widget.pedido?.cliente,
-              "Codigo_de_barras": res,
-              "tipoInstalacion": product?.tipoInstalacion,
-            }));
-            Fluttertoast.showToast(
-                msg: "Scan completado correctamente",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.BOTTOM,
-                timeInSecForIosWeb: 1,
-                backgroundColor: Colors.green,
-                textColor: Colors.white,
-                fontSize: 16.0);
-          } else {
-            Fluttertoast.showToast(
-                msg: "Codigo de barra ya scaneado",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.BOTTOM,
-                timeInSecForIosWeb: 1,
-                backgroundColor: Colors.red,
-                textColor: Colors.white,
-                fontSize: 16.0);
-          }
+          Fluttertoast.showToast(
+              msg:
+                  "Este codigo de barras no pertenece a uno generado desde la pagina",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0);
+          // if (res != -1 && res != result) {
+          //   instalacionBloc.add(AddInstalacion(instalacion: {
+          //     "Pedido": widget.pedido?.id,
+          //     "Empalmista": "FqA4-9Og9feIcUiGJpNGd",
+          //     "Producto_pedido": product?.id,
+          //     "Fecha_de_alta": DateTime.now().toIso8601String(),
+          //     "Estado": "pendiente",
+          //     "Cliente": widget.pedido?.cliente,
+          //     "Codigo_de_barras": res,
+          //     "tipoInstalacion": product?.tipoInstalacion,
+          //   }));
+          //   Fluttertoast.showToast(
+          //       msg: "Scan completado correctamente",
+          //       toastLength: Toast.LENGTH_SHORT,
+          //       gravity: ToastGravity.BOTTOM,
+          //       timeInSecForIosWeb: 1,
+          //       backgroundColor: Colors.green,
+          //       textColor: Colors.white,
+          //       fontSize: 16.0);
+          // } else {
+          //   Fluttertoast.showToast(
+          //       msg: "Codigo de barra ya scaneado",
+          //       toastLength: Toast.LENGTH_SHORT,
+          //       gravity: ToastGravity.BOTTOM,
+          //       timeInSecForIosWeb: 1,
+          //       backgroundColor: Colors.red,
+          //       textColor: Colors.white,
+          //       fontSize: 16.0);
+          // }
         }
         result = res;
       });

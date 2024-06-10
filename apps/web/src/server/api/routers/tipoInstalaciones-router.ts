@@ -17,7 +17,11 @@ export const tipoInstalacionesRouter = createTRPCRouter({
     }),
 
   list: publicProcedure.query(({ ctx }) => {
-    return ctx.db.query.tipoInstalaciones.findMany();
+    return ctx.db.query.tipoInstalaciones.findMany({
+      with:{
+        pasoCriticoTotipoInstalacion:true,
+      }
+    });
   }),
 
   get: publicProcedure

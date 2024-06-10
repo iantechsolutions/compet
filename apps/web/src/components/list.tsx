@@ -15,6 +15,8 @@ export type ListTileProps = {
   className?: string;
   onClick?: () => void;
   href?: string;
+  button?: React.ReactNode;
+  deleteButton?: React.ReactNode;
 };
 
 export function List(props: ListProps) {
@@ -42,8 +44,10 @@ export function ListTile(props: ListTileProps) {
       )}
 
       <div className="w-full flex items-center">
-        <div className="flex font-medium">{props.title}</div>
-        <div className="text-xs font-semibold">{props.subtitle}</div>
+        <div className="flex flex-col">
+          <div className="font-medium">{props.title}</div>
+          {props.subtitle && <div className="text-xs font-semibold">{props.subtitle}</div>}
+        </div>
       </div>
 
       {props.trailing && (
@@ -51,8 +55,21 @@ export function ListTile(props: ListTileProps) {
           {props.trailing}
         </div>
       )}
+
+      {props.button && (
+        <div className="flex shrink-0 items-center justify-center">
+          {props.button}
+        </div>
+      )}
+
+      {props.deleteButton && (
+        <div className="flex shrink-0 items-center justify-center">
+          {props.deleteButton}
+        </div>
+      )}
     </>
   );
+
 
   const containerClassName =
     "flex gap-3 py-3 hover:bg-stone-100 active:bg-stone-200";

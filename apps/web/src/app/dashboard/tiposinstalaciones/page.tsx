@@ -13,7 +13,7 @@ export default async function Home(){
       <section className="space-y-2">
         <div className="flex justify-between">
           <Title>Categorias de productos</Title>
-          <AddTipoInstalacionDialog />
+          <AddTipoInstalacionDialog  />
         </div>
         <List>
           {criticsteps.map((Paso) => {
@@ -21,7 +21,8 @@ export default async function Home(){
               <ListTile
                 key={Paso.id}
                 leading={Paso.description}
-                href={`/dashboard/tiposinstalaciones/${Paso.id}`}
+                // href={`/dashboard/tiposinstalaciones/${Paso.id}`}
+                button={<AddTipoInstalacionDialog tipoInstalacion={Paso} />}
               />
             );
           })}

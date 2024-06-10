@@ -14,9 +14,34 @@ interface InstalacionTabsProps {
 
 const InstalacionTabs: React.FC<InstalacionTabsProps> = ({ instalaciones }) => {
     const [activeTab, setActiveTab] = useState('unfinished');
-    const finishedInstalaciones = instalaciones?.filter(instalacion => instalacion.Estado === 'Aprobada' || instalacion.Estado === 'Rechazada');
-    const unfinishedInstalaciones = instalaciones?.filter(instalacion => instalacion.Estado !== "Aprobada" && instalacion.Estado !== "Rechazada");
-
+    const finishedInstalaciones = instalaciones?.filter(instalacion => instalacion.Estado === 'Completada');
+    const unfinishedInstalaciones = instalaciones?.filter(instalacion => instalacion.Estado === 'Pendiente');
+    const inProgressInstalaciones = instalaciones?.filter(instalacion => instalacion.Estado === "En progreso");
+    const approvedInstalaciones = instalaciones?.filter(instalacion => instalacion.Estado === "Aprobada");
+    const rejectedInstalaciones = instalaciones?.filter(instalacion => instalacion.Estado === "Rechazada");
+    let displayedInstalaciones = [] as RouterOutputs['instalaciones']['list'] | undefined;
+    switch (activeTab) {
+        case 'unfinished':
+            displayedInstalaciones = unfinishedInstalaciones;
+            break;
+        case 'inprogress':
+            // Assuming inProgressInstalaciones is defined similarly
+            displayedInstalaciones = inProgressInstalaciones;
+            break;
+        case 'finished':
+            displayedInstalaciones = finishedInstalaciones;
+            break;
+        case 'approved':
+            // Assuming approvedInstalaciones is defined similarly
+            displayedInstalaciones = approvedInstalaciones;
+            break;
+        case 'rejected':
+            // Assuming rejectedInstalaciones is defined similarly
+            displayedInstalaciones = rejectedInstalaciones;
+            break;
+        default:
+            displayedInstalaciones = [];
+    }
     return (
         <>
             <div className="flex space-x-4">
@@ -27,14 +52,33 @@ const InstalacionTabs: React.FC<InstalacionTabsProps> = ({ instalaciones }) => {
                     Pendientes
                 </button>
                 <button
+                    onClick={() => setActiveTab('inprogress')}
+                    className={`py-2 px-4 ${activeTab === 'inprogress' ? 'border-b-2 border-blue-500' : ''}`}
+                >
+                    En curso
+                </button>
+                
+                <button
                     onClick={() => setActiveTab('finished')}
                     className={`py-2 px-4 ${activeTab === 'finished' ? 'border-b-2 border-blue-500' : ''}`}
                 >
-                    Terminadas
+                    Completadas
+                </button>
+                <button
+                    onClick={() => setActiveTab('approved')}
+                    className={`py-2 px-4 ${activeTab === 'approved' ? 'border-b-2 border-blue-500' : ''}`}
+                >
+                    Aprobadas
+                </button>
+                <button
+                    onClick={() => setActiveTab('rejected')}
+                    className={`py-2 px-4 ${activeTab === 'rejected' ? 'border-b-2 border-blue-500' : ''}`}
+                >
+                    Rechazadas
                 </button>
             </div>
             <List>
-                {(activeTab === 'unfinished' ? unfinishedInstalaciones : finishedInstalaciones)?.map(instalacion => (
+                {displayedInstalaciones?.map(instalacion => (
                     <ListTile
                         key={instalacion.Id}
                         leading={
