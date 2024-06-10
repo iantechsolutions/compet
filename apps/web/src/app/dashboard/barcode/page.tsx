@@ -12,11 +12,11 @@ import { Button } from "~/components/ui/button";
 import Link from "next/link";
 import { Input } from "~/components/ui/input";
 import { Barcode } from "lucide-react";
+import BarcodePrintComponent from "~/components/barcodeprintsvg";
 
 export default function Home() {
-  const { data: productos, isLoading, error } = api.productos.list.useQuery();
-  const { data: CodigoBarras } = api.CodigoBarras.list.useQuery();
-  const { mutateAsync: createBarcodes, isPending } = api.CodigoBarras.create.useMutation();
+  const {data: generatedBarcodes} = api.generatedBarcodes.list.useQuery();
+  const {mutateAsync: addGeneratedBarcode, isPending: isLoading} = api.generatedBarcodes.add.useMutation();
 
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [ultimaId, setUltimaId] = useState<number | undefined>(undefined);
@@ -27,35 +27,32 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    if (CodigoBarras && CodigoBarras.length > 0) {
-      const LastCodigoBarras = CodigoBarras[CodigoBarras.length - 1];
-      setUltimaId(LastCodigoBarras?.Id);
+    if (generatedBarcodes && generatedBarcodes.length > 0) {
+      const lastBarcode = generatedBarcodes[generatedBarcodes.length - 1];
+      setUltimaId(parseInt(lastBarcode?.Codigo ?? "0"));
     }
-  }, [CodigoBarras]);
+  }, [generatedBarcodes]);
 
   //Obtener el ultimo codigo de barras
 
   useEffect(() => {
     if (ultimaId !== undefined) {
       setDesde(ultimaId + 1);
+      setHasta(ultimaId + 1);
     }
   }, [ultimaId]);
 
   const handleAddIds = async () => {
     const ids = [];
     for (let i = desde; i <= hasta; i++) {
+      addGeneratedBarcode({
+        Codigo: i.toString(),
+      });
       ids.push(i);
     }
     setSelectedIds(ids);
-
-
-    //
     try {
       for (let i = desde; i <= hasta; i++) {
-        // await createBarcodes({
-        //   descripcion: "",
-        //   productoSeleccionado: 0
-        // });
       }
       toast.success("Códigos de barra creados correctamente");
       router.refresh();
@@ -110,13 +107,6 @@ export default function Home() {
   if (isLoading) {
     return <p>Loading...</p>;
   }
-
-  if (error) {
-    return <p>Error: {error.message}</p>;
-  }
-
-
-
   return (
     <LayoutContainer>
       <section className="space-y-2">
@@ -128,7 +118,7 @@ export default function Home() {
           {/* <Button>
             <Link href="/dashboard/barcode/1">Asociar códigos de barra</Link>
           </Button> */}
-          <Button onClick={generatePDF} disabled={true}>Generar PDF</Button>
+          {/* <Button onClick={generatePDF} disabled={true}>Generar PDF</Button> */}
         </div>
         <div className="flex space-x-4">
           <div>
@@ -138,6 +128,7 @@ export default function Home() {
               type="number"
               placeholder={ultimaId !== undefined ? `Última ID: ${ultimaId}` : 'ej: 1'}
               value={desde}
+              disabled={true}
               onChange={(e) => setDesde(parseInt(e.target.value))}
             />
           </div>
@@ -152,15 +143,9 @@ export default function Home() {
             />
           </div>
         </div>
-
-        <div className="p-10 mt-4 grid grid-cols-8 gap-4">
-          {selectedIds.map((id) => (
-            <div key={id} className="Barcode border-black border-2 p-3 flex-col flex items-center">
-              <Barcode  width={50} height={50} values={id.toString()} />
-              <h1>{id}</h1>
-            </div>
-          ))}
-        </div>
+          {/* {selectedIds.map((id) => ( */}
+            <BarcodePrintComponent selectedIds={selectedIds}/>
+          {/* // ))} */}
       </section>
     </LayoutContainer>
   );

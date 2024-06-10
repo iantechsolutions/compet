@@ -41,7 +41,7 @@ export function ListTile(props: ListTileProps) {
         </div>
       )}
 
-      <div className="w-full">
+      <div className="w-full flex items-center">
         <div className="flex font-medium">{props.title}</div>
         <div className="text-xs font-semibold">{props.subtitle}</div>
       </div>

@@ -3,6 +3,7 @@
 
 import { Description } from "@radix-ui/react-dialog";
 import { isNotNull, relations, sql } from "drizzle-orm";
+
 import { index, int, sqliteTableCreator, text } from "drizzle-orm/sqlite-core";
 import { nanoid } from "nanoid";
 import { number, string, z } from "zod";
@@ -356,3 +357,16 @@ export const CodigoBarras = createTable("CodigoBarras", {
 export const CodigoBarrassRelation = relations(CodigoBarras, ({ one }) => ({
   CodigoBarras: one(productos),
 }));
+
+export const generatedBarcodes = createTable(
+  'generatedBarcodes',
+  {
+      Id: text("id", { length: 255 })
+      .notNull()
+      .primaryKey()
+      .$default(()=>createId()),
+      Codigo: text('Codigo', { length: 256 }),
+      Instalacion: text('Instalacion'),
+      Linked: int("linked", { mode: "boolean" }).default(true),
+  }
+)

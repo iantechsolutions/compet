@@ -93,7 +93,6 @@ export function AddPedidoDialog() {
         //   Producto: prod!.Id, 
         //   Cantidad: cantidad,
         //   Descripcion: prod?.Descripcion || "",
-        //   CodigoBarras: prod?.Codigo_de_barras || "",
         //   Nombre:prod?.Nombre || "",
         // })
         }

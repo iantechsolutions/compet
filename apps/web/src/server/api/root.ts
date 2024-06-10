@@ -14,11 +14,10 @@ import { pedidosRouter } from "./routers/pedidos";
 import { productosPedidosRouter } from "./routers/productospedidos";
 import { pasoCriticoRouter } from "./routers/pasoCritico-router";
 import { tipoInstalacionesRouter } from "./routers/tipoInstalaciones-router";
-import { CodigoBarras } from "../db/schema";
 import { CodigoBarrasRouter } from "./routers/codigoBarra-router";
 import { pasocriticototipoinstalacionRouter } from './routers/pasocriticototipoinstalacion-router'
-import { pasoCriticoTotipoInstalacion } from '../db/schema'
 import { uploadthingrouter } from "./routers/uploadthing";
+import { generatedBarcodesRouter } from "./routers/generatedBarcodes";
 
 /**
  * This is the primary router for your server.
@@ -39,6 +38,7 @@ export const appRouter = createTRPCRouter({
     pasoCriticoTotipoInstalacion: pasocriticototipoinstalacionRouter,
   CodigoBarras: CodigoBarrasRouter,
   uploadthing: uploadthingrouter,
+  generatedBarcodes: generatedBarcodesRouter,
   sellCheck: sellerProcedure.query(({ ctx }) => {
     // falla si no es seller
   }),
