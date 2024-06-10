@@ -60,5 +60,5 @@ function getBaseUrl() {
     if (process.env.VERCEL_URL) {
         return `https://${process.env.VERCEL_URL}`
     }
-    return `http://192.168.1.12:${process.env.PORT ?? 3000}`
+    return `https://compet-tracc.vercel.app/`
 }
