@@ -40,6 +40,8 @@ class PedidoBloc extends Bloc<PedidoEvent, PedidoState> {
       Uri.parse('$_baseUrl/pedidos'),
       headers: <String, String>{'Authorization': "Bearer $accessToken" ?? ""},
     );
+    print('$_baseUrl/pedidos');
+    print(accessToken);
     if (response.statusCode == 200) {
       // If the server returns a 200 OK response, parse the JSON.
       Map<String, dynamic> map = json.decode(response.body);
