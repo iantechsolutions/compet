@@ -37,3 +37,12 @@ class AddInstalacion extends InstalacionEvent {
   @override
   List<Object> get props => [instalacion];
 }
+
+class EditInstalacion extends InstalacionEvent {
+  const EditInstalacion({required this.instalacion});
+
+  final Map<String, dynamic> instalacion;
+
+  @override
+  List<Object> get props => [instalacion];
+}

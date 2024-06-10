@@ -99,7 +99,7 @@ export const instalacionesRouter = createTRPCRouter({
 
 
     update: publicProcedure.input(z.object({Id:z.string(), tipoInstalacion: z.string(), Pedido: z.string(),Empalmista: z.string(),FechaAlta: z.number(),FechaInst: z.number(),FechaVeri: z.number(),Estado: z.string(),Cliente: z.string(),Producto_pedido:z.string(), Codigo_de_barras:z.string() })).mutation(async ({ ctx, input }) => {
-      await db
+      const updated = await db
         .update(instalaciones)
         .set({
           Pedido: input.Pedido,
@@ -111,7 +111,8 @@ export const instalacionesRouter = createTRPCRouter({
           Cliente: input.Cliente,
           tipoInstalacionId: input.tipoInstalacion,
         })
-        .where(eq(instalaciones.Id, input.Id));
+        .where(eq(instalaciones.Id, input.Id)).returning();
+        return updated;
     }),
 
   delete: publicProcedure

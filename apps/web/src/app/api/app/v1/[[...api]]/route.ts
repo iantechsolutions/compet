@@ -249,27 +249,32 @@ app.delete('/instalaciones/delete/:Id', async (c) => {
 });
 
 app.put('/instalaciones/update/:Id', async (c) => {
-   
-    const db = await api.instalaciones.get({
-        Id: c.req.param('Id')
-    });
-    if(db?.Empalmista != null  && db.Fecha_de_alta != null && db.Fecha_de_verificacion != undefined && db.Fecha_de_instalacion != undefined)
-        {
-    await api.instalaciones.update({
-        Id: db.Id,
-        Cliente: db.Cliente,
-        Empalmista: db.Empalmista,
-        Pedido: db.Pedido,
-        Estado: db.Estado,
-        Codigo_de_barras: db.Codigo_de_barras ?? "",
-        Producto_pedido: db.Producto_pedido ?? "",
-        tipoInstalacion: db.tipoInstalacionId ?? "",
-        FechaAlta: db.Fecha_de_alta.getTime(),
-        FechaVeri: db.Fecha_de_verificacion.getTime(),
-        FechaInst: db.Fecha_de_instalacion.getTime()
-    })
-        return c.json(db)
+    const Id = c.req.param('Id'); // Step 1: Extract the Id from URL parameters.
+    const body = await c.req.json(); // Step 2: Parse the request body.
+
+    // Step 3: Check if the instalacion with the given Id exists.
+    const db = await api.instalaciones.get({ Id });
+    if (!db) {
+        return c.json({ error: "Instalacion not found" }, 404);
     }
+
+    // Step 4: Update the instalacion with new values.
+    const updated = await api.instalaciones.update({
+        Id: db.Id,
+        Cliente: body.Cliente ?? db.Cliente,
+        Empalmista: body.Empalmista ?? db.Empalmista,
+        Pedido: body.Pedido ?? db.Pedido,
+        Estado: body.Estado ?? db.Estado,
+        Codigo_de_barras: body.Codigo_de_barras ?? db.Codigo_de_barras,
+        Producto_pedido: body.Producto_pedido ?? db.Producto_pedido,
+        tipoInstalacion: body.tipoInstalacion ?? db.tipoInstalacionId,
+        FechaAlta: (body.Fecha_de_alta ? new Date(body.Fecha_de_alta).getTime() : db.Fecha_de_alta?.getTime()) ?? 0,
+        FechaVeri: body.Fecha_de_verificacion ? new Date(body.Fecha_de_verificacion).getTime() : db.Fecha_de_verificacion?.getTime() ?? 0,
+        FechaInst: body.Fecha_de_instalacion ? new Date(body.Fecha_de_instalacion).getTime() : db.Fecha_de_instalacion?.getTime() ?? 0,
+    });
+
+    // Step 5: Return a success response.
+    return c.json(updated);
 });
 
 app.post('/instalaciones/post', async (c) => {

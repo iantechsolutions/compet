@@ -34,6 +34,10 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
         print('Creating instalacion...');
         await _createInstalacion(event.instalacion);
       }
+      if (event is EditInstalacion) {
+        print('Editing instalacion...');
+        await _editInstalacion(event.instalacion);
+      }
     });
   }
 
@@ -105,6 +109,27 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
     } else {
       // If the server returns an unsuccessful response code, throw an exception.
       throw Exception('Failed to create instalacion');
+    }
+  }
+
+  Future<void> _editInstalacion(Map<String, dynamic> instalacion) async {
+    String? accessToken = await storage.read(key: "credenciales");
+    var coso = jsonEncode(instalacion);
+    final response = await http.put(
+      Uri.parse('$_baseUrl/instalaciones/update/' + instalacion['id']),
+      body: coso,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer $accessToken"
+      },
+    );
+    print("response");
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> map = json.decode(response.body);
+    } else {
+      // If the server returns an unsuccessful response code, throw an exception.
+      throw Exception('Failed to update instalacion');
     }
   }
 }
