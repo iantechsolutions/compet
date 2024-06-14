@@ -11,6 +11,8 @@ import {
     ListChecksIcon,
     PackageIcon,
     Settings2Icon,
+    Square,
+    SquareUserIcon,
     TagIcon,
     TruckIcon,
     UserRound,
@@ -91,6 +93,14 @@ export default function Sidebar() {
                                 >
                                     Barcode
                                 </SidenavItem>
+                                {userInfo?.isAdministrator && (
+                                    <SidenavItem
+                                    icon={<SquareUserIcon />}
+                                    href="/dashboard/usuarios"
+                                    >
+                                    Usuarios
+                                    </SidenavItem>
+                                )} 
                             </Sidenav>
     )
 }

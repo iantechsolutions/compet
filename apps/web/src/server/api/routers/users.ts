@@ -6,6 +6,7 @@ export const usersRouter = createTRPCRouter({
       user: ctx.session.user,
       isClient: ctx.isClient,
       isCompany: ctx.isCompany,
+      isAdministrator: ctx.isAdministrator,
     };
   }),
 });

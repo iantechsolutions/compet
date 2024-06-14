@@ -11,6 +11,9 @@ import { error } from 'console';
 import { Description } from '@radix-ui/react-dialog';
 import { ConsoleLogWriter } from 'drizzle-orm';
 import { get } from 'http';
+import { Session } from '@auth0/nextjs-auth0';
+import { use } from 'react';
+import { schema } from '~/server/db';
 export const runtime = 'edge'
 
 const app = new Hono().basePath('/api/app/v1')
@@ -63,6 +66,56 @@ app.route('/', appv1)
 
 
 
+
+
+app.get('/usuarios', async (c, next) => {
+
+    const user = await getServerAuthSession()
+    const usuarios = await api.usersList.list();
+
+
+    if (!user) {
+        console.log('No user found in the session');
+        return;
+      }
+      
+      
+      const userExists = usuarios.some(usuario => usuario.Id === user.user.id);
+
+    if (userExists) {
+        await api.usersList.update({
+            Id: user.user.id,
+            email: user.user.email,
+            nombre: user.user.name,
+            apellido: 'Gonzalez',
+            rol: 'administrador',
+            solicitudAprobada: true,
+            administrator: true,
+            picture: user.user.picture || "",
+            client: true,
+            company: true,
+            splicer: true,
+        })
+            return c.json("Updated succesful")
+        }
+     else {
+        await api.usersList.create({  
+            Id: user.user.id,       
+            email: user.user.email,
+            nombre: user.user.name,
+            apellido: 'Rodriguez',
+            rol: 'Cliente',
+            solicitudAprobada: true,
+            administrator: true,
+            picture: user.user.picture || "",
+            client: true,
+            company: true,
+            splicer: true,
+        })
+        return c.json("Created succesful")
+    }
+
+});
 
 
 

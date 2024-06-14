@@ -18,7 +18,7 @@ import { CodigoBarrasRouter } from "./routers/codigoBarra-router";
 import { pasocriticototipoinstalacionRouter } from './routers/pasocriticototipoinstalacion-router'
 import { uploadthingrouter } from "./routers/uploadthing";
 import { generatedBarcodesRouter } from "./routers/generatedBarcodes";
-
+import { usersRouterList } from "./routers/user-router";
 /**
  * This is the primary router for your server.
  *
@@ -26,6 +26,7 @@ import { generatedBarcodesRouter } from "./routers/generatedBarcodes";
  */
 export const appRouter = createTRPCRouter({
   users: usersRouter,
+  usersList: usersRouterList,
   productos: productosRouter,
   clientes: clientesRouter,
   empalmistas: empalmistasRouter,

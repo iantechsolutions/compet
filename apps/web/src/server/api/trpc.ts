@@ -90,6 +90,7 @@ export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
             client: true,
             company: true,
             splicer: true,
+            administrator: true,
         },
     })
 
@@ -99,7 +100,7 @@ export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
             .values({
                 Id: session.user.id,
                 email: session.user.email,
-                name: session.user.name,
+                nombre: session.user.name,
                 picture: session.user.picture,
             })
             .onConflictDoNothing()
@@ -111,6 +112,7 @@ export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
             ...ctx,
             isCompany: user?.client ?? false,
             isClient: user?.company ?? false,
+            isAdministrator: user?.administrator ?? false
         },
     })
 })

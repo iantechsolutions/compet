@@ -11,7 +11,7 @@ const afterCallback: AfterCallbackAppRoute = async (_req, session, _state) => {
         await db.insert(schema.users).values({
             Id: session.user.sub,
             email: session.user.email,
-            name: session.user.name,
+            nombre: session.user.name,
             picture: session.user.picture,
         })
     }

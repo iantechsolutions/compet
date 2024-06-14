@@ -27,14 +27,18 @@ export const users = createTable(
         .primaryKey()
         .$default(()=>createId()),
     email: text("email", { length: 256 }).unique().notNull(),
-    name: text("name", { length: 256 }),
+    nombre: text("nombre", { length: 256 }),
+    apellido: text("apellido", { length: 256 }),
+    rol: text("rol", { length: 256 }),
+    solicitudAprobada: int("solicitudAprobada", { mode: "boolean" }).default(false),
+    administrator: int("adminsitrator", { mode: "boolean" }).default(false),
     picture: text("picture"),
     client: int("client", { mode: "boolean" }).default(true),
     company: int("company", { mode: "boolean" }).default(true),
     splicer: int("splicer", { mode: "boolean" }).default(true),
   },
   (example) => ({
-    userIndex: index("user_data_idx").on(example.name),
+    userIndex: index("user_data_idx").on(example.nombre),
   })
 );
 
