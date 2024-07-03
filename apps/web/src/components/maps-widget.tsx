@@ -1,41 +1,53 @@
-// import React, {useEffect} from 'react';
-// import { Loader } from '@googlemaps/js-api-loader';
-// import { env } from '~/env';
+'use client';
 
-// export function Map(){
-//     const mapRef = React.useRef(null);
+import React, { useEffect } from 'react';
+import { Loader } from '@googlemaps/js-api-loader';
 
-//     useEffect(() => {
-//         const initMap = async () => {
-//         const loader = new Loader({
-//             apiKey: env.GOOGLE_MAPS_API_KEY,
-//             version: 'weekly'
-//         });
-//         const {Map} = await loader.importLibrary('maps');
-//         const {Marker} = await loader.importLibrary('marker') as google.maps.MarkerLibrary;
+interface GoogleMapsProps {
+	lat: number;
+	lng: number;
+    zoom: number;
+}
 
-//         const position = {
-//             lat: 43.213,
-//             long: 43.123,
-//         }
+export default function GoogleMaps({ lat, lng,zoom }: GoogleMapsProps) {
+	const mapRef = React.useRef<HTMLDivElement>(null);
 
-//         const mapOptions: google.maps.options = {
-//             center:position,
-//             zoom:17,
-//             mapId: 'MY_NEXT_JS_MAP_ID'
-//         }
-//         const map = new Map(mapRef.current, mapOptions);
+	useEffect(() => {
+		const initializeMap = async () => {
+			const loader = new Loader({
+				apiKey: process.env.GOOGLE_MAPS_API_KEY as string,
+				version: 'quarterly',
+			});
 
-//         const marker = new Marker({
-//             map:map,
-//             position:position,
-//         })
-//         }
-//         initMap();
-//     }   ,[]);
+			const { Map } = await loader.importLibrary('maps');
 
-//     return(
-//         <div ref={mapRef}></div>
-//     )
+			const locationInMap = {
+				lat: lat,
+				lng: lng,
+			};
 
-// }
+			// MARKER
+			const { Marker } = (await loader.importLibrary(
+				'marker'
+			)) as google.maps.MarkerLibrary;
+
+			const options: google.maps.MapOptions = {
+				center: locationInMap,
+				zoom: zoom,
+				mapId: 'NEXT_MAPS_TUTS',
+			};
+
+			const map = new Map(mapRef.current as HTMLDivElement, options);
+
+			// add the marker in the map
+			const marker = new Marker({
+				map: map,
+				position: locationInMap,
+			});
+		};
+
+		initializeMap();
+	}, [lat, lng]);
+
+	return <div className="h-[500px] w-[700px] rounded-md" ref={mapRef} />;
+}

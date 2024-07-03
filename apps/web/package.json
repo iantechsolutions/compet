@@ -13,6 +13,7 @@
     },
     "dependencies": {
         "@auth0/nextjs-auth0": "^3.5.0",
+        "@googlemaps/js-api-loader": "1.16.2",
         "@libsql/client": "^0.6.0",
         "@radix-ui/react-accordion": "^1.1.2",
         "@radix-ui/react-checkbox": "^1.0.4",
@@ -29,6 +30,7 @@
         "@trpc/next": "next",
         "@trpc/react-query": "next",
         "@trpc/server": "11.0.0-rc.382",
+        "@types/google.maps": "3.54.3",
         "@uploadthing/react": "^6.5.4",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.0",

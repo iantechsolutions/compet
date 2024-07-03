@@ -17,11 +17,11 @@ import {
 } from "~/components/ui/table"
 import { BarcodeComponent } from "~/components/barcodesvg";
 import { useState, useEffect, useRef } from "react";
-
+import GoogleMaps from "~/components/maps-widget";
 
 const dateToDMY = (date: Date | null | undefined) => {
     if (date) {
-        return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`; // Adjusted month +1
+        return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
     } else {
         return "No hay fecha";
     }
@@ -29,19 +29,16 @@ const dateToDMY = (date: Date | null | undefined) => {
 
 export default function Page() {
     const router = useRouter();
-    const goBack = () => {
-        router.back();
-    }
-    const pathname = usePathname().split('/')[usePathname().split('/').length - 1];
+    const pathname = usePathname().split('/').pop();
     const { data: instalacion, isLoading } = api.instalaciones.get.useQuery({ Id: pathname?.toString()! });
     const { mutateAsync: updateInstalacion } = api.instalaciones.update.useMutation();
     
     const [comment, setComment] = useState("");
 
-    const approveInstalacion = () => {
+    const handleUpdate = (estado: string) => {
         updateInstalacion({
             Id: pathname?.toString()!,
-            Estado: "Aprobada",
+            Estado: estado,
             Cliente: instalacion?.Cliente ?? "",
             Empalmista: instalacion?.Empalmista ?? "",
             FechaAlta: instalacion?.Fecha_de_alta?.getTime() ?? 0,
@@ -53,25 +50,7 @@ export default function Page() {
             Codigo_de_barras: instalacion?.Codigo_de_barras ?? "",
             Comentario: comment,
         });
-        toast.success("Instalación aprobada con éxito");
-    };
-
-    const rejectInstalacion = () => {
-        updateInstalacion({
-            Id: pathname?.toString()!,
-            Estado: "Rechazada",
-            Cliente: instalacion?.Cliente ?? "",
-            Empalmista: instalacion?.Empalmista ?? "",
-            FechaAlta: instalacion?.Fecha_de_alta?.getTime() ?? 0,
-            FechaVeri: Date.now(),
-            FechaInst: Date.now(),
-            Pedido: instalacion?.Pedido ?? "",
-            Producto_pedido: instalacion?.Producto_pedido ?? "",
-            tipoInstalacion: instalacion?.tipoInstalacionId ?? "",
-            Codigo_de_barras: instalacion?.Codigo_de_barras ?? "",
-            Comentario: comment,
-        });
-        toast.success("Instalación rechazada con éxito");
+        toast.success(`Instalación ${estado.toLowerCase()} con éxito`);
     };
 
     const mapRef = useRef(null);
@@ -84,13 +63,15 @@ export default function Page() {
         <div className="p-6 bg-gray-100 min-h-screen">
             <div className="mt-6 bg-white p-6 rounded shadow-md">
                 <div className="grid grid-cols-2">
-                    <div>
-                        <h1 className="text-2xl font-bold mb-4">Detalles de la Instalación</h1>
-                        <p className="mb-2"><strong>Cliente:</strong> {instalacion?.cliente.Nombre}</p>
-                        <p className="mb-2"><strong>Empalmista:</strong> {instalacion?.empalmista?.Nombre}</p>
-                        <p className="mb-2"><strong>Fecha de alta:</strong> {dateToDMY(instalacion?.Fecha_de_alta)}</p>
-                        <p className="mb-2"><strong>Fecha de instalación:</strong> {dateToDMY(undefined)}</p>
-                        <p className="mb-2"><strong>Fecha de verificación:</strong> {dateToDMY(undefined)}</p>
+                        <div>
+                            <h1 className="text-2xl font-bold mb-4">Detalles de la Instalación</h1>
+                            <p className="mb-2"><strong>Cliente:</strong> {instalacion?.cliente?.Nombre}</p>
+                            <p className="mb-2"><strong>Empalmista:</strong> {instalacion?.empalmista?.Nombre}</p>
+                            <p className="mb-2"><strong>Fecha de alta:</strong> {dateToDMY(instalacion?.Fecha_de_alta)}</p>
+                            <p className="mb-2"><strong>Fecha de instalación:</strong> {dateToDMY(undefined)}</p>
+                            <p className="mb-2"><strong>Fecha de verificación:</strong> {dateToDMY(undefined)}</p>
+                        </div>
+                        <div>
                         {instalacion?.Codigo_de_barras && (
                             <div className="mt-6 flex justify-center mr-48">
                                 <div className="border border-black p-3 flex flex-col items-center">
@@ -98,10 +79,11 @@ export default function Page() {
                                 </div>
                             </div>
                         )}
-                    </div>
+                        </div>
+                    {/* </div>
                     <div>
                         <div id="map" ref={mapRef} style={{ width: '100%', height: '400px' }}></div>
-                    </div>
+                    </div> */}
                 </div>
 
                 <h2 className="text-xl font-bold mb-4">Imágenes</h2>
@@ -115,8 +97,17 @@ export default function Page() {
                         />
                     ))}
                 </div>
+                
+                {instalacion?.lat && instalacion?.long && (
+                    <div className="mt-4">
+                        <h2 className="text-xl font-bold mb-4">Ubicación de finalización de la instalación</h2>
+                        <GoogleMaps lat={instalacion?.lat} lng={instalacion?.long} zoom={18} />
+                    </div>
+                )}
+
                 {instalacion?.Estado === "Completada" && (
                     <div className="mt-6">
+                        <h2 className="text-xl font-bold mb-4">Comentario</h2>
                         <textarea
                             className="w-full p-2 border rounded mb-4"
                             placeholder="Añadir comentario..."
@@ -124,10 +115,10 @@ export default function Page() {
                             onChange={(e) => setComment(e.target.value)}
                         />
                         <div className="flex space-x-4">
-                            <Button onClick={approveInstalacion} className="bg-green-500 hover:bg-green-600 text-white">
+                            <Button onClick={() => handleUpdate("Aprobada")} className="bg-green-500 hover:bg-green-600 text-white">
                                 Aprobar
                             </Button>
-                            <Button onClick={rejectInstalacion} className="bg-red-500 hover:bg-red-600 text-white">
+                            <Button onClick={() => handleUpdate("Rechazada")} className="bg-red-500 hover:bg-red-600 text-white">
                                 Rechazar
                             </Button>
                         </div>
