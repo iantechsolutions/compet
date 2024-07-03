@@ -114,6 +114,7 @@ export const instalaciones = createTable(
         Pedido: text('Pedido').notNull().references(()=>pedidos.Id),
         Producto_pedido: text('Producto_pedido').references(()=>productosPedidos.Id),
         Empalmista: text('Empalmista').references(()=>empalmistas.Id),
+        Comentario: text('Comentario'),
         Fecha_de_alta: int('FechaAlta', { mode: 'timestamp' }).default(sql`CURRENT_TIMESTAMP`),
         Fecha_de_instalacion:int('FechaInstal', { mode: 'timestamp' }),
         Fecha_de_verificacion:int('FechaVeri', { mode: 'timestamp' }),

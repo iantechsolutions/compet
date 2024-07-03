@@ -17,6 +17,7 @@ export const env = createEnv({
         UPLOADTHING_SECRET: z.string(),
         AUTH0_AUDIENCE:z.string(),
         UPLOADTHING_APP_ID: z.string(),
+        GOOGLE_MAPS_API_KEY: z.string()
     },
 
     /**
@@ -45,6 +46,7 @@ export const env = createEnv({
         UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
         UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,   
         AUTH0_AUDIENCE:process.env.AUTH0_AUDIENCE,
+        GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
     },
     /**
      * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

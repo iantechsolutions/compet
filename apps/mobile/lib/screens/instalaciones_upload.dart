@@ -41,6 +41,7 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
   final String _baseUrl = Constants.BASE_URL; // replace with your API URL
   final storage = const FlutterSecureStorage();
   bool showPreview = false;
+
   Future<void> takePicture() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.camera);
     if (image != null) {
@@ -59,6 +60,7 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
 
   String result = "";
   int currentStep = 0;
+
   Future<Position> _determinePosition() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -91,69 +93,88 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
   Widget build(BuildContext context) {
     final instalacionBloc = BlocProvider.of<InstalacionBloc>(context);
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Registro de Instalación'),
-          foregroundColor: Colors.black,
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        ),
+      appBar: AppBar(
+        title: const Text('Registro de Instalación'),
+        foregroundColor: Colors.black,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        body:
-            // COLUMN
-            AStepper(
-          type: AStepperType.horizontal,
-          physics: const ClampingScrollPhysics(),
-          steps: getcosos(),
-          currentStep: currentStep,
-          onStepContinue: () async {
-            Position ubi = await _determinePosition();
-            print("se activa");
-            final isLastStep = currentStep == getcosos().length - 1;
-            String? accessToken = await storage.read(key: "credenciales");
-            images.map((e) async {
-              List<int> bytes = await e!.readAsBytes();
-              String base64 = base64Encode(bytes);
-              Foto foto = Foto(
-                link: base64,
-                instalacion: widget.instalacion.id ?? "",
-                id: "",
-                lat: ubi.latitude,
-                long: ubi.longitude,
-              );
-              print("instalacionId");
-              print(widget.instalacion.id);
-              print("base64");
-              print(base64.substring(0, 100) + "...");
-              final response = await http.post(
-                  Uri.parse('$_baseUrl/instalaciones/upload'),
-                  headers: <String, String>{
-                    'Authorization': "Bearer $accessToken"
-                  },
-                  body: jsonEncode(foto.toJson()));
-            }).toList();
-            if (isLastStep) {
-              instalacionBloc.add(EditInstalacion(instalacion: {
-                "Id": widget.instalacion.id,
-                "Pedido": widget.instalacion.pedido,
-                "Empalmista": widget.instalacion.empalmista,
-                "Producto_pedido": widget.instalacion.producto_pedido,
-                "Fecha_de_alta":
-                    widget.instalacion.fechaDeAlta?.millisecondsSinceEpoch,
-                "Fecha_de_verificacion": DateTime.now().millisecondsSinceEpoch,
-                "Estado": "Completada",
-                "Cliente": widget.instalacion.cliente,
-                "Codigo_de_barras": widget.instalacion.Codigo_de_barras,
-                "tipoInstalacion": widget.instalacion.tipoInstalacion,
-              }));
-              print("Completed");
-              Navigator.pop(context); // Go back to the previous screen
-            } else {
-              images.clear();
-              setState(() => currentStep += 1);
-            }
-          },
-          onStepCancel: (() =>
-              {currentStep == 0 ? null : setState(() => currentStep -= 1)}),
-        ));
+      ),
+      backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      body: AStepper(
+        type: AStepperType.horizontal,
+        physics: const ClampingScrollPhysics(),
+        controlsBuilder: (BuildContext context, AControlsDetails details) {
+          return Row(
+            children: <Widget>[
+              TextButton(
+                onPressed: details.onStepContinue,
+                child: const Text('Continuar'),
+              ),
+              TextButton(
+                onPressed: details.onStepCancel,
+                child: const Text('Cancelar'),
+              ),
+            ],
+          );
+        },
+        steps: getcosos(),
+        currentStep: currentStep,
+        onStepContinue: () async {
+          Position ubi = await _determinePosition();
+          print("se activa");
+          final isLastStep = currentStep == getcosos().length - 1;
+          String? accessToken = await storage.read(key: "credenciales");
+          images.map((e) async {
+            List<int> bytes = await e!.readAsBytes();
+            String base64 = base64Encode(bytes);
+            Foto foto = Foto(
+              link: base64,
+              instalacion: widget.instalacion.id ?? "",
+              id: "",
+              lat: ubi.latitude,
+              long: ubi.longitude,
+            );
+            print("instalacionId");
+            print(widget.instalacion.id);
+            print("base64");
+            print(base64.substring(0, 100) + "...");
+            final response = await http.post(
+              Uri.parse('$_baseUrl/instalaciones/upload'),
+              headers: <String, String>{'Authorization': "Bearer $accessToken"},
+              body: jsonEncode(foto.toJson()),
+            );
+          }).toList();
+          if (isLastStep) {
+            instalacionBloc.add(EditInstalacion(instalacion: {
+              "Id": widget.instalacion.id,
+              "Pedido": widget.instalacion.pedido,
+              "Empalmista": widget.instalacion.empalmista,
+              "Producto_pedido": widget.instalacion.producto_pedido,
+              "Fecha_de_alta":
+                  widget.instalacion.fechaDeAlta?.millisecondsSinceEpoch,
+              "Fecha_de_instalacion": DateTime.now().millisecondsSinceEpoch,
+              "Estado": "Completada",
+              "Cliente": widget.instalacion.cliente,
+              "Codigo_de_barras": widget.instalacion.Codigo_de_barras,
+              "tipoInstalacion": widget.instalacion.tipoInstalacion,
+              "lat": ubi.latitude,
+              "long": ubi.longitude,
+            }));
+            print("Completed");
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => InstalacionCompletadaScreen(),
+              ),
+            );
+          } else {
+            images.clear();
+            setState(() => currentStep += 1);
+          }
+        },
+        onStepCancel: (() =>
+            {currentStep == 0 ? null : setState(() => currentStep -= 1)}),
+      ),
+    );
   }
 
   List<AStep> getcosos() {
@@ -166,56 +187,58 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
       if (pasocritico.pasoCriticoData != null &&
           pasocritico.pasoCriticoData?.usesCamera == true) {
         return AStep(
-            title: Text(pasocritico.pasoCriticoData?.description ??
-                "Paso ${(index ?? 0) + 1}"),
-            content: Container(
-              height: 500,
-              child: Column(
-                children: [
-                  Text(pasocritico.pasoCriticoData?.detalle ?? ""),
-                  ElevatedButton(
-                    onPressed: takePicture,
-                    child: const Text('Tomar una foto'),
-                  ),
-                  const SizedBox(height: 8.0),
-                  Expanded(
-                    flex: 3,
-                    child: images.isEmpty
-                        ? const Center(
-                            child: Text('Ninguna imagen tomada todavia'))
-                        : GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              mainAxisSpacing: 8.0,
-                              crossAxisSpacing: 8.0,
-                            ),
-                            itemCount: images.length,
-                            itemBuilder: (context, index) {
-                              return Image.file(
-                                File(images[index]!.path),
-                                width: 100.0,
-                                height: 100.0,
-                                fit: BoxFit.fill,
-                              );
-                            },
+          title: Text(pasocritico.pasoCriticoData?.description ??
+              "Paso ${(index ?? 0) + 1}"),
+          content: Container(
+            height: 500,
+            child: Column(
+              children: [
+                Text(pasocritico.pasoCriticoData?.detalle ?? ""),
+                ElevatedButton(
+                  onPressed: takePicture,
+                  child: const Text('Tomar una foto'),
+                ),
+                const SizedBox(height: 8.0),
+                Expanded(
+                  flex: 3,
+                  child: images.isEmpty
+                      ? const Center(
+                          child: Text('Ninguna imagen tomada todavía'))
+                      : GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 8.0,
+                            crossAxisSpacing: 8.0,
                           ),
-                  ),
-                ],
-              ),
-            ));
+                          itemCount: images.length,
+                          itemBuilder: (context, index) {
+                            return Image.file(
+                              File(images[index]!.path),
+                              width: 100.0,
+                              height: 100.0,
+                              fit: BoxFit.fill,
+                            );
+                          },
+                        ),
+                ),
+              ],
+            ),
+          ),
+        );
       } else {
         return AStep(
-            title: Text(pasocritico.pasoCriticoData?.description ??
-                "Paso ${(index ?? 0) + 1}"),
-            content: Container(
-              height: 500,
-              child: Column(
-                children: [
-                  Text(pasocritico.pasoCriticoData?.detalle ?? ""),
-                ],
-              ),
-            ));
+          title: Text(pasocritico.pasoCriticoData?.description ??
+              "Paso ${(index ?? 0) + 1}"),
+          content: Container(
+            height: 500,
+            child: Column(
+              children: [
+                Text(pasocritico.pasoCriticoData?.detalle ?? ""),
+              ],
+            ),
+          ),
+        );
       }
     }).toList();
     if (steps != null) {
@@ -225,35 +248,46 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
     }
   }
 
-  List<AStep> getSteps() => [
-        AStep(
-            isActive: currentStep >= 0,
-            title: const Text("Paso 1"),
-            content: SafetyInstructionsComponent()),
-        AStep(
-            isActive: currentStep >= 1,
-            title: const Text("Paso 2"),
-            content: DimensionesCaptureComponent()),
-        AStep(
-            isActive: currentStep >= 2,
-            title: const Text("Paso 3"),
-            content: SemiconductoraCaptureComponent()),
-        AStep(
-            isActive: currentStep >= 3,
-            title: const Text("Paso 4"),
-            content: MasillaCaptureComponent()),
-        AStep(
-            isActive: currentStep >= 4,
-            title: const Text("Paso 5"),
-            content: TuboCampoCaptureComponent()),
-        AStep(
-            isActive: currentStep >= 5,
-            title: const Text("Paso 6"),
-            content: MasillaCaptureComponent()),
-      ];
-
   @override
   void dispose() {
     super.dispose();
+  }
+}
+
+class InstalacionCompletadaScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Instalación Completada'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Instalación Completada',
+              style: TextStyle(fontSize: 24),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.popUntil(context, (route) => route.isFirst);
+              },
+              child: const Text('Volver al menú'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                int count = 0;
+                Navigator.popUntil(context, (route) {
+                  return count++ == 2;
+                });
+              },
+              child: const Text('Registrar otra'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
