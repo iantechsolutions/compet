@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
 import '../../bloc/instalacion_bloc.dart';
@@ -17,6 +18,31 @@ class BarcodeScannerComponent extends StatefulWidget {
 class _BarcodeScannerComponentState extends State<BarcodeScannerComponent> {
   String result = "";
   TextEditingController _controller = TextEditingController();
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Ubicacion GPS desactivada'),
+          content: const Text('Por favor encienda su Ubicacion GPS.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Entendido'),
+            ),
+          ],
+        ),
+      );
+      return Future.error('Por favor encienda su Ubicacion GPS.');
+    }
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    return await Geolocator.getCurrentPosition();
+  }
 
   void changeTextFieldValue(String value) {
     _controller.text = value;
@@ -26,17 +52,12 @@ class _BarcodeScannerComponentState extends State<BarcodeScannerComponent> {
   @override
   Widget build(BuildContext context) {
     final instalacionBloc = BlocProvider.of<InstalacionBloc>(context);
-    void checkBarCode(String scan) {
+    Future<void> checkBarCode(String scan) async {
+      Position ubi = await _determinePosition();
+      print("ubicacionPrint");
+      print(ubi);
       instalacionBloc.stream.listen((state) {
         if (state is InstalacionFetched) {
-          print("aca sip");
-          print(state.instalacion.pedido);
-          print(state.instalacion.empalmista);
-          print(state.instalacion.producto_pedido);
-          print(state.instalacion.fechaDeAlta);
-          print(state.instalacion.cliente);
-          print(state.instalacion.Codigo_de_barras);
-          print(state.instalacion.tipoInstalacion);
           instalacionBloc.add(EditInstalacion(instalacion: {
             "Id": state.instalacion.id,
             "Pedido": state.instalacion.pedido,
@@ -48,6 +69,8 @@ class _BarcodeScannerComponentState extends State<BarcodeScannerComponent> {
             "Cliente": state.instalacion.cliente,
             "Codigo_de_barras": state.instalacion.Codigo_de_barras,
             "tipoInstalacion": state.instalacion.tipoInstalacion,
+            "lat": ubi.latitude,
+            "long": ubi.longitude,
           }));
           Navigator.push(
             context,

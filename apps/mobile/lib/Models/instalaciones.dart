@@ -18,6 +18,8 @@ class Instalacion extends Equatable {
   final String? cliente;
   final String? tipoInstalacion;
   final String? Codigo_de_barras;
+  final double? lat;
+  final double? long;
   TipoInstalacion? tipoInstalacionData;
 
   Instalacion({
@@ -32,56 +34,36 @@ class Instalacion extends Equatable {
     required this.cliente,
     required this.tipoInstalacion,
     required this.Codigo_de_barras,
+    required this.lat,
+    required this.long,
     this.tipoInstalacionData,
   });
 
   factory Instalacion.fromJson(Map<String, dynamic> json) {
     try {
-      print('Parsing id...');
       final id = json["Id"];
-      print(id);
-      print('Parsing pedido...');
       final pedido = json["Pedido"];
-      print(pedido);
-      print('Parsing producto_pedido...');
       final producto_pedido = json["Producto_pedido"];
-      print(producto_pedido);
-      print('Parsing empalmista...');
       final empalmista = json["Empalmista"];
-      print(empalmista);
-      print('Parsing fechaDeInstalacion...');
       final fechaDeInstalacion = json["Fecha_de_instalacion"] != null
           ? DateTime.parse(json["Fecha_de_instalacion"])
           : null;
-      print(fechaDeInstalacion);
-      print('Parsing fechaDeVerificacion...');
       final fechaDeVerificacion = json["Fecha_de_verificacion"] != null
           ? DateTime.parse(json["Fecha_de_verificacion"])
           : null;
-      print(fechaDeVerificacion);
-      print('Parsing fechaDeAlta...');
       final fechaDeAlta = json["Fecha_de_alta"] != null
           ? DateTime.parse(json["Fecha_de_alta"])
           : DateTime.now();
-      print(fechaDeAlta);
-      print('Parsing estado...');
       final estado = json["Estado"];
-      print(estado);
-      print('Parsing cliente...');
       final cliente = json["Cliente"];
-      print(cliente);
-      print('Parsing tipoInstalacion...');
       final tipoInstalacion = json["tipoInstalacionId"];
-      print(tipoInstalacion);
-      print('Parsing Codigo_de_barras...');
       final Codigo_de_barras = json["Codigo_de_barras"];
-      print(Codigo_de_barras);
-      print('Parsing tipoInstalacionData...');
       final tipoInstalacionData = json["tipoInstalacion"] != null
           ? TipoInstalacion.fromJson(
               json["tipoInstalacion"] as Map<String, dynamic>)
           : null;
-      print(tipoInstalacionData);
+      final lat = json["lat"];
+      final long = json["long"];
       return Instalacion(
         id: id,
         pedido: pedido,
@@ -95,6 +77,8 @@ class Instalacion extends Equatable {
         tipoInstalacion: tipoInstalacion,
         Codigo_de_barras: Codigo_de_barras,
         tipoInstalacionData: tipoInstalacionData,
+        lat: lat,
+        long: long,
       );
     } catch (e) {
       print('Error occurred while parsing JSON: $e');
@@ -116,5 +100,7 @@ class Instalacion extends Equatable {
         tipoInstalacion,
         Codigo_de_barras,
         tipoInstalacionData,
+        lat,
+        long,
       ];
 }

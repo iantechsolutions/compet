@@ -14,7 +14,7 @@ import { RouterOutputs } from "../root";
 
 export const instalacionesRouter = createTRPCRouter({
     // Producto: z.number(),Empalmista: z.number(),FechaAlta: z.number(),FechaInst: z.number(),FechaVeri: z.number(),Estado: z.number(),Cliente: z.number()
-    create: publicProcedure.input(z.object({ Pedido: z.string(),tipoInstalacionId: z.string(),Empalmista: z.string(),FechaAlta: z.number(),FechaInst: z.number().optional(),FechaVeri: z.number().optional(),Estado: z.string(),Cliente: z.string(),Producto_pedido:z.string(),Codigo_de_barras:z.string()})).mutation(async ({ ctx, input }) => {
+    create: publicProcedure.input(z.object({ Pedido: z.string(),tipoInstalacionId: z.string(),Empalmista: z.string(),FechaAlta: z.number(),FechaInst: z.number().optional(),FechaVeri: z.number().optional(),Estado: z.string(),Cliente: z.string(),Producto_pedido:z.string(),Codigo_de_barras:z.string(), lat: z.number(), long: z.number()})).mutation(async ({ ctx, input }) => {
         // simulate a slow db call
         await new Promise((resolve) => setTimeout(resolve, 1000))
         await ctx.db.insert(instalaciones).values(
@@ -98,7 +98,7 @@ export const instalacionesRouter = createTRPCRouter({
 
 
 
-    update: publicProcedure.input(z.object({Id:z.string(), tipoInstalacion: z.string(), Pedido: z.string(),Empalmista: z.string(),FechaAlta: z.number(),FechaInst: z.number(),FechaVeri: z.number(),Estado: z.string(),Cliente: z.string(),Producto_pedido:z.string(), Codigo_de_barras:z.string() })).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({Id:z.string(), tipoInstalacion: z.string(), Pedido: z.string(),Empalmista: z.string(),FechaAlta: z.number(),FechaInst: z.number(),FechaVeri: z.number(),Estado: z.string(),Cliente: z.string(),Producto_pedido:z.string(), Codigo_de_barras:z.string() , lat:z.number(),long:z.number()})).mutation(async ({ ctx, input }) => {
       const updated = await db
         .update(instalaciones)
         .set({
@@ -110,6 +110,8 @@ export const instalacionesRouter = createTRPCRouter({
           Estado: input.Estado,
           Cliente: input.Cliente,
           tipoInstalacionId: input.tipoInstalacion,
+          lat: input.lat,
+          long: input.long,
         })
         .where(eq(instalaciones.Id, input.Id)).returning();
         return updated;

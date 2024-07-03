@@ -5,13 +5,15 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { fotos } from "~/server/db/schema";
 
 export const fotosRouter = createTRPCRouter({
-    create: publicProcedure.input(z.object({ Link: z.string().min(1), Instalacion: z.string()})).mutation(async ({ ctx, input }) => {
+    create: publicProcedure.input(z.object({ Link: z.string().min(1), Instalacion: z.string(), lat: z.number(), long: z.number()})).mutation(async ({ ctx, input }) => {
         // simulate a slow db call
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
         await ctx.db.insert(fotos).values({
           Link: input.Link,
-          Instalacion: input.Instalacion
+          Instalacion: input.Instalacion,
+          lat: input.lat,
+          long: input.long,
         })
     }),
 
@@ -33,12 +35,14 @@ export const fotosRouter = createTRPCRouter({
       return channel;
     }),
 
-    update: publicProcedure.input(z.object({Id:z.string(), Link: z.string().min(1), Instalacion: z.string() })).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({Id:z.string(), Link: z.string().min(1), Instalacion: z.string(), lat: z.number(), long: z.number() })).mutation(async ({ ctx, input }) => {
       await db
         .update(fotos)
         .set({
           Link: input.Link,
           Instalacion: input.Instalacion,
+          lat: input.lat,
+          long: input.long,
         })
         .where(eq(fotos.Id, input.Id));
     }),

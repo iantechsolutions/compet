@@ -50,8 +50,6 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
     if (response.statusCode == 200) {
       // If the server returns a 200 OK response, parse the JSON.
       Map<String, dynamic> map = json.decode(response.body);
-      print(map);
-      print(response.body);
       Iterable list = map['instalaciones'];
       return list.map((model) => Instalacion.fromJson(model)).toList();
     } else {
@@ -63,22 +61,17 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
 
   Future<Instalacion> _getInstalacionFromBarCode(String barcode) async {
     String? accessToken = await storage.read(key: "credenciales");
-    print('$_baseUrl/instalaciones/barcode/$barcode');
-    print(accessToken);
     final response = await http.get(
       Uri.parse('$_baseUrl/instalaciones/barcode/$barcode'),
       headers: <String, String>{'Authorization': "Bearer $accessToken" ?? ""},
     );
     if (response.statusCode == 200) {
-      print(response.body);
       // If the server returns a 200 OK response, parse the JSON.
       Map<String, dynamic> map = json.decode(response.body);
-      print("map");
-      print(map);
-      print(map['instalaciones']);
+
       // Iterable list = ;
       Instalacion instalacion = Instalacion.fromJson(map['instalaciones']);
-      print("se");
+
       return instalacion;
     } else {
       // If the server returns an unsuccessful response code, throw an exception.
@@ -89,11 +82,7 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
 
   Future<void> _createInstalacion(Map<String, dynamic> instalacion) async {
     String? accessToken = await storage.read(key: "credenciales");
-    print("aca");
     var coso = jsonEncode(instalacion);
-    print(coso);
-    print("accessToken");
-    print(accessToken);
     final response = await http.post(
       Uri.parse('$_baseUrl/instalaciones/post'),
       body: coso,
@@ -102,8 +91,6 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
         'Authorization': "Bearer $accessToken"
       },
     );
-    print("response");
-    print(response.statusCode);
     if (response.statusCode == 200) {
       Map<String, dynamic> map = json.decode(response.body);
     } else {
@@ -115,8 +102,6 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
   Future<void> _editInstalacion(Map<String, dynamic> instalacion) async {
     String? accessToken = await storage.read(key: "credenciales");
     var coso = jsonEncode(instalacion);
-    print("url");
-    print('$_baseUrl/instalaciones/update/' + instalacion['Id']);
     final response = await http.put(
       Uri.parse('$_baseUrl/instalaciones/update/' + instalacion['Id']),
       body: coso,
@@ -125,8 +110,7 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
         'Authorization': "Bearer $accessToken"
       },
     );
-    print("response");
-    print(response.statusCode);
+
     if (response.statusCode == 200) {
       Map<String, dynamic> map = json.decode(response.body);
     } else {

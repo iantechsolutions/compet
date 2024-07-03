@@ -21,22 +21,13 @@ class pasoTipoRelation extends Equatable {
 
   factory pasoTipoRelation.fromJson(Map<String, dynamic> json) {
     try {
-      print('Parsing id...');
       final id = json["id"];
-      print(id);
-      print('Parsing tipoInstalacion...');
       final tipoInstalacion = json["tipoInstalacion"];
-      print(tipoInstalacion);
-      print('Parsing pasoCritico...');
       final pasoCriticoId = json["pasoCritico"];
-      print(pasoCriticoId);
-      print('Parsing pasoCriticoData...');
-      print(json["pasoCriticoData"]);
       final pasoCriticoData = json["pasoCriticoData"] != null
           ? pasoCritico
               .fromJson(json["pasoCriticoData"] as Map<String, dynamic>)
           : null;
-      print(pasoCriticoData);
       return pasoTipoRelation(
           id: id,
           TipoInstalacion: tipoInstalacion,

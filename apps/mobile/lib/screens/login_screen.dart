@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:auth0_flutter/auth0_flutter.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:mplikelanding/components/auth_service.dart';
 import 'package:shadcn_ui/shadcn_ui.dart'; // Ensure this package is correctly imported
 // ignore: depend_on_referenced_packages
@@ -25,6 +27,40 @@ class LoginScreenState extends State<LoginScreen> {
     super.initState();
     auth0 = Auth0('https://dev-66yy7ysg5y71pl8j.us.auth0.com',
         'uEQAlmj7yP6A8ZEGWgnTyrERFwkeRcBq');
+    _checkPermission(); // Check for GPS permission on init
+  }
+
+  Future<void> _checkPermission() async {
+    var status = await Permission.location.status;
+    if (status.isGranted) {
+      // Permission is granted, proceed as usual
+    } else {
+      // Request permission
+      _requestPermission();
+    }
+  }
+
+  Future<void> _requestPermission() async {
+    var status = await Permission.location.request();
+    if (!status.isGranted) {
+      _showPermissionDeniedDialog();
+    }
+  }
+
+  void _showPermissionDeniedDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Permiso denegado'),
+        content: Text('Acceso a la ubicacion es necesario para usar esta app.'),
+        actions: [
+          TextButton(
+            onPressed: () => SystemNavigator.pop(),
+            child: Text('Salir'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -42,14 +78,15 @@ class LoginScreenState extends State<LoginScreen> {
       child: MaterialApp(
         home: Scaffold(
           body: Center(
-              child: SingleChildScrollView(
-            child: Center(
-              child: Container(
-                padding: EdgeInsets.all(20),
-                child: _credentials == null ? loginButton() : userActions(),
+            child: SingleChildScrollView(
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.all(20),
+                  child: _credentials == null ? loginButton() : userActions(),
+                ),
               ),
             ),
-          )),
+          ),
         ),
       ),
     );

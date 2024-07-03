@@ -261,6 +261,8 @@ app.post('/instalaciones/post', async (c) => {
         Producto_pedido: body.Producto_pedido?.toString() ?? "",
         Codigo_de_barras: body.Codigo_de_barras?.toString() ?? "",
         tipoInstalacionId: body.tipoInstalacion?.toString() ?? "",
+        lat: body.lat,
+        long: body.long
     });
     return c.json("Succesful")
 });
@@ -288,6 +290,8 @@ app.put('/instalaciones/update/:Id', async (c) => {
         FechaAlta: (body.Fecha_de_alta ? new Date(body.Fecha_de_alta).getTime() : db.Fecha_de_alta?.getTime()) ?? 0,
         FechaVeri: body.Fecha_de_verificacion ? new Date(body.Fecha_de_verificacion).getTime() : db.Fecha_de_verificacion?.getTime() ?? 0,
         FechaInst: body.Fecha_de_instalacion ? new Date(body.Fecha_de_instalacion).getTime() : db.Fecha_de_instalacion?.getTime() ?? 0,
+        lat: body.lat ?? db.lat,
+        long: body.long ?? db.long
     });
 
     // Step 5: Return a success response.
@@ -327,7 +331,9 @@ app.put('/fotos/update/:Id', async (c) => {
     await api.fotos.update({
         Id: db.Id,
         Link: db.Link,
-        Instalacion: db.Instalacion
+        Instalacion: db.Instalacion,
+        lat: db.lat ?? 0,
+        long: db.long ?? 0
     })
         return c.json(db)
     }
@@ -336,7 +342,9 @@ app.put('/fotos/update/:Id', async (c) => {
 app.post('/fotos/post', async (c) => {
     const result = await api.fotos.create({
         Link: "",
-        Instalacion: ""
+        Instalacion: "",
+        lat: 0,
+        long: 0
     });
     return c.json("Succesful")
 });
@@ -505,7 +513,9 @@ app.post('/instalaciones/upload',async (c)=>{
     console.log(body.instalacion);
     const foto = await api.fotos.create({
         Instalacion: body.Instalacion,
-        Link: uploaded.data?.url ?? "error"
+        Link: uploaded.data?.url ?? "error",
+        lat: body.lat,
+        long: body.long,
     })
     console.log(foto);
     console.log(uploaded.data)

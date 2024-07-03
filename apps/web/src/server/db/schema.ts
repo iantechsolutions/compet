@@ -4,7 +4,7 @@
 import { Description } from "@radix-ui/react-dialog";
 import { isNotNull, relations, sql } from "drizzle-orm";
 
-import { index, int, sqliteTableCreator, text } from "drizzle-orm/sqlite-core";
+import { index, int, real, sqliteTableCreator, text } from "drizzle-orm/sqlite-core";
 import { nanoid } from "nanoid";
 import { number, string, z } from "zod";
 /**
@@ -84,8 +84,9 @@ export const fotos = createTable(
         .primaryKey()
         .$default(()=>createId()),
         Link: text('Link', { length: 256 }),
-        Instalacion: text('Instalacion').notNull().references(()=>instalaciones.Id)
-        
+        Instalacion: text('Instalacion').notNull().references(()=>instalaciones.Id),
+        lat: real('lat'),
+        long: real('long'),
     },
     (example) => ({
         imagesIndex: index('images_idx').on(example.Instalacion),
@@ -116,10 +117,12 @@ export const instalaciones = createTable(
         Codigo_de_barras: text("BarCode"),
         Cliente: text('Cliente').notNull().references(()=>clientes.Id),
         tipoInstalacionId: text('tipoInstalacion',{ length: 255 }),
+        lat: real('lat'),
+        long: real('long'),
     },
     (example) => ({
         instalationsIndex: index('instalations_idx').on(example.Pedido),
-    }),
+    }), 
 )
 
 export const instalacionesRelations = relations(
