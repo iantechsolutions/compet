@@ -47,6 +47,7 @@ class LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  bool buttonPressed = false;
   void _showPermissionDeniedDialog() {
     showDialog(
       context: context,
@@ -96,7 +97,9 @@ class LoginScreenState extends State<LoginScreen> {
     return ShadButton.secondary(
       // Shadcn button component
       backgroundColor: Theme.of(context).colorScheme.primary,
+      enabled: !buttonPressed,
       onPressed: () async {
+        buttonPressed = true;
         final credentials =
             await auth0.webAuthentication(scheme: 'demo').login(useHTTPS: true);
         print(credentials?.accessToken);
@@ -105,6 +108,7 @@ class LoginScreenState extends State<LoginScreen> {
         setState(() {
           _credentials = credentials;
         });
+        buttonPressed = false;
       },
       text:
           Text("Ingresar", style: TextStyle(fontSize: 20, color: Colors.white)),

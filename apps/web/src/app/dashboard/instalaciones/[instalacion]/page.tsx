@@ -34,7 +34,7 @@ export default function Page() {
     const { mutateAsync: updateInstalacion } = api.instalaciones.update.useMutation();
     
     const [comment, setComment] = useState("");
-
+    setComment(instalacion?.Comentario ?? "");
     const handleUpdate = (estado: string) => {
         updateInstalacion({
             Id: pathname?.toString()!,
@@ -104,7 +104,18 @@ export default function Page() {
                         <GoogleMaps lat={instalacion?.lat} lng={instalacion?.long} zoom={18} />
                     </div>
                 )}
-
+                {instalacion?.Estado === "Aprobada" || instalacion?.Estado === "Rechazada" ? (
+                    <div className="mt-6">
+                        <h2 className="text-xl font-bold mb-4">Comentario</h2>
+                        <textarea
+                            className="w-full p-2 border rounded mb-4"
+                            placeholder="Añadir comentario..."
+                            disabled={true}
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                        />
+                    </div>
+                ) : null}
                 {instalacion?.Estado === "Completada" && (
                     <div className="mt-6">
                         <h2 className="text-xl font-bold mb-4">Comentario</h2>
