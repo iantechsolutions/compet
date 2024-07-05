@@ -31,10 +31,13 @@ export default function Page() {
     const router = useRouter();
     const pathname = usePathname().split('/').pop();
     const { data: instalacion, isLoading } = api.instalaciones.get.useQuery({ Id: pathname?.toString()! });
-    const { mutateAsync: updateInstalacion } = api.instalaciones.update.useMutation();
-    
-    const [comment, setComment] = useState("");
-    setComment(instalacion?.Comentario ?? "");
+    const { mutateAsync: updateInstalacion } = api.instalaciones.update.useMutation();    
+    const [comment, setComment] = useState(instalacion?.Comentario);
+    useEffect(()=>{
+        if(instalacion && instalacion?.Estado === "Aprobada" || instalacion?.Estado === "Rechazada"){
+            setComment(instalacion?.Comentario)
+        }
+    },[instalacion]);
     const handleUpdate = (estado: string) => {
         updateInstalacion({
             Id: pathname?.toString()!,
@@ -48,7 +51,7 @@ export default function Page() {
             Producto_pedido: instalacion?.Producto_pedido ?? "",
             tipoInstalacion: instalacion?.tipoInstalacionId ?? "",
             Codigo_de_barras: instalacion?.Codigo_de_barras ?? "",
-            Comentario: comment,
+            Comentario: comment ?? "",
         });
         toast.success(`Instalación ${estado.toLowerCase()} con éxito`);
     };
@@ -68,8 +71,8 @@ export default function Page() {
                             <p className="mb-2"><strong>Cliente:</strong> {instalacion?.cliente?.Nombre}</p>
                             <p className="mb-2"><strong>Empalmista:</strong> {instalacion?.empalmista?.Nombre}</p>
                             <p className="mb-2"><strong>Fecha de alta:</strong> {dateToDMY(instalacion?.Fecha_de_alta)}</p>
-                            <p className="mb-2"><strong>Fecha de instalación:</strong> {dateToDMY(undefined)}</p>
-                            <p className="mb-2"><strong>Fecha de verificación:</strong> {dateToDMY(undefined)}</p>
+                            <p className="mb-2"><strong>Fecha de instalación:</strong> {dateToDMY(instalacion?.Fecha_de_instalacion)}</p>
+                            <p className="mb-2"><strong>Fecha de verificación:</strong> {dateToDMY(instalacion?.Fecha_de_verificacion)}</p>
                         </div>
                         <div>
                         {instalacion?.Codigo_de_barras && (
@@ -111,7 +114,7 @@ export default function Page() {
                             className="w-full p-2 border rounded mb-4"
                             placeholder="Añadir comentario..."
                             disabled={true}
-                            value={comment}
+                            value={comment ?? ""}
                             onChange={(e) => setComment(e.target.value)}
                         />
                     </div>
@@ -122,7 +125,7 @@ export default function Page() {
                         <textarea
                             className="w-full p-2 border rounded mb-4"
                             placeholder="Añadir comentario..."
-                            value={comment}
+                            value={comment ?? ""}
                             onChange={(e) => setComment(e.target.value)}
                         />
                         <div className="flex space-x-4">
