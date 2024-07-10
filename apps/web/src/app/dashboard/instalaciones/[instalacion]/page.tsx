@@ -52,6 +52,7 @@ export default function Page() {
             tipoInstalacion: instalacion?.tipoInstalacionId ?? "",
             Codigo_de_barras: instalacion?.Codigo_de_barras ?? "",
             Comentario: comment ?? "",
+            NroLoteArticulo: instalacion?.NroLoteArticulo ?? "",
         });
         toast.success(`Instalación ${estado.toLowerCase()} con éxito`);
     };
@@ -65,19 +66,27 @@ export default function Page() {
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
             <div className="mt-6 bg-white p-6 rounded shadow-md">
-                <div className="grid grid-cols-2">
+                <div className="grid grid-cols-3">
                         <div>
                             <h1 className="text-2xl font-bold mb-4">Detalles de la Instalación</h1>
                             <p className="mb-2"><strong>Cliente:</strong> {instalacion?.cliente?.Nombre}</p>
-                            <p className="mb-2"><strong>Empalmista:</strong> {instalacion?.empalmista?.Nombre}</p>
+                            <p className="mb-2"><strong>Nro de lote del articulo:</strong> {instalacion?.NroLoteArticulo}</p>
                             <p className="mb-2"><strong>Fecha de alta:</strong> {dateToDMY(instalacion?.Fecha_de_alta)}</p>
                             <p className="mb-2"><strong>Fecha de instalación:</strong> {dateToDMY(instalacion?.Fecha_de_instalacion)}</p>
                             <p className="mb-2"><strong>Fecha de verificación:</strong> {dateToDMY(instalacion?.Fecha_de_verificacion)}</p>
                         </div>
                         <div>
+                            <h1 className="text-2xl font-bold mb-4">Detalles del Empalmista</h1>
+                            <p className="mb-2"><strong>Nombre: </strong> {instalacion?.empalmista?.Nombre}</p>
+                            <p className="mb-2"><strong>DNI: </strong> {instalacion?.empalmista?.DNI}</p>
+                            <p className="mb-2"><strong>Fecha de nacimiento:</strong> {dateToDMY(instalacion?.empalmista?.BirthDate)}</p>
+                        </div>
+                        <div>
+                            
                         {instalacion?.Codigo_de_barras && (
-                            <div className="mt-6 flex justify-center mr-48">
-                                <div className="border border-black p-3 flex flex-col items-center">
+                            <div className="flex flex-col justify-center mr-48">
+                                <h1 className="text-2xl font-bold mb-4">Codigo QR</h1>
+                                <div className="border border-black p-3 flex flex-col items-center mt-6">
                                     <BarcodeComponent key={instalacion?.Id} id={instalacion?.Codigo_de_barras} />
                                 </div>
                             </div>

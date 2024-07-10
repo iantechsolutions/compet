@@ -178,9 +178,13 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
   }
 
   List<AStep> getcosos() {
+    print("aca");
+    print(widget.instalacion);
+    print(widget.instalacion.tipoInstalacionData);
     List<AStep>? steps = widget
         .instalacion.tipoInstalacionData?.pasoCriticoTotipoInstalacion
         ?.map((pasocritico) {
+      print(pasocritico);
       int? index = widget
           .instalacion.tipoInstalacionData?.pasoCriticoTotipoInstalacion
           ?.indexOf(pasocritico);

@@ -77,6 +77,8 @@ export const empalmistas = createTable(
         .primaryKey()
         .$default(()=>createId()),
         Nombre: text('Nombre', { length: 256 }),
+        DNI: text('DNI', { length: 256 }),
+        BirthDate: int('FechaAlta', { mode: 'timestamp' }).default(sql`CURRENT_TIMESTAMP`),
     }
 )
 
@@ -121,6 +123,7 @@ export const instalaciones = createTable(
         Estado: text('Estado').notNull(),
         Codigo_de_barras: text("BarCode"),
         Cliente: text('Cliente').notNull().references(()=>clientes.Id),
+        NroLoteArticulo: text('NroLoteArticulo', { length: 255 }),
         tipoInstalacionId: text('tipoInstalacion',{ length: 255 }),
         lat: real('lat'),
         long: real('long'),

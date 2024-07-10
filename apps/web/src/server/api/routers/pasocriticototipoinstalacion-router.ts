@@ -53,5 +53,16 @@ export const pasocriticototipoinstalacionRouter = createTRPCRouter({
         .delete(pasoCriticoTotipoInstalacion)
         .where(eq(pasoCriticoTotipoInstalacion.id, input.Id));
     }),
+    deleteByTipoInstalacionId: publicProcedure
+    .input(
+      z.object({
+        Id: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      await db
+        .delete(pasoCriticoTotipoInstalacion)
+        .where(eq(pasoCriticoTotipoInstalacion.tipoInstalacion, input.Id));
+    }),
 
 })

@@ -6,13 +6,15 @@ import { empalmistas } from "~/server/db/schema";
 
 export const empalmistasRouter = createTRPCRouter({
   create: publicProcedure
-    .input(z.object({ name: z.string().min(1) }))
+    .input(z.object({ name: z.string().min(1), DNI: z.string(), BirthDate : z.date() }))
     .mutation(async ({ ctx, input }) => {
       // simulate a slow db call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       await ctx.db.insert(empalmistas).values({
         Nombre: input.name,
+        DNI: input.DNI,
+        BirthDate: input.BirthDate,
       });
     }),
 
@@ -27,18 +29,20 @@ export const empalmistasRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input }) => {
-      const channel = await db.query.clientes.findFirst({
+      const channel = await db.query.empalmistas.findFirst({
         where: eq(empalmistas.Id, input.Id),
       });
 
       return channel;
     }),
 
-    update: publicProcedure.input(z.object({Id:z.string(), name: z.string().min(1) })).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({Id:z.string(), name: z.string().min(1), DNI: z.string(), BirthDate : z.date() })).mutation(async ({ ctx, input }) => {
       await db
         .update(empalmistas)
         .set({
           Nombre: input.name,
+          DNI: input.DNI,
+          BirthDate: input.BirthDate,
         })
         .where(eq(empalmistas.Id, input.Id));
     }),

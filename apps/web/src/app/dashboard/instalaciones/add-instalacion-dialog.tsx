@@ -60,7 +60,7 @@ async function handleCreate() {
           Producto_pedido: "",
           Codigo_de_barras: "",
           tipoInstalacionId: "",
-
+          NroLoteArticulo: "",
         });
 
         toast.success("Instalacion creada correctamente");

@@ -25,6 +25,7 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
   @override
   Widget build(BuildContext context) {
     final instalacionBloc = BlocProvider.of<InstalacionBloc>(context);
+
     void openScanner(ProductoPedido? product) async {
       var res = await Navigator.push(
         context,
@@ -33,10 +34,57 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
         ),
       );
 
-      product?.cantidadScaneada = product.cantidadScaneada + 1;
+      if (res is String && res != "-1" && res != result) {
+        TextEditingController loteController = TextEditingController();
+        if (true) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Ingresar NroLote'),
+                content: TextField(
+                  controller: loteController,
+                  decoration: InputDecoration(hintText: "NroLote"),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('Cancelar'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    child: const Text('Guardar'),
+                    onPressed: () {
+                      instalacionBloc.add(AddInstalacion(instalacion: {
+                        "Pedido": widget.pedido?.id,
+                        "Empalmista": "RVYm3m9OoStGnokd6Tt5P",
+                        "Producto_pedido": product?.id,
+                        "Fecha_de_alta": DateTime.now().millisecondsSinceEpoch,
+                        "Estado": "Pendiente",
+                        "Cliente": widget.pedido?.cliente,
+                        "Codigo_de_barras": res,
+                        "tipoInstalacion": product?.tipoInstalacion,
+                        "NroLote": loteController.text,
+                      }));
+                      product?.cantidadScaneada = product.cantidadScaneada + 1;
 
-      setState(() {
-        if (res is String) {
+                      Fluttertoast.showToast(
+                          msg: "Scan completado correctamente",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.green,
+                          textColor: Colors.white,
+                          fontSize: 16.0);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
           Fluttertoast.showToast(
               msg:
                   "Este codigo de barras no pertenece a uno generado desde la pagina",
@@ -46,44 +94,25 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
               backgroundColor: Colors.red,
               textColor: Colors.white,
               fontSize: 16.0);
-          if (res != -1 && res != result) {
-            instalacionBloc.add(AddInstalacion(instalacion: {
-              "Pedido": widget.pedido?.id,
-              //CAMBIAR ESTO
-              "Empalmista": "RVYm3m9OoStGnokd6Tt5P",
-              "Producto_pedido": product?.id,
-              "Fecha_de_alta": DateTime.now().millisecondsSinceEpoch,
-              "Estado": "Pendiente",
-              "Cliente": widget.pedido?.cliente,
-              "Codigo_de_barras": res,
-              "tipoInstalacion": product?.tipoInstalacion,
-            }));
-            Fluttertoast.showToast(
-                msg: "Scan completado correctamente",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.BOTTOM,
-                timeInSecForIosWeb: 1,
-                backgroundColor: Colors.green,
-                textColor: Colors.white,
-                fontSize: 16.0);
-          } else {
-            Fluttertoast.showToast(
-                msg: "Codigo de barra ya scaneado",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.BOTTOM,
-                timeInSecForIosWeb: 1,
-                backgroundColor: Colors.red,
-                textColor: Colors.white,
-                fontSize: 16.0);
-          }
         }
+      } else {
+        Fluttertoast.showToast(
+            msg: "Codigo de barra ya scaneado",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
+
+      setState(() {
         result = res;
       });
     }
 
     void showProductDetails(ProductoPedido? product) {
-      if (product!.cantidad <= (product.cantidadScaneada - product!.cantidad)) {
-        print(product);
+      if (product!.cantidad <= (product.cantidadScaneada - product.cantidad)) {
         Fluttertoast.showToast(
             msg: "Ya se escanearon todas las unidades de este producto",
             toastLength: Toast.LENGTH_SHORT,

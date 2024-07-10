@@ -21,6 +21,7 @@ class Instalacion extends Equatable {
   final double? lat;
   final double? long;
   TipoInstalacion? tipoInstalacionData;
+  final String? NroLoteArticulo;
 
   Instalacion({
     required this.id,
@@ -37,6 +38,7 @@ class Instalacion extends Equatable {
     required this.lat,
     required this.long,
     this.tipoInstalacionData,
+    required this.NroLoteArticulo,
   });
 
   factory Instalacion.fromJson(Map<String, dynamic> json) {
@@ -64,6 +66,7 @@ class Instalacion extends Equatable {
           : null;
       final lat = json["lat"];
       final long = json["long"];
+      final NroLoteArticulo = json["NroLoteArticulo"];
       return Instalacion(
         id: id,
         pedido: pedido,
@@ -79,6 +82,7 @@ class Instalacion extends Equatable {
         tipoInstalacionData: tipoInstalacionData,
         lat: lat,
         long: long,
+        NroLoteArticulo: NroLoteArticulo,
       );
     } catch (e) {
       print('Error occurred while parsing JSON: $e');
@@ -102,5 +106,6 @@ class Instalacion extends Equatable {
         tipoInstalacionData,
         lat,
         long,
+        NroLoteArticulo,
       ];
 }

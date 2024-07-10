@@ -18,6 +18,8 @@
         "node": ">=18"
     },
     "dependencies": {
-        "drizzle-kit": "^0.20.17"
+        "drizzle-kit": "^0.20.17",
+        "react-select": "^5.8.0",
+        "react-sortable-hoc": "^2.0.0"
     }
 }

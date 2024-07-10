@@ -98,6 +98,7 @@ export default function AccordionList({ pedidos }: AccordionListProps) {
                 tipoInstalacionId:"",
                 Producto_pedido: "",
                 Codigo_de_barras: "",
+                NroLoteArticulo: "",
             })
         
         }

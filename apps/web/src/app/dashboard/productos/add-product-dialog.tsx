@@ -1,8 +1,8 @@
 "use client";
 import { ComboboxDemo } from "~/components/ui/combobox";
-import { Loader2Icon, PlusCircleIcon } from "lucide-react";
+import { Loader2Icon, PlusCircleIcon, Edit3Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import {
@@ -14,60 +14,94 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-// import { asTRPCError } from "~/lib/errors";
 import { api } from "~/trpc/react";
-import { set } from "zod";
+import { RouterOutputs } from "~/server/api/root";
 
-export function AddProductoDialog() {
-  const { mutateAsync: createProduct, isPending } =
+type ProductType = RouterOutputs['productos']['list'][number];
+
+interface AddProductoDialogProps {
+  product?: ProductType;
+}
+
+export function AddProductoDialog({ product }: AddProductoDialogProps) {
+  const { mutateAsync: createProduct, isPending: isCreating } =
     api.productos.create.useMutation();
+  const { mutateAsync: updateProduct, isPending: isUpdating } =
+    api.productos.update.useMutation();
 
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [barcode, setBarcode] = useState("");
+  const [name, setName] = useState(product?.Nombre || "");
+  const [description, setDescription] = useState(product?.Descripcion || "");
+  const [barcode, setBarcode] = useState(product?.Codigo_de_barras || "");
 
   const [open, setOpen] = useState(false);
 
   const router = useRouter();
-  const { data: categorias} = api.tipoInstalaciones.list.useQuery(undefined);
+  const { data: categorias } = api.tipoInstalaciones.list.useQuery(undefined);
 
-  const [categoria,setCategoria] = useState("");
-  const handleCategoriaChange= (value : any) => {
-    console.log(value);
+  const [categoria, setCategoria] = useState(product?.tipoDeInstalacion_id || "");
+  const handleCategoriaChange = (value: any) => {
     setCategoria(value);
-  }
+  };
 
-  async function handleCreate() { 
+  useEffect(() => {
+    if (product) {
+      setName(product.Nombre);
+      setDescription(product.Descripcion ?? "");
+      setBarcode(product.Codigo_de_barras ?? "");
+      setCategoria(product.tipoDeInstalacion_id ?? "");
+    }
+  }, [product]);
+
+  async function handleSave() {
     try {
       const categoriaItem = categorias?.find((categoriaT) => categoriaT.id === categoria);
-      await createProduct({
-        categoria: categoriaItem!.id,
-        name,
-        description,
-        barcode
-      });
 
-      toast.success("Producto creado correctamente");
+      if (product) {
+        await updateProduct({
+          Id: product.Id,
+          name,
+          description,
+          barcode,
+          categoria: categoriaItem!.id,
+        });
+        toast.success("Producto actualizado correctamente");
+      } else {
+        await createProduct({
+          categoria: categoriaItem!.id,
+          name,
+          description,
+          barcode,
+        });
+        toast.success("Producto creado correctamente");
+      }
+
       router.refresh();
       setOpen(false);
     } catch (e) {
       console.log(e);
+      toast.error("Error al guardar producto");
     }
   }
 
   return (
     <>
       <Button onClick={() => setOpen(true)}>
-        <PlusCircleIcon className="mr-2" size={20} />
-        Agregar producto
+        {product ? (
+          <>
+            <Edit3Icon className="mr-2" size={20} />
+            Editar producto
+          </>
+        ) : (
+          <>
+            <PlusCircleIcon className="mr-2" size={20} />
+            Agregar producto
+          </>
+        )}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Agregar nuevo producto</DialogTitle>
-            {/* <DialogDescription>
-                    
-                </DialogDescription> */}
+            <DialogTitle>{product ? "Editar producto" : "Agregar nuevo producto"}</DialogTitle>
           </DialogHeader>
           <div>
             <Label htmlFor="name">Nombre del producto</Label>
@@ -81,14 +115,14 @@ export function AddProductoDialog() {
           <div>
             <Label htmlFor="description">Descripcion del producto</Label>
             <Input
-              id="descripcion"
+              id="description"
               placeholder="..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
           {/* <div>
-            <Label htmlFor="description">Codigo de barras del producto</Label>
+            <Label htmlFor="barcode">Codigo de barras del producto</Label>
             <Input
               id="barcode"
               placeholder="..."
@@ -103,18 +137,19 @@ export function AddProductoDialog() {
               placeholder="Categoria"
               options={categorias?.map((categoria) => ({
                 value: categoria.id,
-                onChange:{handleCategoriaChange},
+                onChange: { handleCategoriaChange },
                 label: categoria.description || "",
               })) ?? []}
               onSelectionChange={handleCategoriaChange}
+              // selectedValue={categoria}
             />
           </div>
           <DialogFooter>
-            <Button disabled={isPending} onClick={handleCreate}>
-              {isPending && (
+            <Button disabled={isCreating || isUpdating} onClick={handleSave}>
+              {(isCreating || isUpdating) && (
                 <Loader2Icon className="mr-2 animate-spin" size={20} />
               )}
-              Agregar producto
+              {product ? "Actualizar producto" : "Agregar producto"}
             </Button>
           </DialogFooter>
         </DialogContent>

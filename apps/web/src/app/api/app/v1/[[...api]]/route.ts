@@ -215,7 +215,8 @@ app.put('/productos/update/:Id', async (c) => {
         Id: db.Id,
         name: db.Nombre,
         description: db.Descripcion,
-        barcode: db.Codigo_de_barras
+        barcode: db.Codigo_de_barras,
+        categoria: db.tipoDeInstalacion_id ?? "",
     })
         return c.json(db)
     }
@@ -315,7 +316,8 @@ app.post('/instalaciones/post', async (c) => {
         Codigo_de_barras: body.Codigo_de_barras?.toString() ?? "",
         tipoInstalacionId: body.tipoInstalacion?.toString() ?? "",
         lat: body.lat,
-        long: body.long
+        long: body.long,
+        NroLoteArticulo: body.NroLoteArticulo?.toString() ?? "",
     });
     return c.json("Succesful")
 });
@@ -344,7 +346,8 @@ app.put('/instalaciones/update/:Id', async (c) => {
         FechaVeri: body.Fecha_de_verificacion ? new Date(body.Fecha_de_verificacion).getTime() : db.Fecha_de_verificacion?.getTime() ?? 0,
         FechaInst: body.Fecha_de_instalacion ? new Date(body.Fecha_de_instalacion).getTime() : db.Fecha_de_instalacion?.getTime() ?? 0,
         lat: body.lat ?? db.lat,
-        long: body.long ?? db.long
+        long: body.long ?? db.long,
+        NroLoteArticulo: body.NroLoteArticulo ?? db.NroLoteArticulo
     });
 
     // Step 5: Return a success response.
@@ -431,8 +434,9 @@ app.put('/empalmistas/update/:Id', async (c) => {
         {
     await api.empalmistas.update({
         Id: db.Id,
-        name: db.Nombre
-        
+        name: db.Nombre,
+        DNI: db.DNI ?? "",
+        BirthDate: db.BirthDate ?? new Date(),
     })
         return c.json(db)
     }
@@ -440,7 +444,9 @@ app.put('/empalmistas/update/:Id', async (c) => {
 
 app.post('/empalmistas/post', async (c) => {
     const result = await api.empalmistas.create({
-        name: ""
+        name: "",
+        DNI: "",
+        BirthDate: new Date(),
     });
     return c.json("Succesful")
 });

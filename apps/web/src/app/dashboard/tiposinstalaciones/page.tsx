@@ -3,7 +3,8 @@ import LayoutContainer from "~/components/layout-container";
 import { Title } from "~/components/title";
 import { List, ListTile } from "~/components/list";
 import { AddTipoInstalacionDialog } from "./add-tipo-dialog";
-
+import './page.css'
+import { DeleteTipoInstalacionButton } from "~/components/deletebuttontipoinstalacion";
   
 
 export default async function Home(){
@@ -23,6 +24,7 @@ export default async function Home(){
                 leading={Paso.description}
                 // href={`/dashboard/tiposinstalaciones/${Paso.id}`}
                 button={<AddTipoInstalacionDialog tipoInstalacion={Paso} />}
+                deleteButton={<DeleteTipoInstalacionButton clientId={Paso.id} />}
               />
             );
           })}
