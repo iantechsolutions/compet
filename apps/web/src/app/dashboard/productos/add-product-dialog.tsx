@@ -1,6 +1,7 @@
 "use client";
 import { ComboboxDemo } from "~/components/ui/combobox";
 import { Loader2Icon, PlusCircleIcon, Edit3Icon } from "lucide-react";
+import Select from 'react-select';
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -40,9 +41,12 @@ export function AddProductoDialog({ product }: AddProductoDialogProps) {
 
   const [categoria, setCategoria] = useState(product?.tipoDeInstalacion_id || "");
   const handleCategoriaChange = (value: any) => {
-    setCategoria(value);
+    setCategoria(value.value);
   };
-
+  const opciones:readonly any[] = categorias?.map((categoria) => ({
+    value: categoria.id,
+    label: categoria.description || "",
+  })) ?? [];
   useEffect(() => {
     if (product) {
       setName(product.Nombre);
@@ -57,23 +61,26 @@ export function AddProductoDialog({ product }: AddProductoDialogProps) {
       const categoriaItem = categorias?.find((categoriaT) => categoriaT.id === categoria);
 
       if (product) {
+        console.log("update");
         await updateProduct({
           Id: product.Id,
           name,
           description,
           barcode,
-          categoria: categoriaItem!.id,
+          categoria: categoriaItem ? categoriaItem?.id : null,
         });
         toast.success("Producto actualizado correctamente");
       } else {
+        console.log("create");
         await createProduct({
-          categoria: categoriaItem!.id,
+          categoria: categoriaItem ? categoriaItem?.id : null,
           name,
           description,
           barcode,
         });
         toast.success("Producto creado correctamente");
       }
+      setCategoria("");
 
       router.refresh();
       setOpen(false);
@@ -132,7 +139,7 @@ export function AddProductoDialog({ product }: AddProductoDialogProps) {
           </div> */}
           <div>
             <Label>Categoria de producto</Label><br/>
-            <ComboboxDemo
+            {/* <ComboboxDemo
               title="Seleccionar categoria..."
               placeholder="Categoria"
               options={categorias?.map((categoria) => ({
@@ -142,7 +149,19 @@ export function AddProductoDialog({ product }: AddProductoDialogProps) {
               })) ?? []}
               onSelectionChange={handleCategoriaChange}
               // selectedValue={categoria}
+            /> */}
+            <Select
+              className="basic-single"
+              classNamePrefix="select"
+              defaultValue={opciones.find((categoria) => categoria.value === product?.tipoDeInstalacion_id)}
+              isClearable={true}
+              isSearchable={true}
+              name="Categoria"
+              options={opciones}
+              onChange={handleCategoriaChange}
             />
+
+
           </div>
           <DialogFooter>
             <Button disabled={isCreating || isUpdating} onClick={handleSave}>

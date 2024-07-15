@@ -26,7 +26,7 @@ export const users = createTable(
         .notNull()
         .primaryKey()
         .$default(()=>createId()),
-    email: text("email", { length: 256 }).unique().notNull(),
+    email: text("email", { length: 256 }).notNull(),
     nombre: text("nombre", { length: 256 }),
     apellido: text("apellido", { length: 256 }),
     rol: text("rol", { length: 256 }),
@@ -37,9 +37,6 @@ export const users = createTable(
     company: int("company", { mode: "boolean" }).default(true),
     splicer: int("splicer", { mode: "boolean" }).default(true),
   },
-  (example) => ({
-    userIndex: index("user_data_idx").on(example.nombre),
-  })
 );
 
 // export const posts = createTable(
@@ -230,7 +227,7 @@ export const productos = createTable(
         Nombre: text('Nombre', { length: 256 }).notNull(),
         Codigo_de_barras: text('BarCode', { length: 256 }),
         Descripcion: text('Descripcion',{length: 256}),
-        tipoDeInstalacion_id: text('tipoDeInstalacion_id',{length: 256}).references(()=>tipoInstalaciones.id),
+        tipoDeInstalacion_id: text('tipoDeInstalacion_id',{length: 256}).default(''),
     }
 )
 

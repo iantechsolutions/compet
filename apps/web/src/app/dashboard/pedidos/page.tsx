@@ -20,7 +20,7 @@ export default async function Home(){
             return (
               <ListTile
                 key={pedido.Id}
-                leading={pedido.Id}
+                leading={pedido.cliente.Nombre}
                 title={pedido.Estado}
               />
             );

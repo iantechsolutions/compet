@@ -3,6 +3,7 @@ import LayoutContainer from "~/components/layout-container";
 import { Title } from "~/components/title";
 import { List, ListTile } from "~/components/list";
 import { AddPasoDialog } from "./add-paso-dialog";
+import { DeletePasoButton } from "~/components/deletebuttonpaso";
   
 
 export default async function Home(){
@@ -20,7 +21,9 @@ export default async function Home(){
               <ListTile
                 key={Paso.id}
                 leading={Paso.description}
-                href={`/dashboard/criticsteps/${Paso.id}`}
+                button={<AddPasoDialog paso={Paso} />}
+                deleteButton={<DeletePasoButton clientId={Paso.id} />}
+                // href={`/dashboard/criticsteps/${Paso.id}`}
               />
             );
           })}

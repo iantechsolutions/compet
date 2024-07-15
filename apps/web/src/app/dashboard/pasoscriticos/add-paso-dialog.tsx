@@ -1,12 +1,11 @@
 "use client";
 
-import { Loader2Icon, PlusCircleIcon } from "lucide-react";
+import { Loader2Icon, PlusCircleIcon, Edit3Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import { ComboboxDemo } from "~/components/ui/combobox";
 import {
   Dialog,
   DialogContent,
@@ -16,48 +15,73 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-// import { asTRPCError } from "~/lib/errors";
 import { api } from "~/trpc/react";
 
-export function AddPasoDialog() {
-  const { mutateAsync: createPaso, isPending } =
-    api.pasoCritico.create.useMutation();
+interface AddPasoDialogProps {
+  paso?: {
+    id: string;
+    description: string;
+    detalle: string;
+    useCamera: boolean | null;
+  };
+}
+
+export function AddPasoDialog({ paso }: AddPasoDialogProps) {
+  const { mutateAsync: createPaso, isPending: isCreating } = api.pasoCritico.create.useMutation();
+  const { mutateAsync: updatePaso, isPending: isUpdating } = api.pasoCritico.update.useMutation();
 
   const [open, setOpen] = useState(false);
-  const [descripcion, setDecripcion] = useState("");
-  const [detalle, setDetalle] = useState("");
-  const [usesCamera, setUsesCamera] = useState(false);
+  const [descripcion, setDecripcion] = useState(paso?.description || "");
+  const [detalle, setDetalle] = useState(paso?.detalle || "");
+  const [usesCamera, setUsesCamera] = useState(paso?.useCamera || false);
   const router = useRouter();
 
-
-async function handleCreate() {
-    try {
-        await createPaso({
-          description: descripcion,
-          detalle: detalle,
-        useCamera: usesCamera
-        });
-
-        toast.success("Paso creada correctamente");
-        router.refresh();
-        setOpen(false);
-    } catch (e) {
-        console.log(e);
+  useEffect(() => {
+    if (paso) {
+      setDecripcion(paso.description ?? "");
+      setDetalle(paso.detalle ?? "");
+      setUsesCamera(paso.useCamera ?? false);
     }
-}
+  }, [paso]);
+
+  async function handleSave() {
+    try {
+      if (paso) {
+        await updatePaso({ Id: paso.id, description: descripcion, detalle, useCamera: usesCamera });
+        toast.success("Paso actualizado correctamente");
+      } else {
+        await createPaso({ description: descripcion, detalle, useCamera: usesCamera });
+        toast.success("Paso creado correctamente");
+      }
+      router.refresh();
+      setOpen(false);
+    } catch (e) {
+      console.error(e);
+      toast.error("Error al guardar el paso");
+    }
+  }
 
   return (
     <>
       <Button onClick={() => setOpen(true)}>
-        <PlusCircleIcon className="mr-2" size={20} />
-        Agregar paso
+        {paso ? (
+          <>
+            <Edit3Icon className="mr-2" size={20} />
+            Editar paso
+          </>
+        ) : (
+          <>
+            <PlusCircleIcon className="mr-2" size={20} />
+            Agregar paso
+          </>
+        )}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Agregar nuevo paso</DialogTitle>
+            <DialogTitle>{paso ? "Editar paso" : "Agregar nuevo paso"}</DialogTitle>
           </DialogHeader>
-        <div>
+          <div>
             <Label htmlFor="descripcion">Descripcion del paso</Label>
             <Input
               id="descripcion"
@@ -65,8 +89,8 @@ async function handleCreate() {
               value={descripcion}
               onChange={(e) => setDecripcion(e.target.value)}
             />
-        </div>
-        <div>
+          </div>
+          <div>
             <Label htmlFor="detalles">Detalles del paso</Label>
             <Input
               id="detalles"
@@ -74,17 +98,17 @@ async function handleCreate() {
               value={detalle}
               onChange={(e) => setDetalle(e.target.value)}
             />
-        </div>
-        <div>
-            <Label htmlFor="detalles">Se debe usar la camara en este paso?</Label><br/>
-            <Checkbox checked={usesCamera} onClick={()=>setUsesCamera(!usesCamera)} />
-        </div>
+          </div>
+          <div>
+            <Label htmlFor="usesCamera">Se debe usar la camara en este paso?</Label><br />
+            <Checkbox checked={usesCamera} onClick={() => setUsesCamera(!usesCamera)} />
+          </div>
           <DialogFooter>
-            <Button disabled={isPending} onClick={handleCreate}>
-              {isPending && (
+            <Button disabled={isCreating || isUpdating} onClick={handleSave}>
+              {(isCreating || isUpdating) && (
                 <Loader2Icon className="mr-2 animate-spin" size={20} />
               )}
-              Agregar paso
+              {paso ? "Actualizar paso" : "Agregar paso"}
             </Button>
           </DialogFooter>
         </DialogContent>
