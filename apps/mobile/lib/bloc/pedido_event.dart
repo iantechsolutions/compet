@@ -37,3 +37,12 @@ class AddPedido extends PedidoEvent {
   @override
   List<Object> get props => [pedido];
 }
+
+class EditPedido extends PedidoEvent {
+  const EditPedido({required this.pedido});
+
+  final Map<String, dynamic> pedido;
+
+  @override
+  List<Object> get props => [pedido];
+}

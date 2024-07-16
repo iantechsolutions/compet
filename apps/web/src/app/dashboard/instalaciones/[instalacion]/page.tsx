@@ -86,7 +86,7 @@ export default function Page() {
                         {instalacion?.Codigo_de_barras && (
                             <div className="flex flex-col justify-center mr-48">
                                 <h1 className="text-2xl font-bold mb-4">Codigo QR</h1>
-                                <div className="border border-black p-3 flex flex-col items-center mt-6">
+                                <div className="p-3 flex flex-col items-center mt-6">
                                     <BarcodeComponent key={instalacion?.Id} id={instalacion?.Codigo_de_barras} />
                                 </div>
                             </div>

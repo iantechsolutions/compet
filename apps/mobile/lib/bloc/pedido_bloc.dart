@@ -31,6 +31,10 @@ class PedidoBloc extends Bloc<PedidoEvent, PedidoState> {
         print('Fetched pedido: ${pedido?.id}');
         emit(pedido != null ? PedidoFetched(pedido: pedido) : PedidoNotFound());
       }
+      if (event is EditPedido) {
+        print('Editing instalacion...');
+        await _editPedido(event.pedido);
+      }
     });
   }
 
@@ -68,6 +72,26 @@ class PedidoBloc extends Bloc<PedidoEvent, PedidoState> {
     } else {
       // If the server returns an unsuccessful response code, throw an exception.
       throw Exception('Failed to load pedido');
+    }
+  }
+
+  Future<void> _editPedido(Map<String, dynamic> pedido) async {
+    String? accessToken = await storage.read(key: "credenciales");
+    var coso = jsonEncode(pedido);
+    final response = await http.put(
+      Uri.parse('$_baseUrl/pedidos/update/' + pedido['Id']),
+      body: coso,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer $accessToken"
+      },
+    );
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> map = json.decode(response.body);
+    } else {
+      // If the server returns an unsuccessful response code, throw an exception.
+      throw Exception('Failed to update instalacion');
     }
   }
 }

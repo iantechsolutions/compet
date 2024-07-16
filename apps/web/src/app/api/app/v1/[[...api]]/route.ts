@@ -255,22 +255,33 @@ app.delete('/pedidos/delete/:Id', async (c) => {
 });
 
 app.put('/pedidos/update/:Id', async (c) => {
-   
-    const db = await api.pedidos.get({
-        Id: c.req.param('Id')
-    });
-    if(db?.cliente != null  && db.Fecha_de_creacion != null && db.Estado != undefined)
-        {
-    await api.pedidos.update({
-        Id: db.Id,
-        Cliente: db.Cliente,
-        FechaCreacion: db.Fecha_de_creacion.getTime(),
-        Estado: db.Estado,
-
-    })
-        return c.json(db)
+    const Id = c.req.param('Id'); // Step 1: Extract the Id from URL parameters.
+    const body = await c.req.json(); // Step 2: Parse the request body.
+    // Step 3: Check if the instalacion with the given Id exists.
+    const db = await api.pedidos.get({ Id });
+    if (!db) {
+        return c.json({ error: "Pedido not found" }, 404);
     }
+
+    // Step 4: Update the instalacion with new values.
+    const updated = await api.pedidos.update({
+        Id: db.Id,
+        Cliente: body.Cliente ?? db.Cliente,
+        Estado: body.Estado ?? db.Estado,
+        Fecha_de_aprobacion: (body.Fecha_de_aprobacion ? new Date(body.Fecha_de_aprobacion).getTime() : db.Fecha_de_aprobacion?.getTime()) ?? 0,
+        FechaCreacion: (body.Fecha_de_creacion ? new Date(body.Fecha_de_creacion).getTime() : db.Fecha_de_creacion?.getTime()) ?? 0,
+        Fecha_de_envio: (body.Fecha_de_envio ? new Date(body.Fecha_de_envio).getTime() : db.Fecha_de_envio?.getTime()) ?? 0,
+    });
+
+    // Step 5: Return a success response.
+    return c.json(updated);
 });
+
+
+// update: publicProcedure.input(z.object({Id:z.string(),FechaCreacion: z.number(),Fecha_de_aprobacion: z.number().optional()
+//     ,Fecha_de_envio: z.number().optional(),Estado: z.string(),Cliente: z.string()})).mutation(async ({ ctx, input }) => {
+
+
 
 app.post('/pedidos/post', async (c) => {
     const result = await api.pedidos.create({

@@ -44,7 +44,7 @@ export function AddPedidoDialog() {
   const router = useRouter();
   const { data: clientes } = api.clientes.list.useQuery(undefined)
   const { data: productos } = api.productos.list.useQuery(undefined)
-
+  const productosConCategoria = productos?.filter((producto) => producto.tipoDeInstalacion !== null);
   const handleClienteChange = (value : any) => {
     console.log(value);
     setCliente(value);

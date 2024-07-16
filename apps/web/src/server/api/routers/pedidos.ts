@@ -55,7 +55,7 @@ export const pedidosRouter = createTRPCRouter({
 
     update: publicProcedure.input(z.object({Id:z.string(),FechaCreacion: z.number(),Fecha_de_aprobacion: z.number().optional()
       ,Fecha_de_envio: z.number().optional(),Estado: z.string(),Cliente: z.string()})).mutation(async ({ ctx, input }) => {
-      await db
+      const updated = await db
         .update(pedidos)
         .set({
           Cliente: input.Cliente,
@@ -70,7 +70,8 @@ export const pedidosRouter = createTRPCRouter({
               ? new Date(input.Fecha_de_envio)
               : undefined,
         })
-        .where(eq(pedidos.Id, input.Id));
+        .where(eq(pedidos.Id, input.Id)).returning();
+        return updated;
     }),
 
   delete: publicProcedure

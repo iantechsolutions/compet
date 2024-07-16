@@ -64,37 +64,41 @@ class PedidosScreenState extends State<PedidosScreen> {
                     // uses the default value
                     return null;
                   },
-                  children: state.pedidoes.map((cliente) => [
-                        ShadTableCell(
-                            child: Text(
-                                cliente?.clienteObj?.nombre ??
-                                    "Cliente no encontrado",
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w700,
-                                ))),
-                        ShadTableCell(
-                            child: Text(cliente?.estado ?? "",
-                                style: const TextStyle(color: Colors.black))),
-                        ShadTableCell(
-                          child: IconButton(
-                            icon: const Icon(Icons
-                                .barcode_reader), // replace with your barcode icon
-                            color: Colors.black,
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => RegisterPedidoScreen(
-                                    pedido: cliente,
-                                    productos: cliente?.productos,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      ]));
+                  children: state.pedidoes
+                      .where((element) => element?.estado != "Enviado")
+                      .map((cliente) => [
+                            ShadTableCell(
+                                child: Text(
+                                    cliente?.clienteObj?.nombre ??
+                                        "Cliente no encontrado",
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w700,
+                                    ))),
+                            ShadTableCell(
+                                child: Text(cliente?.estado ?? "",
+                                    style:
+                                        const TextStyle(color: Colors.black))),
+                            ShadTableCell(
+                              child: IconButton(
+                                icon: const Icon(Icons
+                                    .barcode_reader), // replace with your barcode icon
+                                color: Colors.black,
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          RegisterPedidoScreen(
+                                        pedido: cliente,
+                                        productos: cliente?.productos,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
+                          ]));
             } else {
               return Center(
                 child: SizedBox(
