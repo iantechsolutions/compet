@@ -1,8 +1,9 @@
 "use client";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
+import utc from "dayjs/plugin/utc";
 import React, { useState, useEffect } from "react";
-import { Loader2Icon, PlusCircleIcon, Edit3Icon, SendToBack } from "lucide-react";
+import { Loader2Icon, PlusCircleIcon, Edit3Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
@@ -19,7 +20,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
-
+dayjs.extend(utc);
+dayjs.locale("es");
 type EmpalmistaType = RouterOutputs['empalmistas']['list'][number];
 
 interface AddEmpalmistaDialogProps {
@@ -29,11 +31,11 @@ interface AddEmpalmistaDialogProps {
 export function AddEmpalmistaDialog({ empalmista }: AddEmpalmistaDialogProps) {
   const { mutateAsync: createEmpalmista, isPending: isCreating } = api.empalmistas.create.useMutation();
   const { mutateAsync: updateEmpalmista, isPending: isUpdating } = api.empalmistas.update.useMutation();
-  const [popover1Open, setPopover1Open] = useState(false);
   const [name, setName] = useState(empalmista?.Nombre || "");
   const [DNI, setDNI] = useState(empalmista?.DNI || "");
-  const [BirthDate, setBirthDate] = useState(empalmista?.BirthDate || new Date ());
+  const [BirthDate, setBirthDate] = useState<Date | undefined>(empalmista?.BirthDate || undefined);
   const [open, setOpen] = useState(false);
+  const [popover1Open, setPopover1Open] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -44,17 +46,13 @@ export function AddEmpalmistaDialog({ empalmista }: AddEmpalmistaDialogProps) {
     }
   }, [empalmista]);
 
-  async function setFechaNacimiento(e: any) {
-    setBirthDate(e);
-    setPopover1Open(false);
-  }
   async function handleSave() {
     try {
       if (empalmista) {
-        await updateEmpalmista({ Id: empalmista.Id, name, DNI, BirthDate });
+        await updateEmpalmista({ Id: empalmista.Id, name, DNI, BirthDate: BirthDate });
         toast.success("Empalmista actualizado correctamente");
       } else {
-        await createEmpalmista({ name, DNI, BirthDate });
+        await createEmpalmista({ name, DNI, BirthDate:BirthDate });
         toast.success("Empalmista creado correctamente");
       }
       router.refresh();
@@ -106,36 +104,56 @@ export function AddEmpalmistaDialog({ empalmista }: AddEmpalmistaDialogProps) {
           <div>
           <Label>Fecha de nacimiento</Label>
           <br />
+          {/* <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-[280px] justify-start text-left font-normal",
+                  !BirthDate && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {BirthDate ? dayjs(BirthDate).format("D [de] MMMM [de] YYYY") : <span>Seleccione una fecha</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={BirthDate}
+                onSelect={setBirthDate}
+              />
+            </PopoverContent>
+          </Popover> */}
           <Popover open={popover1Open} onOpenChange={setPopover1Open}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-[240px] border-green-300 pl-3 text-left font-normal focus-visible:ring-green-400",
-                    !BirthDate && "text-muted-foreground"
-                  )}>
-                  <p>
-                    {BirthDate ? (
-                      dayjs(BirthDate).format("D [de] MMMM [de] YYYY")
-                    ) : (
-                      <span>Seleccione una fecha</span>
-                    )}
-                  </p>
-                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={
-                    BirthDate ? new Date(BirthDate) : undefined
-                  }
-                  onSelect={(e) => setFechaNacimiento(e)}
-                  disabled={(date: Date) => date < new Date()}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+                <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-[240px] pl-3 text-left font-normal",
+                        !BirthDate && "text-muted-foreground"
+                      )}
+                    >
+                      <p>
+                        {BirthDate ? (
+                          dayjs.utc(BirthDate).format("D [de] MMMM [de] YYYY")
+                        ) : (
+                          <span>Escoga una fecha</span>
+                        )}
+                      </p>
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={BirthDate ? new Date(BirthDate) : undefined}
+                    onSelect={(e)=>setBirthDate(e)}
+                    disabled={(date: Date) => date < new Date("1900-01-01")}
+                    
+                  />
+                </PopoverContent>
+              </Popover>
           </div>
           <DialogFooter>
             <Button disabled={isCreating || isUpdating} onClick={handleSave}>

@@ -9,6 +9,7 @@ export const BarcodeComponent: React.FC<BarcodeComponentProps> = ({ id }) => {
   const { inputRef } = useBarcode({
     value: id,
     options:{
+        format: "CODE128",
         width: 2,
         height:100,
         background: 'transparent',

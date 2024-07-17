@@ -45,14 +45,18 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
 
       if (res is String && res != "-1" && res != result) {
         TextEditingController loteController = TextEditingController();
+        String result = "";
         if (true) {
           showDialog(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('Ingresar NroLote'),
+                title: const Text('Ingresar Nro de Lote'),
                 content: TextField(
                   controller: loteController,
+                  onChanged: (value) {
+                    result = value;
+                  },
                 ),
                 actions: <Widget>[
                   TextButton(
@@ -73,7 +77,7 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
                         "Cliente": widget.pedido?.cliente,
                         "Codigo_de_barras": res,
                         "tipoInstalacion": product?.tipoInstalacion,
-                        "NroLote": loteController.text,
+                        "NroLoteArticulo": result,
                       }));
                       productUpdateado = updateCantScaneada(product!);
 
@@ -133,31 +137,41 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
             fontSize: 16.0);
         return;
       }
+      String texto =
+          ("Cantidad restante: ${productUpdateado!.cantidad - (productUpdateado!.cantidadScaneada)}");
       print("ACAAAAAA");
-      print(productUpdateado);
+      print(texto);
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(productUpdateado!.nombre),
-            content: Text(
-                'Cantidad restante: ${productUpdateado!.cantidad - productUpdateado!.cantidadScaneada}'),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Abrir scanner'),
-                onPressed: () {
-                  setState(() async {
-                    productUpdateado = await openScanner(product);
-                  });
-                },
-              ),
-              TextButton(
-                child: const Text('Cerrar'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                title: Text(productUpdateado!.nombre),
+                content: Text(texto),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('Abrir scanner'),
+                    onPressed: () async {
+                      productUpdateado = await openScanner(product);
+                      setState(() {
+                        texto =
+                            "Cantidad restante: ${productUpdateado!.cantidad - productUpdateado!.cantidadScaneada - 1}";
+                        print("cambio");
+                        print(texto);
+                      });
+                    },
+                  ),
+                  TextButton(
+                    child: const Text('Cerrar'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
           );
         },
       );

@@ -6,7 +6,7 @@ import { empalmistas } from "~/server/db/schema";
 
 export const empalmistasRouter = createTRPCRouter({
   create: publicProcedure
-    .input(z.object({ name: z.string().min(1), DNI: z.string(), BirthDate : z.date() }))
+    .input(z.object({ name: z.string().min(1), DNI: z.string(), BirthDate : z.date().optional() }))
     .mutation(async ({ ctx, input }) => {
       // simulate a slow db call
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -36,7 +36,7 @@ export const empalmistasRouter = createTRPCRouter({
       return channel;
     }),
 
-    update: publicProcedure.input(z.object({Id:z.string(), name: z.string().min(1), DNI: z.string(), BirthDate : z.date() })).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({Id:z.string(), name: z.string().min(1), DNI: z.string(), BirthDate : z.date().optional() })).mutation(async ({ ctx, input }) => {
       await db
         .update(empalmistas)
         .set({

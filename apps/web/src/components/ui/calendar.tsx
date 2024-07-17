@@ -1,13 +1,13 @@
-"use client";
+"use client"
 
-import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
-import { es } from "date-fns/locale";
-import type * as React from "react";
-import { DayPicker } from "react-day-picker";
-import { buttonVariants } from "~/components/ui/button";
-import { cn } from "~/lib/utils";
-
-export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+import * as React from "react"
+import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons"
+import { DayPicker } from "react-day-picker"
+import { es } from "date-fns/locale"
+import { cn } from "~/lib/utils"  
+import { buttonVariants } from "~/components/ui/button"
+import "react-day-picker/dist/style.css";
+export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
 function Calendar({
   className,
@@ -18,22 +18,32 @@ function Calendar({
   return (
     <DayPicker
       locale={es}
+      showOutsideDays={showOutsideDays}
       captionLayout="dropdown-buttons"
       fromYear={1900}
-      toYear={2030}
-      showOutsideDays={showOutsideDays}
+      toYear={2100}
       className={cn("p-3", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
-        caption: "flex justify-between pt-1 relative items-center gap-2 px-2",
-        caption_label: "text-sm font-medium capitalize",
+        caption: "flex justify-center pt-1 relative items-center text-md",
+        // caption_dropdowns: "flex justify-between gap-6",
         caption_dropdowns: "flex justify-center gap-2",
+        caption_label: "text-sm font-medium capitalize hidden",
+        dropdown_month: "p-2",
+        dropdown_icon: "hidden",
+        // dropdown_month: "pr-2",
+        dropdown_year: "p-2",
+        dropdown:"p-2",
+        
+        // caption_label: "text-sm font-medium",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
           "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
         ),
+        nav_button_previous: "absolute left-1",
+        nav_button_next: "absolute right-1",
         table: "w-full border-collapse space-y-1",
         head_row: "flex",
         head_cell:
@@ -68,8 +78,8 @@ function Calendar({
       }}
       {...props}
     />
-  );
+  )
 }
-Calendar.displayName = "Calendar";
+Calendar.displayName = "Calendar"
 
-export { Calendar };
+export { Calendar }

@@ -97,7 +97,22 @@ export default function Page() {
                         <div id="map" ref={mapRef} style={{ width: '100%', height: '400px' }}></div>
                     </div> */}
                 </div>
-
+                <h2 className="text-xl font-bold mb-4">Informacion del producto</h2>
+                <div className="">
+                    <p className="mb-2"><strong>Nombre:</strong> {instalacion?.productoPedido?.Nombre}</p>
+                    <p className="mb-2"><strong>Descripcion:</strong> {instalacion?.productoPedido?.Descripcion}</p>
+                    { instalacion?.productoPedido?.tipoInstalacion && 
+                    <>
+                    <p className="mb-2"><strong>Categoria:</strong> {instalacion?.tipoInstalacion?.description}</p>
+                    <p className="mb-2"><strong>Pasos:</strong></p>
+                    <ul>
+                        {instalacion?.tipoInstalacion?.pasoCriticoTotipoInstalacion?.map((e) => (
+                            <li key={e.pasoCriticoData?.id}>-{e.pasoCriticoData?.description}</li>
+                        ))}
+                    </ul>
+                    </>
+                    }
+                </div>
                 <h2 className="text-xl font-bold mb-4">Imágenes</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {instalacion?.fotos?.map((e) => (
