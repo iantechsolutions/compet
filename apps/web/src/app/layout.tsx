@@ -16,6 +16,7 @@ import {
     UserRound,
     UsersRoundIcon,
   } from "lucide-react";
+import { Toaster } from 'sonner'
 // import { useUserInfo } from '../components/auth-provider/auth-provider-client'
 const inter = Inter({
     subsets: ['latin'],
@@ -45,6 +46,7 @@ export default function RootLayout({
                         >
                             <div className='pl-64 pt-11'>
                                 {children}
+                                <Toaster></Toaster>
                             </div>
                         </Header>
                         <div className='fixed top-16 bottom-0 left-0 flex flex-col gap-2 p-2 pr-6 shadow-xl sm:flex h-full'>

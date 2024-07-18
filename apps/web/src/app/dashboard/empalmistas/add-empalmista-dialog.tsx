@@ -48,11 +48,12 @@ export function AddEmpalmistaDialog({ empalmista }: AddEmpalmistaDialogProps) {
 
   async function handleSave() {
     try {
+      console.log("BirthDate", BirthDate);
       if (empalmista) {
-        await updateEmpalmista({ Id: empalmista.Id, name, DNI, BirthDate: BirthDate });
+        await updateEmpalmista({ Id: empalmista.Id, name, DNI, BirthDate: BirthDate?.getTime() });
         toast.success("Empalmista actualizado correctamente");
       } else {
-        await createEmpalmista({ name, DNI, BirthDate:BirthDate });
+        await createEmpalmista({ name, DNI, BirthDate:BirthDate?.getTime() });
         toast.success("Empalmista creado correctamente");
       }
       router.refresh();
@@ -148,7 +149,9 @@ export function AddEmpalmistaDialog({ empalmista }: AddEmpalmistaDialogProps) {
                   <Calendar
                     mode="single"
                     selected={BirthDate ? new Date(BirthDate) : undefined}
-                    onSelect={(e)=>setBirthDate(e)}
+                    onSelect={(e)=>{
+                      setBirthDate(e);
+                    }}
                     disabled={(date: Date) => date < new Date("1900-01-01")}
                     
                   />
