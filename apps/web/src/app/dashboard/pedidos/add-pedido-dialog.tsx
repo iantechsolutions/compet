@@ -155,7 +155,8 @@ export function AddPedidoDialog() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {productos?.map((producto) => (
+                {productos?.filter(x=>(x.tipoDeInstalacion?.pasoCriticoTotipoInstalacion?.length ?? 0) > 0)
+                .map((producto) => (
                     <TableRow key={producto.Id}>
                         <TableCell>{producto.Nombre}</TableCell>
                         <TableCell>{producto.Descripcion}</TableCell>

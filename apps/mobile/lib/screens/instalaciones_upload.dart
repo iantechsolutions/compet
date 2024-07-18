@@ -282,10 +282,8 @@ class InstalacionCompletadaScreen extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                int count = 0;
-                Navigator.popUntil(context, (route) {
-                  return count++ == 2;
-                });
+                Navigator.popUntil(context, (route) => route.isFirst);
+                Navigator.pushNamed(context, "/uploadScreen");
               },
               child: const Text('Registrar otra'),
             ),

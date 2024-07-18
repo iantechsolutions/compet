@@ -29,7 +29,12 @@ export const productosRouter = createTRPCRouter({
   list: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.productos.findMany({
       with:{
-        tipoDeInstalacion:true
+        tipoDeInstalacion:{
+          with:{
+            pasoCriticoTotipoInstalacion:true
+          
+          }
+        }
       },
     });
   }),

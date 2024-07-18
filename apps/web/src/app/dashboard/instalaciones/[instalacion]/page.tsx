@@ -55,6 +55,7 @@ export default function Page() {
             NroLoteArticulo: instalacion?.NroLoteArticulo ?? "",
         });
         toast.success(`Instalación ${estado.toLowerCase()} con éxito`);
+        router.refresh();
     };
 
     const mapRef = useRef(null);
