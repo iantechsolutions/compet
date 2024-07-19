@@ -447,7 +447,7 @@ app.put('/empalmistas/update/:Id', async (c) => {
         Id: db.Id,
         name: db.Nombre,
         DNI: db.DNI ?? "",
-        BirthDate: db.BirthDate ?? new Date(),
+        BirthDate: db.BirthDate?.getTime() ?? new Date().getTime(),
     })
         return c.json(db)
     }
@@ -457,7 +457,7 @@ app.post('/empalmistas/post', async (c) => {
     const result = await api.empalmistas.create({
         name: "",
         DNI: "",
-        BirthDate: new Date(),
+        BirthDate: new Date().getDate(),
     });
     return c.json("Succesful")
 });
