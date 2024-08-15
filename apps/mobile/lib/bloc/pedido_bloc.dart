@@ -44,6 +44,7 @@ class PedidoBloc extends Bloc<PedidoEvent, PedidoState> {
       Uri.parse('$_baseUrl/pedidos'),
       headers: <String, String>{'Authorization': "Bearer $accessToken" ?? ""},
     );
+    print("get pedidos");
     print('$_baseUrl/pedidos');
     print(accessToken);
     if (response.statusCode == 200) {

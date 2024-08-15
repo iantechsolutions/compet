@@ -75,7 +75,7 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
       return instalacion;
     } else {
       // If the server returns an unsuccessful response code, throw an exception.
-      throw Exception('Failed to load pedidos');
+      throw Exception('Failed to load instalacion');
     }
     // Fetch data from API
   }
