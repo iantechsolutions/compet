@@ -41,7 +41,7 @@ class PedidosScreenState extends State<PedidosScreen> {
               return ShadTable.list(
                   header: const [
                     ShadTableCell.header(
-                        child: Text('Cliente',
+                        child: Text('Nro de pedido',
                             style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.w700,
@@ -69,8 +69,7 @@ class PedidosScreenState extends State<PedidosScreen> {
                       .map((cliente) => [
                             ShadTableCell(
                                 child: Text(
-                                    cliente?.clienteObj?.nombre ??
-                                        "Cliente no encontrado",
+                                    "N° " + (cliente?.numero.toString() ?? "0"),
                                     style: const TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w700,

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { db } from "~/server/db";
-import { asc, eq } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { clientes, empalmistas, pedidos, productos } from "~/server/db/schema";
 import { date } from "drizzle-orm/mysql-core";
@@ -13,6 +13,13 @@ export const pedidosRouter = createTRPCRouter({
       await new Promise((resolve) => setTimeout(resolve, 1000))
       const fechaAprobacion = input.Fecha_de_aprobacion !== undefined ? new Date(input.Fecha_de_aprobacion) : undefined;
       const FechaEnvio = input.Fecha_de_envio !== undefined ? new Date(input.Fecha_de_envio) : undefined;
+      const anterior = await ctx.db.query.pedidos.findMany({
+        orderBy: [desc(pedidos.Numero)],
+      });
+      let numero = 1
+      if (anterior){
+        numero = anterior[0]?.Numero ?? 0 + 1
+      }
       const result = await ctx.db.insert(pedidos).values(
         {
           Cliente: input.Cliente,
@@ -20,7 +27,7 @@ export const pedidosRouter = createTRPCRouter({
           Fecha_de_aprobacion: fechaAprobacion,
           Fecha_de_creacion: new Date(input.FechaCreacion),
           Fecha_de_envio: FechaEnvio,
-
+          Numero: numero,
         }
       ).returning()
       return result;

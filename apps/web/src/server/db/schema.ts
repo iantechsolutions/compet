@@ -170,7 +170,8 @@ export const instalacionesRelations = relations(
         Fecha_de_creacion: int('FechaCreacion', { mode: 'timestamp' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
         Fecha_de_aprobacion: int('FechaAprobacion', { mode: 'timestamp' }),
         Fecha_de_envio:int('FechaEnvio', { mode: 'timestamp' }),
-        Estado: text('Estado').notNull(),
+        Estado: text('Estado').notNull(), 
+        Numero: int("Numero").default(0),
         Cliente: text('Cliente').notNull().references(()=>clientes.Id)
     }
 )

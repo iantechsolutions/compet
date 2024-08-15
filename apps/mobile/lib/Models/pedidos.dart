@@ -13,6 +13,7 @@ class Pedido extends Equatable {
   final DateTime? fechaDeEnvio;
   final String estado;
   final String cliente;
+  int? numero;
   Cliente? clienteObj;
   List<ProductoPedido>? productos;
 
@@ -23,6 +24,7 @@ class Pedido extends Equatable {
     required this.fechaDeCreacion,
     required this.estado,
     required this.cliente,
+    this.numero,
     this.clienteObj,
     this.productos,
   });
@@ -38,6 +40,7 @@ class Pedido extends Equatable {
             : null,
         estado: json["Estado"],
         cliente: json["Cliente"],
+        numero: json["Numero"],
         clienteObj:
             json["cliente"] != null ? Cliente.fromJson(json["cliente"]) : null,
         productos: json["productos"] != null && json["productos"].length > 0
