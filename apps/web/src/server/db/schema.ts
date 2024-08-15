@@ -90,6 +90,7 @@ export const fotos = createTable(
         Instalacion: text('Instalacion').notNull().references(()=>instalaciones.Id),
         lat: real('lat'),
         long: real('long'),
+        pasoId: text('pasoId', { length: 255 }),
     },
     (example) => ({
         imagesIndex: index('images_idx').on(example.Instalacion),
@@ -100,6 +101,10 @@ export const fotosRelation = relations(fotos, ({ one }) => ({
   post: one(instalaciones, {
     fields: [fotos.Instalacion],
     references: [instalaciones.Id],
+  }),
+  pasoData: one(pasoCritico, {
+    fields: [fotos.pasoId],
+    references: [pasoCritico.id],
   }),
 }));
 

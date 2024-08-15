@@ -9,6 +9,7 @@ class Foto extends Equatable {
   final String instalacion;
   final double? lat;
   final double? long;
+  final String? pasoId;
 
   const Foto({
     this.id,
@@ -16,6 +17,7 @@ class Foto extends Equatable {
     required this.instalacion,
     required this.lat,
     required this.long,
+    required this.pasoId,
   });
 
   factory Foto.fromJson(Map<String, dynamic> json) => Foto(
@@ -24,6 +26,7 @@ class Foto extends Equatable {
         instalacion: json["Instalacion"],
         lat: json["lat"],
         long: json["long"],
+        pasoId: json["PasoId"],
       );
 
   // Added toJson method

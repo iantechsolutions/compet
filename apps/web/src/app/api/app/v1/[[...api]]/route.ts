@@ -411,7 +411,7 @@ app.post('/fotos/post', async (c) => {
         Link: "",
         Instalacion: "",
         lat: 0,
-        long: 0
+        long: 0,
     });
     return c.json("Succesful")
 });
@@ -586,6 +586,7 @@ app.post('/instalaciones/upload',async (c)=>{
         Link: uploaded.data?.url ?? "error",
         lat: body.lat,
         long: body.long,
+        pasoId: body.pasoId
     })
     console.log(foto);
     console.log(uploaded.data)

@@ -132,6 +132,8 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
               id: "",
               lat: ubi.latitude,
               long: ubi.longitude,
+              pasoId: widget.instalacion.tipoInstalacionData
+                  ?.pasoCriticoTotipoInstalacion?[currentStep].pasoCriticoId,
             );
             print("instalacionId");
             print(widget.instalacion.id);
