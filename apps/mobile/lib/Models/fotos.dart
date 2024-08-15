@@ -36,6 +36,7 @@ class Foto extends Equatable {
         "Instalacion": instalacion,
         "lat": lat,
         "long": long,
+        "pasoId": pasoId,
       };
 
   @override

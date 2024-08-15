@@ -2,6 +2,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
 import { Barcode } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Button } from "~/components/ui/button";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -115,7 +116,41 @@ export default function Page() {
                     }
                 </div>
                 <h2 className="text-xl font-bold mb-4">Imágenes</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+                <Tabs defaultValue={instalacion?.tipoInstalacion?.pasoCriticoTotipoInstalacion? instalacion?.tipoInstalacion?.pasoCriticoTotipoInstalacion[0]?.pasoCritico : null}>
+                    <TabsList
+                    className="max-w-full overflow-ellipsis"
+                    >
+                        {instalacion?.tipoInstalacion?.pasoCriticoTotipoInstalacion?.map((e) => (
+                        <TabsTrigger
+                            key={e.pasoCriticoData?.id}
+                            value={e.pasoCriticoData?.id}
+                            className="data-[state=active]:bg-[#71EBD4]"
+                            >
+                            {e.pasoCriticoData?.description}
+                        </TabsTrigger>
+                        ))}
+                    </TabsList>
+                    {instalacion?.tipoInstalacion?.pasoCriticoTotipoInstalacion?.map((e) => (
+                        <TabsContent key={e.pasoCriticoData?.id} value={e.pasoCriticoData?.id}>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {instalacion?.fotos?.filter((f) => f.pasoId === e.pasoCritico).map((f) => (
+                                    <img
+                                        key={f.Link}
+                                        src={f.Link ?? ""}
+                                        alt="Instalación"
+                                        className="w-full h-48 object-cover rounded"
+                                    />
+                                ))}
+                            </div>
+                        </TabsContent>
+                    ))}
+                    {/* <TabsContent value="conditional">
+                    </TabsContent>
+                    <TabsContent value="perAge">
+                    </TabsContent> */}
+                </Tabs>
+                {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {instalacion?.fotos?.map((e) => (
                         <img
                             key={e.Link}
@@ -124,7 +159,7 @@ export default function Page() {
                             className="w-full h-48 object-cover rounded"
                         />
                     ))}
-                </div>
+                </div> */}
                 
                 {instalacion?.lat && instalacion?.long && (
                     <div className="mt-4">

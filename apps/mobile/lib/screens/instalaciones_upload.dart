@@ -121,6 +121,8 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
         onStepContinue: () async {
           Position ubi = await _determinePosition();
           print("se activa");
+          print(widget.instalacion.tipoInstalacionData
+              ?.pasoCriticoTotipoInstalacion?[currentStep].pasoCriticoId);
           final isLastStep = currentStep == getcosos().length - 1;
           String? accessToken = await storage.read(key: "credenciales");
           images.map((e) async {
@@ -135,10 +137,21 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
               pasoId: widget.instalacion.tipoInstalacionData
                   ?.pasoCriticoTotipoInstalacion?[currentStep].pasoCriticoId,
             );
+            Foto fotoTemp = Foto(
+              link: "base64",
+              instalacion: widget.instalacion.id ?? "",
+              id: "",
+              lat: ubi.latitude,
+              long: ubi.longitude,
+              pasoId: widget.instalacion.tipoInstalacionData
+                  ?.pasoCriticoTotipoInstalacion?[currentStep].pasoCriticoId,
+            );
             print("instalacionId");
             print(widget.instalacion.id);
-            print("base64");
-            print(base64.substring(0, 100) + "...");
+            print("fototemp");
+            print(fotoTemp.toJson());
+            // print(base64.substring(0, 100) + "...");
+
             final response = await http.post(
               Uri.parse('$_baseUrl/instalaciones/upload'),
               headers: <String, String>{'Authorization': "Bearer $accessToken"},
