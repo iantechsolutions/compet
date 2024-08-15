@@ -580,7 +580,7 @@ app.post('/instalaciones/upload',async (c)=>{
     })
     console.log("uploaded");
     console.log(uploaded);
-    console.log(body.instalacion);
+    console.log(body);
     const foto = await api.fotos.create({
         Instalacion: body.Instalacion,
         Link: uploaded.data?.url ?? "error",

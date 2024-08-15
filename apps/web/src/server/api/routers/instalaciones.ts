@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { db } from "~/server/db";
-import { and, asc, eq, not } from "drizzle-orm";
+import { and, asc, eq, not, or } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
   clientes,
@@ -83,7 +83,7 @@ export const instalacionesRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       const channel = await db.query.instalaciones.findFirst({
-        where: and(eq(instalaciones.Codigo_de_barras, input.barcode),not(eq(instalaciones.Estado,"Completada"))),
+        where: and(eq(instalaciones.Codigo_de_barras, input.barcode),or(eq(instalaciones.Estado,"En progreso"),eq(instalaciones.Estado,"Pendiente"))),
         with: {
           empalmista: true,
           pedido: {
