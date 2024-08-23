@@ -13,12 +13,21 @@ export const pedidosRouter = createTRPCRouter({
       await new Promise((resolve) => setTimeout(resolve, 1000))
       const fechaAprobacion = input.Fecha_de_aprobacion !== undefined ? new Date(input.Fecha_de_aprobacion) : undefined;
       const FechaEnvio = input.Fecha_de_envio !== undefined ? new Date(input.Fecha_de_envio) : undefined;
+      
       const anterior = await ctx.db.query.pedidos.findMany({
         orderBy: [desc(pedidos.Numero)],
       });
+
+      console.log("anterior");
+      console.log(anterior[0]);
+      console.log(anterior[0]?.Numero);
       let numero = 1
+      console.log(numero);
       if (anterior){
-        numero = anterior[0]?.Numero ?? 0 + 1
+        console.log("pre" + (anterior[0]?.Numero ?? 0));
+        console.log("+1 " + (anterior[0]?.Numero ?? 0) +1);
+        numero = (anterior[0]?.Numero ?? 0) + 1
+        console.log(numero);
       }
       const result = await ctx.db.insert(pedidos).values(
         {

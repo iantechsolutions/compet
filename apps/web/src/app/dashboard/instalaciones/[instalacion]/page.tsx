@@ -117,7 +117,7 @@ export default function Page() {
                 </div>
                 <h2 className="text-xl font-bold mb-4">Imágenes</h2>
 
-                <Tabs defaultValue={instalacion?.tipoInstalacion?.pasoCriticoTotipoInstalacion? instalacion?.tipoInstalacion?.pasoCriticoTotipoInstalacion[0]?.pasoCritico : null}>
+                <Tabs defaultValue={instalacion?.tipoInstalacion?.pasoCriticoTotipoInstalacion? instalacion?.tipoInstalacion?.pasoCriticoTotipoInstalacion[0]?.pasoCritico : undefined}>
                     <TabsList
                     className="max-w-full overflow-ellipsis"
                     >
