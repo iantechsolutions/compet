@@ -72,8 +72,8 @@ async function handleCreate() {
               FechaAlta: new Date().getTime(),
               Estado: "Pendiente",
               Producto_pedido: producto.Id,
-              Codigo_de_barras: "",
-              tipoInstalacionId: "",
+              Codigo_de_barras: lastBarcode?.toString(),
+              tipoInstalacionId: producto.tipoInstalacion ?? "",
               NroLoteArticulo: "",
             });
           })
