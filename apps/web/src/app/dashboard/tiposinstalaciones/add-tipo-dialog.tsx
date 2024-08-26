@@ -26,6 +26,7 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { api } from "~/trpc/react";
 import { RouterOutputs } from "~/server/api/root";
+import { int } from "drizzle-orm/mysql-core";
 
 type EmpalmistaType = RouterOutputs['tipoInstalaciones']['list'][number];
 interface pasoType {
@@ -138,13 +139,13 @@ export function AddTipoInstalacionDialog({ tipoInstalacion }: AddEmpalmistaDialo
       }
 
       // Create new relations
-      selectedPasos.forEach(async (pasoId) => {
+      for (let i = 0; i < selectedPasos.length; i++) {
         await createRelacion({
-          pasoCritico: pasoId.id,
+          pasoCritico: selectedPasos[i]?.id ?? "",
           tipoInstalacion: tipoInstalacion?.id ?? "",
+          number: i,
         });
-      });
-
+      }
       toast.success("Categoria creada correctamente");
       router.refresh();
       setOpen(false);

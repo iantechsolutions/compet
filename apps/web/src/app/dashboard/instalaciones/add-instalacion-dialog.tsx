@@ -19,9 +19,11 @@ import { Label } from "~/components/ui/label";
 import { api } from "~/trpc/react";
 
 export function AddInstalacionDialog() {
+  const {data: generatedBarcodes} = api.generatedBarcodes.list.useQuery();
   const { mutateAsync: createInstalacion, isPending } =
     api.instalaciones.create.useMutation();
-
+  const { mutateAsync: createBarcode} =
+    api.generatedBarcodes.add.useMutation();
   const [name, setName] = useState("");
   const [open, setOpen] = useState(false);
   const [empalmista, setEmpalmista] = useState("");
@@ -50,18 +52,34 @@ async function handleCreate() {
         const clienteT = clientes?.find((categoriaT) => categoriaT.Id === cliente);
         const pedidoT = pedidos?.find((categoriaT) => categoriaT.Id === producto);
         const empalmistaT = empalmistas?.find((categoriaT) => categoriaT.Id === empalmista);
-
-        await createInstalacion({
-          Cliente:clienteT!.Id,
-          Pedido:pedidoT!.Id,
-          Empalmista: empalmistaT!.Id,
-          FechaAlta: new Date().getTime(),
-          Estado: "Pendiente",
-          Producto_pedido: "",
-          Codigo_de_barras: "",
-          tipoInstalacionId: "",
-          NroLoteArticulo: "",
-        });
+        console.log("cliente",clienteT);
+        console.log("pedido",pedidoT);
+        console.log("empalmista",empalmistaT);
+        let lastBarcode = 0;
+        if(generatedBarcodes){
+          const lastBarcode = generatedBarcodes[generatedBarcodes.length - 1];
+        }
+        if(pedidoT?.productos){
+          pedidoT.productos.forEach(async (producto) => {
+            lastBarcode +=1 ;
+            await createBarcode({
+              Codigo: lastBarcode?.toString(),
+            })
+            await createInstalacion({
+              Cliente:clienteT?.Id ?? "",
+              Pedido:pedidoT?.Id ?? "",
+              Empalmista: empalmistaT?.Id ?? "",
+              FechaAlta: new Date().getTime(),
+              Estado: "Pendiente",
+              Producto_pedido: producto.Id,
+              Codigo_de_barras: "",
+              tipoInstalacionId: "",
+              NroLoteArticulo: "",
+            });
+          })
+        }
+        
+        
 
         toast.success("Instalacion creada correctamente");
         router.refresh();
@@ -111,11 +129,20 @@ async function handleCreate() {
             placeholder="Producto"
             options={pedidos?.map((pedido) => ({
               value: pedido.Id.toString(),
-              label: pedido.cliente.Nombre || "",
+              label: pedido.Numero?.toString() || "",
             })) ?? []}
             onSelectionChange={handleProductoChange}
           />
         </div>
+        <Input>
+            <Label>Codigo de barras</Label>
+            <input
+              type="number"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Codigo de barras"
+              />
+        </Input>
           <DialogFooter>
             <Button disabled={isPending} onClick={handleCreate}>
               {isPending && (

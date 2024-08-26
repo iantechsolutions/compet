@@ -6,7 +6,7 @@ import { pasoCriticoTotipoInstalacion } from '~/server/db/schema'
 
 export const pasocriticototipoinstalacionRouter = createTRPCRouter({
   create: protectedProcedure
-  .input(z.object( {tipoInstalacion: z.string(), pasoCritico: z.string() }))
+  .input(z.object( {tipoInstalacion: z.string(), pasoCritico: z.string(), number: z.number().optional() }))
   .mutation(async ({ input }) => {
     
     await db.insert(pasoCriticoTotipoInstalacion).values(input);

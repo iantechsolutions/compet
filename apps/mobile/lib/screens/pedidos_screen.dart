@@ -37,7 +37,9 @@ class PedidosScreenState extends State<PedidosScreen> {
             );
           }
           if (state is PedidosFetched) {
-            if (state.pedidoes.isNotEmpty) {
+            if (state.pedidoes
+                .where((element) => element?.estado != "Enviado")
+                .isNotEmpty) {
               return ShadTable.list(
                   header: const [
                     ShadTableCell.header(
@@ -109,11 +111,10 @@ class PedidosScreenState extends State<PedidosScreen> {
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.restaurant),
                           SizedBox(
                             width: 8,
                           ),
-                          Text("Add Cliente")
+                          Text("No hay pedidos pendientes")
                         ],
                       )),
                 ),

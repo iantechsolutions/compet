@@ -84,7 +84,9 @@ const InstalacionTabs: React.FC<InstalacionTabsProps> = ({ instalaciones }) => {
                         leading={
                             <BarcodeComponent key={instalacion.Codigo_de_barras} id={instalacion.Codigo_de_barras ?? "placeholder"}/>
                         }
-                        title={instalacion.cliente?.Nombre}
+                        title={instalacion.numero}
+                        subtitle={instalacion.cliente?.Nombre}
+                        
                         href={`/dashboard/instalaciones/${instalacion.Id}`}
                     />
                 ))}

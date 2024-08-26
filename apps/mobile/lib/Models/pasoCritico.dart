@@ -31,6 +31,9 @@ class pasoCritico extends Equatable {
       print('Parsing usesCamera...');
       final usesCamera = json["useCamera"];
       print(usesCamera);
+      print('Parsing number...');
+      final number = json["number"];
+      print(number);
       return pasoCritico(
           id: id,
           detalle: detalle,

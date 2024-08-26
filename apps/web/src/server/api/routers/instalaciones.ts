@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { db } from "~/server/db";
-import { and, asc, eq, not, or } from "drizzle-orm";
+import { and, asc, desc, eq, not, or } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
   clientes,
@@ -16,9 +16,17 @@ export const instalacionesRouter = createTRPCRouter({
     // Producto: z.number(),Empalmista: z.number(),FechaAlta: z.number(),FechaInst: z.number(),FechaVeri: z.number(),Estado: z.number(),Cliente: z.number()
     create: publicProcedure.input(z.object({ Pedido: z.string(),tipoInstalacionId: z.string(),Empalmista: z.string(),FechaAlta: z.number(),FechaInst: z.number().optional(),FechaVeri: z.number().optional(),Estado: z.string(),Cliente: z.string(),Producto_pedido:z.string(),Codigo_de_barras:z.string(), lat: z.number().optional(), long: z.number().optional(), Comentario:z.string().optional(),NroLoteArticulo: z.string() })).mutation(async ({ ctx, input }) => {
         // simulate a slow db call
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+        const anterior = await ctx.db.query.instalaciones.findMany({
+          orderBy: [desc(instalaciones.numero)],
+        });
+        let numero = 1
+        if (anterior){
+          numero = (anterior[0]?.numero ?? 0) + 1
+        }
         await ctx.db.insert(instalaciones).values(
-            input
+        {
+          ...input, numero
+        }
         )
     }),
 

@@ -15,7 +15,7 @@ export const CodigoBarrasRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       // simulate a slow db call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
 
       await ctx.db.insert(CodigoBarras).values({
         descripcion: input.descripcion,

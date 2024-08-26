@@ -48,8 +48,8 @@ class HomeScreenState extends State<InstalacionsScreen> {
               return ShadTable.list(
                   header: const [
                     ShadTableCell.header(
-                        child:
-                            Text('Id', style: TextStyle(color: Colors.black))),
+                        child: Text('Numero',
+                            style: TextStyle(color: Colors.black))),
                     ShadTableCell.header(
                         child: Text('Fecha de alta',
                             style: TextStyle(color: Colors.black))),
@@ -67,7 +67,7 @@ class HomeScreenState extends State<InstalacionsScreen> {
                   },
                   children: state.instalaciones.map((instalacion) => [
                         ShadTableCell(
-                            child: Text("1",
+                            child: Text(instalacion.numero.toString(),
                                 style: const TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w700,

@@ -196,6 +196,8 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
     print("aca");
     print(widget.instalacion);
     print(widget.instalacion.tipoInstalacionData);
+    widget.instalacion.tipoInstalacionData?.pasoCriticoTotipoInstalacion
+        ?.sort((a, b) => (a.number?.compareTo(b.number ?? 0)) ?? 0);
     List<AStep>? steps = widget
         .instalacion.tipoInstalacionData?.pasoCriticoTotipoInstalacion
         ?.map((pasocritico) {

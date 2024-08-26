@@ -10,12 +10,14 @@ class pasoTipoRelation extends Equatable {
   final String? id;
   final String? TipoInstalacion;
   final String? pasoCriticoId;
+  final int? number;
   pasoCritico? pasoCriticoData;
 
   pasoTipoRelation({
     required this.id,
     required this.TipoInstalacion,
     required this.pasoCriticoId,
+    required this.number,
     this.pasoCriticoData,
   });
 
@@ -28,11 +30,13 @@ class pasoTipoRelation extends Equatable {
           ? pasoCritico
               .fromJson(json["pasoCriticoData"] as Map<String, dynamic>)
           : null;
+      final number = json["number"];
       return pasoTipoRelation(
           id: id,
           TipoInstalacion: tipoInstalacion,
           pasoCriticoId: pasoCriticoId,
-          pasoCriticoData: pasoCriticoData);
+          pasoCriticoData: pasoCriticoData,
+          number: number);
     } catch (e) {
       print('Error occurred while parsing JSON: $e');
       print('JSON data: $json');
@@ -46,5 +50,6 @@ class pasoTipoRelation extends Equatable {
         TipoInstalacion,
         pasoCriticoId,
         pasoCriticoData,
+        number,
       ];
 }

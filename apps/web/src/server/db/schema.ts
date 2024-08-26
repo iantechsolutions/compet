@@ -129,6 +129,7 @@ export const instalaciones = createTable(
         tipoInstalacionId: text('tipoInstalacion',{ length: 255 }),
         lat: real('lat'),
         long: real('long'),
+        numero: int('numero').notNull(),
     },
     (example) => ({
         instalationsIndex: index('instalations_idx').on(example.Pedido),
@@ -343,6 +344,7 @@ export const pasoCriticoTotipoInstalacion = createTable("pasoCriticoTotipoInstal
     .$default(()=>createId()),
     tipoInstalacion: text("tipoInstalacion", { length: 255 }).notNull().references(()=>tipoInstalaciones.id),
     pasoCritico: text("pasoCritico", { length: 255 }).notNull().references(()=>pasoCritico.id),
+    number: int("number"),
 });
 
 export const pasoCriticoTotipoInstalacionRelations = relations(pasoCriticoTotipoInstalacion, ({ one }) => ({

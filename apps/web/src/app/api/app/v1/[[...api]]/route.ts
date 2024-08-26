@@ -314,9 +314,7 @@ app.delete('/instalaciones/delete/:Id', async (c) => {
 });
 
 app.post('/instalaciones/post', async (c) => {
-    console.log(1);
     const body = await c.req.json();
-    console.log("body",body);
     const result = await api.instalaciones.create({
         Cliente: body.Cliente?.toString() ?? "",
         Empalmista: body.Empalmista?.toString() ?? "",
