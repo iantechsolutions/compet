@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mplikelanding/bloc/instalacion_bloc.dart';
 import 'package:mplikelanding/bloc/pedido_bloc.dart';
 import 'package:mplikelanding/components/critic_steps/qr_scan.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import '../Models/instalaciones.dart';
 import '../Models/pedidos.dart';
@@ -199,7 +200,9 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
                 );
               },
             ),
-      floatingActionButton: ShadButton(
+      floatingActionButton: ShadButton.outline(
+        backgroundColor: Colors.white,
+        borderRadius: BorderRadius.circular(15.0),
         onPressed: () {
           pedidoBloc.add(EditPedido(pedido: {
             "Id": widget.pedido?.id,
@@ -227,7 +230,10 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
             });
           });
         },
-        text: const Text('Enviar Pedido'),
+        text: const Text(
+          'Enviar Pedido',
+          style: TextStyle(color: Colors.black),
+        ),
       ),
     );
   }

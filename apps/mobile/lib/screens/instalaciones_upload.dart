@@ -110,7 +110,7 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
                 child: const Text('Continuar'),
               ),
               TextButton(
-                onPressed: details.onStepCancel,
+                onPressed: () => Navigator.of(context).pop(),
                 child: const Text('Cancelar'),
               ),
             ],

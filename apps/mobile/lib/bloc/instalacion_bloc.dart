@@ -24,11 +24,24 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
         emit(InstalacionsFetched(instalaciones: instalacions));
       }
       if (event is DetailsInitial) {
-        print('Fetching instalacion details...');
-        Instalacion instalacion =
-            await _getInstalacionFromBarCode(event.barcode);
-        print('Fetched ${instalacion}');
-        emit(InstalacionFetched(instalacion: instalacion));
+        try {
+          print('Fetching instalacion details...');
+          print("acaca");
+          Instalacion? instalacion =
+              await _getInstalacionFromBarCode(event.barcode);
+          print('Fetched ${instalacion}');
+          print("aca");
+          print(instalacion);
+          if (instalacion != null) {
+            print("aca?");
+            emit(InstalacionFetched(instalacion: instalacion));
+          } else {
+            print("emiteado");
+            emit(InstalacionNotFound());
+          }
+        } catch (e) {
+          emit(InstalacionNotFound());
+        }
       }
       if (event is AddInstalacion) {
         print('Creating instalacion...');
@@ -59,7 +72,7 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
     // Fetch data from API
   }
 
-  Future<Instalacion> _getInstalacionFromBarCode(String barcode) async {
+  Future<Instalacion?> _getInstalacionFromBarCode(String barcode) async {
     String? accessToken = await storage.read(key: "credenciales");
     final response = await http.get(
       Uri.parse('$_baseUrl/instalaciones/barcode/$barcode'),
@@ -70,12 +83,18 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
       Map<String, dynamic> map = json.decode(response.body);
 
       // Iterable list = ;
-      Instalacion instalacion = Instalacion.fromJson(map['instalaciones']);
+      print("parsea");
+      try {
+        Instalacion instalacion = Instalacion.fromJson(map['instalaciones']);
 
-      return instalacion;
+        return instalacion;
+      } catch (e) {
+        return null;
+      }
     } else {
       // If the server returns an unsuccessful response code, throw an exception.
-      throw Exception('Failed to load instalacion');
+      // throw Exception('Failed to load instalacion');
+      return null;
     }
     // Fetch data from API
   }
