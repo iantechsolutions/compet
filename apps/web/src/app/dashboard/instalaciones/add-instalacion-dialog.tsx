@@ -49,6 +49,7 @@ const { data: pedidos } = api.pedidos.list.useQuery(undefined);
 
 async function handleCreate() {
     try {
+        console.log("generatedBarcodes",generatedBarcodes);
         const clienteT = clientes?.find((categoriaT) => categoriaT.Id === cliente);
         const pedidoT = pedidos?.find((categoriaT) => categoriaT.Id === producto);
         const empalmistaT = empalmistas?.find((categoriaT) => categoriaT.Id === empalmista);
@@ -57,9 +58,10 @@ async function handleCreate() {
         console.log("empalmista",empalmistaT);
         let lastBarcode = 0;
         if(generatedBarcodes){
-          const lastBarcode = generatedBarcodes[generatedBarcodes.length - 1];
+          lastBarcode = Number(generatedBarcodes[generatedBarcodes.length - 1]?.Codigo) ?? 0;
         }
         if(pedidoT?.productos){
+          console.log("lastBarcode",lastBarcode);
           pedidoT.productos.forEach(async (producto) => {
             lastBarcode +=1 ;
             await createBarcode({
@@ -134,15 +136,13 @@ async function handleCreate() {
             onSelectionChange={handleProductoChange}
           />
         </div>
-        <Input>
-            <Label>Codigo de barras</Label>
-            <input
-              type="number"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Codigo de barras"
-              />
-        </Input>
+        {/* <Input
+          type="number"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Codigo de barras"
+          >
+        </Input> */}
           <DialogFooter>
             <Button disabled={isPending} onClick={handleCreate}>
               {isPending && (
