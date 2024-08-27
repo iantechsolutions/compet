@@ -40,12 +40,11 @@ interface AddEmpalmistaDialogProps {
 }
 
 export function AddTipoInstalacionDialog({ tipoInstalacion }: AddEmpalmistaDialogProps) {
-  const { mutateAsync: createTipoInstalacion } = api.tipoInstalaciones.create.useMutation();
-  const { mutateAsync: updateTipoInstalacion } = api.tipoInstalaciones.update.useMutation();
+  const { mutateAsync: createTipoInstalacion, isPending: isCreating} = api.tipoInstalaciones.create.useMutation();
+  const { mutateAsync: updateTipoInstalacion, isPending: isUpdating } = api.tipoInstalaciones.update.useMutation();
   const { mutateAsync: createRelacion} = api.pasoCriticoTotipoInstalacion.create.useMutation();
   console.log("tipoInstalacion",tipoInstalacion);
   const [open, setOpen] = useState(false);
-  const [isPending, setIsPending] = useState(false);
   const [descripcion, setDescripcion] = useState("");
   const [selectedPasos, setSelectedPasos] = useState<readonly pasoType[]>([]);
   const router = useRouter();
@@ -112,10 +111,17 @@ export function AddTipoInstalacionDialog({ tipoInstalacion }: AddEmpalmistaDialo
   const SortableSelect = SortableContainer(Select) as React.ComponentClass<
     Props<pasoType, true> & SortableContainerProps
   >;
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
 
   async function handleSave() {
+    if(isButtonDisabled || isCreating || isUpdating){
+      return null
+     }
+     setIsButtonDisabled(true);
+
     try {
-      setIsPending(true);
+      
       if (tipoInstalacion) {
         await updateTipoInstalacion({
           Id: tipoInstalacion.id,
@@ -152,9 +158,11 @@ export function AddTipoInstalacionDialog({ tipoInstalacion }: AddEmpalmistaDialo
       router.refresh();
       setOpen(false);
     } catch (e) {
-      setIsPending(false);
+      
       console.error(e);
       toast.error("Error al guardar categoria");
+    }finally {
+      setTimeout(() => setIsButtonDisabled(false), 1500);
     }
   }
 
@@ -214,8 +222,8 @@ export function AddTipoInstalacionDialog({ tipoInstalacion }: AddEmpalmistaDialo
             />
           </div>
           <DialogFooter>
-            <Button disabled={isPending} onClick={handleSave}>
-              {isPending && (
+            <Button disabled={isCreating || isUpdating || isButtonDisabled} onClick={handleSave}>
+              {isCreating || isUpdating || isButtonDisabled && (
                 <Loader2Icon className="mr-2 animate-spin" size={20} />
               )}
               {tipoInstalacion ? "Actualizar categoria" : "Agregar categoria"}

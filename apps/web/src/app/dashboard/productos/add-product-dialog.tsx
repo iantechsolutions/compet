@@ -56,7 +56,16 @@ export function AddProductoDialog({ product }: AddProductoDialogProps) {
     }
   }, [product]);
 
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
+
   async function handleSave() {
+   
+   if(isButtonDisabled || isCreating || isUpdating){
+    return null
+   }
+  setIsButtonDisabled(true);
+
     try {
       const categoriaItem = categorias?.find((categoriaT) => categoriaT.id === categoria);
 
@@ -81,12 +90,14 @@ export function AddProductoDialog({ product }: AddProductoDialogProps) {
         toast.success("Producto creado correctamente");
       }
       setCategoria("");
-
-      router.refresh();
       setOpen(false);
+      
+      router.refresh();
     } catch (e) {
       console.log(e);
       toast.error("Error al guardar producto");
+    }finally {
+      setTimeout(() => setIsButtonDisabled(false), 2000);
     }
   }
 
@@ -164,8 +175,8 @@ export function AddProductoDialog({ product }: AddProductoDialogProps) {
 
           </div>
           <DialogFooter>
-            <Button disabled={isCreating || isUpdating} onClick={handleSave}>
-              {(isCreating || isUpdating) && (
+            <Button disabled={isCreating || isUpdating || isButtonDisabled} onClick={handleSave}>
+              {(isCreating || isUpdating || isButtonDisabled) && (
                 <Loader2Icon className="mr-2 animate-spin" size={20} />
               )}
               {product ? "Actualizar producto" : "Agregar producto"}
