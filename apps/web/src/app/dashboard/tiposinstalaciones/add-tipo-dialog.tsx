@@ -42,9 +42,10 @@ interface AddEmpalmistaDialogProps {
 export function AddTipoInstalacionDialog({ tipoInstalacion }: AddEmpalmistaDialogProps) {
   const { mutateAsync: createTipoInstalacion } = api.tipoInstalaciones.create.useMutation();
   const { mutateAsync: updateTipoInstalacion } = api.tipoInstalaciones.update.useMutation();
-  const { mutateAsync: createRelacion, isPending } = api.pasoCriticoTotipoInstalacion.create.useMutation();
+  const { mutateAsync: createRelacion} = api.pasoCriticoTotipoInstalacion.create.useMutation();
   console.log("tipoInstalacion",tipoInstalacion);
   const [open, setOpen] = useState(false);
+  const [isPending, setIsPending] = useState(false);
   const [descripcion, setDescripcion] = useState("");
   const [selectedPasos, setSelectedPasos] = useState<readonly pasoType[]>([]);
   const router = useRouter();
@@ -114,6 +115,7 @@ export function AddTipoInstalacionDialog({ tipoInstalacion }: AddEmpalmistaDialo
 
   async function handleSave() {
     try {
+      setIsPending(true);
       if (tipoInstalacion) {
         await updateTipoInstalacion({
           Id: tipoInstalacion.id,
@@ -150,6 +152,7 @@ export function AddTipoInstalacionDialog({ tipoInstalacion }: AddEmpalmistaDialo
       router.refresh();
       setOpen(false);
     } catch (e) {
+      setIsPending(false);
       console.error(e);
       toast.error("Error al guardar categoria");
     }

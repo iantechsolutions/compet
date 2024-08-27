@@ -22,6 +22,7 @@ export function DeleteTipoInstalacionButton({ clientId }: DeleteTipoInstalacionB
       await deleteRelaciones({Id: clientId});
       await deleteInstalacionMethod({ Id: clientId });
       toast.success("Categoria eliminada correctamente");
+      setIsDialogOpen(false);
       router.refresh();
     } catch (e) {
       console.error(e);

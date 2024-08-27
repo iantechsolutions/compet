@@ -22,7 +22,7 @@ class Instalacion extends Equatable {
   final double? long;
   TipoInstalacion? tipoInstalacionData;
   final String? NroLoteArticulo;
-  final double? numero;
+  final int? numero;
 
   Instalacion({
     required this.id,
@@ -91,6 +91,7 @@ class Instalacion extends Equatable {
     } catch (e) {
       print('Error occurred while parsing JSON: $e');
       print('JSON data: $json');
+      print(json["numero"]);
       throw e;
     }
   }
