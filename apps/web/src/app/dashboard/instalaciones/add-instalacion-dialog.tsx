@@ -19,11 +19,8 @@ import { Label } from "~/components/ui/label";
 import { api } from "~/trpc/react";
 
 export function AddInstalacionDialog() {
-  const {data: generatedBarcodes} = api.generatedBarcodes.list.useQuery();
   const { mutateAsync: createInstalacion, isPending } =
-    api.instalaciones.create.useMutation();
-  const { mutateAsync: createBarcode} =
-    api.generatedBarcodes.add.useMutation();
+    api.instalaciones.createAssignBarcode.useMutation();
   const [name, setName] = useState("");
   const [open, setOpen] = useState(false);
   const [empalmista, setEmpalmista] = useState("");
@@ -60,24 +57,14 @@ async function handleCreate() {
 
   setIsButtonDisabled(true);
     try {
-        console.log("generatedBarcodes",generatedBarcodes);
         const clienteT = clientes?.find((categoriaT) => categoriaT.Id === cliente);
         const pedidoT = pedidos?.find((categoriaT) => categoriaT.Id === producto);
         const empalmistaT = empalmistas?.find((categoriaT) => categoriaT.Id === empalmista);
         console.log("cliente",clienteT);
         console.log("pedido",pedidoT);
         console.log("empalmista",empalmistaT);
-        let lastBarcode = 0;
-        if(generatedBarcodes){
-          lastBarcode = Number(generatedBarcodes[generatedBarcodes.length - 1]?.Codigo) ?? 0;
-        }
         if(pedidoT?.productos){
-          console.log("lastBarcode",lastBarcode);
           pedidoT.productos.forEach(async (producto) => {
-            lastBarcode +=1 ;
-            await createBarcode({
-              Codigo: lastBarcode?.toString(),
-            })
             await createInstalacion({
               Cliente:clienteT?.Id ?? "",
               Pedido:pedidoT?.Id ?? "",
@@ -85,7 +72,6 @@ async function handleCreate() {
               FechaAlta: new Date().getTime(),
               Estado: "Pendiente",
               Producto_pedido: producto.Id,
-              Codigo_de_barras: lastBarcode?.toString(),
               tipoInstalacionId: producto.tipoInstalacion ?? "",
               NroLoteArticulo: "",
             });
