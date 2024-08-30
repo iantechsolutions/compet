@@ -47,7 +47,7 @@ export default function Page() {
 
 
     const { mutateAsync: deleteInstalacion, isPending: isDeleating } = api.instalaciones.delete.useMutation();
-    const { mutateAsync: updateInstalacion, isPending: isUpdated } = api.instalaciones.update.useMutation();    
+    const { mutateAsync: updateInstalacion, isPending } = api.instalaciones.update.useMutation();    
    
     const [openUpdate, setOpenUpdate] = useState<boolean>(false)
     const [openDelete, setOpenDelete] = useState<boolean>(false)
@@ -69,8 +69,8 @@ export default function Page() {
             setComment(instalacion?.Comentario)
         }
     },[instalacion]);
-    const handleUpdate = (estado: string) => {
-        updateInstalacion({
+    const handleUpdate = async (estado: string)  => {
+        await updateInstalacion({
             Id: pathname?.toString()!,
             Estado: estado,
             Cliente: instalacion?.Cliente ?? "",
@@ -85,8 +85,9 @@ export default function Page() {
             Comentario: comment ?? "",
             NroLoteArticulo: instalacion?.NroLoteArticulo ?? "",
         });
-        toast.success(`Instalación ${estado.toLowerCase()} con éxito`);
         router.refresh();
+        toast.success(`Instalación ${estado.toLowerCase()} con éxito`);
+        
     };
 
 
@@ -280,14 +281,14 @@ async function handleDelete() {
                         />
                         <div className="flex space-x-4">
                             <Button 
-                            disabled={isUpdated}
+                            disabled={isPending}
                             onClick={() => handleUpdate("Aprobada")} className="bg-green-500 hover:bg-green-600 text-white">
-                                 {(isUpdated) && (
+                                 {(isPending) && (
                 <Loader2Icon className="mr-2 animate-spin" size={20} />
               )} Aprobar
                             </Button>
-                            <Button disabled={isUpdated} onClick={() => handleUpdate("Rechazada")} className="bg-red-500 hover:bg-red-600 text-white">
-                            {(isUpdated) && (
+                            <Button disabled={isPending} onClick={() => handleUpdate("Rechazada")} className="bg-red-500 hover:bg-red-600 text-white">
+                            {(isPending) && (
                 <Loader2Icon className="mr-2 animate-spin" size={20} />
               )}  Rechazar
                             </Button>
