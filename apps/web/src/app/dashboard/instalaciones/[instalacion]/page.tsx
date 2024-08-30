@@ -191,12 +191,15 @@ async function handleDelete() {
 
                  {/* JblpR_RHKujpdeLyi4air */}
                  {!instalacion?.tipoInstalacion ? (
-                     <div>
+                              
+                        <div className="w-1/3">
                                 <h1>No existe el tipo de instalacion</h1>
-
-                                <Button onClick={() => setOpenUpdate(true)}>Asignar tipo de instalacion</Button>
-                                <Button onClick={() => setOpenDelete(true)}>Eliminar instalacion</Button>
-                            </div>
+                                <br />
+                                <div className="flex justify-between">
+                                    <Button onClick={() => setOpenDelete(true)}>Eliminar instalacion</Button>
+                                    <Button onClick={() => setOpenUpdate(true)}>Asignar tipo de instalacion</Button>
+                                </div>
+                        </div>
                         ) : (
                             <div>
 
