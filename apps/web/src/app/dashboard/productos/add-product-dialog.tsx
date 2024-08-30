@@ -150,17 +150,7 @@ export function AddProductoDialog({ product }: AddProductoDialogProps) {
           </div> */}
           <div>
             <Label>Categoria de producto</Label><br/>
-            {/* <ComboboxDemo
-              title="Seleccionar categoria..."
-              placeholder="Categoria"
-              options={categorias?.map((categoria) => ({
-                value: categoria.id,
-                onChange: { handleCategoriaChange },
-                label: categoria.description || "",
-              })) ?? []}
-              onSelectionChange={handleCategoriaChange}
-              // selectedValue={categoria}
-            /> */}
+           
             <Select
               className="basic-single"
               classNamePrefix="select"

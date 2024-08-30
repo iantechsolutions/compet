@@ -16,7 +16,14 @@ export function DeleteTipoInstalacionButton({ clientId }: DeleteTipoInstalacionB
     const [isDialogOpen, setIsDialogOpen] = useState(false); 
   const router = useRouter();
   const { mutateAsync: deleteInstalacionMethod } = api.tipoInstalaciones.delete.useMutation();
+
+const {data:productos} = api.productos.getByInstalation.useQuery({instalacionId: clientId})
+
+const {data:instalaciones} = api.instalaciones.getByTipoInstalacion.useQuery({tipoId: clientId})
+
+
   const {mutateAsync: deleteRelaciones} = api.pasoCriticoTotipoInstalacion.deleteByTipoInstalacionId.useMutation();
+
   const deleteInstalacion = async () => {
     try {
       await deleteRelaciones({Id: clientId});
@@ -41,6 +48,22 @@ export function DeleteTipoInstalacionButton({ clientId }: DeleteTipoInstalacionB
             <DialogTitle>¿Estás seguro?</DialogTitle>
           </DialogHeader>
           <div>¿Seguro que quieres eliminar esta categoria?</div>
+          <div>Los siguientes productos no tendran tipo de instalacion</div>
+          <ul>
+            <h1>Productos</h1>
+          {productos && productos.map((prod) => 
+          { return(
+            <li key={prod.Id}>-{prod.Nombre}</li>
+           )}
+          )}
+            <h1>Instalaciones</h1>
+
+          {instalaciones && instalaciones.map((prod) => 
+          { return(
+            <li key={prod.Id}>-N° {prod.numero}</li>
+           )}
+          )}
+          </ul>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
               Cancelar
