@@ -44,7 +44,14 @@ const { data: empalmistas} = api.empalmistas.list.useQuery(undefined);
 const { data: clientes } = api.clientes.list.useQuery(undefined);
 const { data: pedidos } = api.pedidos.list.useQuery(undefined);
 
+const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
 async function handleCreate() {
+  if(isPending || isButtonDisabled){
+    return null
+  }
+
+  setIsButtonDisabled(true);
     try {
         const clienteT = clientes?.find((categoriaT) => categoriaT.Id === cliente);
         const pedidoT = pedidos?.find((categoriaT) => categoriaT.Id === producto);
@@ -69,11 +76,13 @@ async function handleCreate() {
         
         
 
+        setOpen(false);
         toast.success("Instalacion creada correctamente");
         router.refresh();
-        setOpen(false);
     } catch (e) {
         console.log(e);
+    } finally {
+      setTimeout(() => setIsButtonDisabled(false), 2000);
     }
 }
 
@@ -130,8 +139,8 @@ async function handleCreate() {
           >
         </Input> */}
           <DialogFooter>
-            <Button disabled={isPending} onClick={handleCreate}>
-              {isPending && (
+            <Button disabled={isPending || isButtonDisabled} onClick={handleCreate}>
+              {isPending || isButtonDisabled && (
                 <Loader2Icon className="mr-2 animate-spin" size={20} />
               )}
               Agregar instalacion

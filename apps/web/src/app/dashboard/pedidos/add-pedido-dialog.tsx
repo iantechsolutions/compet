@@ -60,8 +60,15 @@ export function AddPedidoDialog() {
       [productId]: count
     }));
   };
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   async function handleCreate() {
+    if(isButtonDisabled || isPending || isPendingProducto){
+      return null
+     }
+     setIsButtonDisabled(true);
+
+
     try {
       const idCliente = clientes?.find((producto) => producto.Id === cliente)?.Id;
       const result = await createPedido({
@@ -96,11 +103,14 @@ export function AddPedidoDialog() {
         //   Nombre:prod?.Nombre || "",
         // })
         }
+        setOpen(false);
       toast.success("Pedido creado correctamente");
       router.refresh();
-      setOpen(false);
     } catch (e) {
       console.log(e);
+    }
+    finally {
+      setTimeout(() => setIsButtonDisabled(false), 2000);
     }
   }
 
@@ -174,8 +184,8 @@ export function AddPedidoDialog() {
             </Table>
           </div>
           <DialogFooter>
-            <Button disabled={isPending || isPendingProducto} onClick={handleCreate}>
-              {(isPending || isPendingProducto) && (
+            <Button disabled={isPending || isPendingProducto || isButtonDisabled} onClick={handleCreate}>
+              {(isPending || isPendingProducto || isButtonDisabled) && (
                 <Loader2Icon className="mr-2 animate-spin" size={20} />
               )}
               Agregar pedido

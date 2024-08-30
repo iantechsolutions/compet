@@ -46,7 +46,16 @@ export function AddEmpalmistaDialog({ empalmista }: AddEmpalmistaDialogProps) {
     }
   }, [empalmista]);
 
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
   async function handleSave() {
+
+    if(isButtonDisabled || isCreating || isUpdating){
+      return null
+     }
+     setIsButtonDisabled(true);
+
+
     try {
       console.log("BirthDate", BirthDate);
       if (empalmista) {
@@ -61,7 +70,14 @@ export function AddEmpalmistaDialog({ empalmista }: AddEmpalmistaDialogProps) {
     } catch (e) {
       console.error(e);
       toast.error("Error al guardar empalmista");
+    }finally {
+      setTimeout(() => setIsButtonDisabled(false), 2000);
     }
+  }
+
+  async function FechasCreateEmpalmista(e: any) {
+    setBirthDate(e);
+    setPopover1Open(false);
   }
 
   return (
@@ -150,7 +166,7 @@ export function AddEmpalmistaDialog({ empalmista }: AddEmpalmistaDialogProps) {
                     mode="single"
                     selected={BirthDate ? new Date(BirthDate) : undefined}
                     onSelect={(e)=>{
-                      setBirthDate(e);
+                      FechasCreateEmpalmista(e);
                     }}
                     disabled={(date: Date) => date < new Date("1900-01-01")}
                     
@@ -159,8 +175,8 @@ export function AddEmpalmistaDialog({ empalmista }: AddEmpalmistaDialogProps) {
               </Popover>
           </div>
           <DialogFooter>
-            <Button disabled={isCreating || isUpdating} onClick={handleSave}>
-              {(isCreating || isUpdating) && (
+            <Button disabled={isCreating || isUpdating || isButtonDisabled} onClick={handleSave}>
+              {(isCreating || isUpdating || isButtonDisabled) && (
                 <Loader2Icon className="mr-2 animate-spin" size={20} />
               )}
               {empalmista ? "Actualizar empalmista" : "Agregar empalmista"}

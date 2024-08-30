@@ -40,7 +40,16 @@ export function AddClienteDialog({ client }: AddClienteDialogProps) {
 
   const router = useRouter();
 
+
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
+
   async function handleSave() {
+    if(isButtonDisabled || isCreating || isUpdating){
+      return null
+     }
+     setIsButtonDisabled(true);
+
     try {
       if (client) {
         await updateClient({
@@ -60,6 +69,9 @@ export function AddClienteDialog({ client }: AddClienteDialogProps) {
       setOpen(false);
     } catch (e) {
       console.log(e);
+    }
+    finally {
+      setTimeout(() => setIsButtonDisabled(false), 2000);
     }
   }
 
@@ -107,8 +119,8 @@ export function AddClienteDialog({ client }: AddClienteDialogProps) {
             />
           </div>
           <DialogFooter>
-            <Button disabled={isCreating || isUpdating} onClick={handleSave}>
-              {(isCreating || isUpdating) && (
+            <Button disabled={isCreating || isUpdating || isButtonDisabled} onClick={handleSave}>
+              {(isCreating || isUpdating || isButtonDisabled) && (
                 <Loader2Icon className="mr-2 animate-spin" size={20} />
               )}
               {client ? "Actualizar cliente" : "Agregar cliente"}

@@ -44,7 +44,16 @@ export function AddPasoDialog({ paso }: AddPasoDialogProps) {
     }
   }, [paso]);
 
+
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
+
   async function handleSave() {
+    if(isButtonDisabled || isCreating || isUpdating){
+      return null
+     }
+     setIsButtonDisabled(true);
+
     try {
       if (paso) {
         await updatePaso({ Id: paso.id, description: descripcion, detalle, useCamera: usesCamera });
@@ -58,6 +67,8 @@ export function AddPasoDialog({ paso }: AddPasoDialogProps) {
     } catch (e) {
       console.error(e);
       toast.error("Error al guardar el paso");
+    }finally {
+      setTimeout(() => setIsButtonDisabled(false), 1500);
     }
   }
 
@@ -104,8 +115,8 @@ export function AddPasoDialog({ paso }: AddPasoDialogProps) {
             <Checkbox checked={usesCamera} onClick={() => setUsesCamera(!usesCamera)} />
           </div>
           <DialogFooter>
-            <Button disabled={isCreating || isUpdating} onClick={handleSave}>
-              {(isCreating || isUpdating) && (
+            <Button disabled={isCreating || isUpdating || isButtonDisabled} onClick={handleSave}>
+              {(isCreating || isUpdating || isButtonDisabled) && (
                 <Loader2Icon className="mr-2 animate-spin" size={20} />
               )}
               {paso ? "Actualizar paso" : "Agregar paso"}
