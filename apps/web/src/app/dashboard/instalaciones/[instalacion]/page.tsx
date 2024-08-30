@@ -41,7 +41,7 @@ const dateToDMY = (date: Date | null | undefined) => {
 export default function Page() {
     const router = useRouter();
     const pathname = usePathname().split('/').pop();
-    const { data: instalacion, isLoading } = api.instalaciones.get.useQuery({ Id: pathname?.toString()! });
+    const { data: instalacion, isLoading, refetch  } = api.instalaciones.get.useQuery({ Id: pathname?.toString()! });
 
     const { data: categorias } = api.tipoInstalaciones.list.useQuery();
 
@@ -85,7 +85,7 @@ export default function Page() {
             Comentario: comment ?? "",
             NroLoteArticulo: instalacion?.NroLoteArticulo ?? "",
         });
-        router.refresh();
+        refetch()
         toast.success(`Instalación ${estado.toLowerCase()} con éxito`);
         
     };
