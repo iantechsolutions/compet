@@ -37,4 +37,11 @@ class InstalacionDeletionSuccess extends InstalacionState {}
 
 class InstalacionAdditionSuccess extends InstalacionState {}
 
-class InstalacionAdditionFailure extends InstalacionState {}
+class InstalacionAdditionFailure extends InstalacionState {
+  const InstalacionAdditionFailure({required this.error});
+
+  final String error;
+
+  @override
+  List<Object> get props => [error];
+}

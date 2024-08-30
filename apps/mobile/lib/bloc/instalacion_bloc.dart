@@ -45,7 +45,13 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
       }
       if (event is AddInstalacion) {
         print('Creating instalacion...');
-        await _createInstalacion(event.instalacion);
+        String? result = await _createInstalacion(event.instalacion);
+        if(result!=null){
+          emit(InstalacionAdditionFailure(error: result));
+        }
+        else{
+          emit(InstalacionAdditionSuccess());
+        }
       }
       if (event is EditInstalacion) {
         print('Editing instalacion...');
@@ -99,8 +105,10 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
     // Fetch data from API
   }
 
-  Future<void> _createInstalacion(Map<String, dynamic> instalacion) async {
+  Future<String?> _createInstalacion(Map<String, dynamic> instalacion) async {
     String? accessToken = await storage.read(key: "credenciales");
+    print("accessToken");
+    print(accessToken);
     var coso = jsonEncode(instalacion);
     print("aca no hay error");
     final response = await http.post(
@@ -113,17 +121,19 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
     );
     print("response");
     print(response.body);
+    print(response.body == '"Codigo en uso"');
+    print(response.body == '"Codigo no sistema"');
     if (response.statusCode == 200) {
-      if(response.body == "Codigo Usado"){
-        throw Exception("El Codigo de barras ya esta en uso");
+      if(response.body == '"Codigo Usado"'){
+        return ("El Codigo de barras ya esta en uso");
       }
-      else if (response.body == "Codigo no sistema"){
-        throw Exception("El Codigo de barras no existe en el sistema");
+      else if (response.body == '"Codigo no sistema"'){
+        return ("El Codigo de barras no existe en el sistema");
       }
       Map<String, dynamic> map = json.decode(response.body);
     } else {
       // If the server returns an unsuccessful response code, throw an exception.
-      throw Exception('Failed to create instalacion');
+      return ('Error al crear la instalacion');
     }
   }
 

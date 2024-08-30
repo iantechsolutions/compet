@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mplikelanding/bloc/instalacion_bloc.dart';
@@ -23,6 +25,8 @@ class RegisterPedidoScreen extends StatefulWidget {
 
 class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
   String result = "";
+  late StreamSubscription instalacionBlocSubscription;
+  ProductoPedido? productoActual = null;
   updateCantScaneada(ProductoPedido product) {
     print("updatea");
     setState(() {
@@ -34,9 +38,31 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
   @override
   Widget build(BuildContext context) {
     final instalacionBloc = BlocProvider.of<InstalacionBloc>(context);
-
+    instalacionBlocSubscription = instalacionBloc.stream.listen((state) {
+      if (state is InstalacionAdditionSuccess) {
+        Fluttertoast.showToast(
+            msg: "Instalacion creada correctamente",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        productoActual = updateCantScaneada(productoActual!);
+      }
+      if (state is InstalacionAdditionFailure){
+        Fluttertoast.showToast(
+            msg: state.error,
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
+    });
     openScanner(ProductoPedido? product) async {
-      var productUpdateado = product;
+      var productoActual = product;
       var res = await Navigator.push(
         context,
         MaterialPageRoute(
@@ -48,9 +74,9 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
         TextEditingController loteController = TextEditingController();
         String result = "";
 
-        if (true) {
           showDialog(
             context: context,
+            barrierDismissible: true,
             builder: (BuildContext context) {
               return AlertDialog(
                 title: const Text('Ingresar Nro de Lote'),
@@ -69,71 +95,37 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
                   ),
                   TextButton(
                     child: const Text('Guardar'),
-                    onPressed: () {
-                      try{
-                      instalacionBloc.add(AddInstalacion(instalacion: {
-                        "Pedido": widget.pedido?.id,
-                        "Empalmista": "RVYm3m9OoStGnokd6Tt5P",
-                        "Producto_pedido": product?.id,
-                        "Fecha_de_alta": DateTime.now().millisecondsSinceEpoch,
-                        "Estado": "Pendiente",
-                        "Cliente": widget.pedido?.cliente,
-                        "Codigo_de_barras": res,
-                        "tipoInstalacion": product?.tipoInstalacion,
-                        "NroLoteArticulo": result,
-                      }));
-                      }
-                      catch(e){
-                        print(e);
-                      }
-                      productUpdateado = updateCantScaneada(product!);
-
-                      Fluttertoast.showToast(
-                          msg: "Scan completado correctamente",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.green,
-                          textColor: Colors.white,
-                          fontSize: 16.0);
-                      Navigator.of(context).pop();
+                    onPressed: () async {
+                        instalacionBloc.add(AddInstalacion(instalacion: {
+                          "Pedido": widget.pedido?.id,
+                          "Empalmista": "RVYm3m9OoStGnokd6Tt5P",
+                          "Producto_pedido": product?.id,
+                          "Fecha_de_alta": DateTime.now().millisecondsSinceEpoch,
+                          "Estado": "Pendiente",
+                          "Cliente": widget.pedido?.cliente,
+                          "Codigo_de_barras": res,
+                          "tipoInstalacion": product?.tipoInstalacion,
+                          "NroLoteArticulo": result,
+                        }));
+                      // var coso = await instalacionBloc.;
+                      // await instalacionBloc.
+                      productoActual = updateCantScaneada(product!);
                     },
                   ),
                 ],
               );
             },
           );
-        } else {
-          Fluttertoast.showToast(
-              msg:
-                  "Este codigo de barras no pertenece a uno generado desde la pagina",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              fontSize: 16.0);
-        }
-      } else {
-        Fluttertoast.showToast(
-            msg: "Codigo de barra ya scaneado",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
-      }
+      } 
 
       setState(() {
         result = res;
       });
-      return productUpdateado;
     }
 
     void showProductDetails(ProductoPedido? product) {
-      var productUpdateado = product;
-      if (productUpdateado!.cantidad <= productUpdateado.cantidadScaneada) {
+      var productoActual = product;
+      if (productoActual!.cantidad <= productoActual.cantidadScaneada) {
         Fluttertoast.showToast(
             msg: "Ya se escanearon todas las unidades de este producto",
             toastLength: Toast.LENGTH_SHORT,
@@ -145,7 +137,7 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
         return;
       }
       String texto =
-          ("Cantidad restante: ${productUpdateado!.cantidad - (productUpdateado!.cantidadScaneada)}");
+          ("Cantidad restante: ${productoActual!.cantidad - (productoActual!.cantidadScaneada)}");
       print("ACAAAAAA");
       print(texto);
 
@@ -155,16 +147,17 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
           return StatefulBuilder(
             builder: (context, setState) {
               return AlertDialog(
-                title: Text(productUpdateado!.nombre),
+                title: Text(productoActual!.nombre),
                 content: Text(texto),
                 actions: <Widget>[
                   TextButton(
                     child: const Text('Abrir scanner'),
                     onPressed: () async {
-                      productUpdateado = await openScanner(product);
+                      productoActual = product;
+                      await openScanner(product);
                       setState(() {
                         texto =
-                            "Cantidad restante: ${productUpdateado!.cantidad - productUpdateado!.cantidadScaneada - 1}";
+                            "Cantidad restante: ${productoActual!.cantidad - productoActual!.cantidadScaneada - 1}";
                         print("cambio");
                         print(texto);
                       });
