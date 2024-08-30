@@ -20,6 +20,8 @@ class DetailsInitial extends InstalacionEvent {
 
 class RefreshInstalacions extends InstalacionEvent {}
 
+class StandByInstalacion extends InstalacionEvent {}
+
 class DeleteInstalacion extends InstalacionEvent {
   const DeleteInstalacion({required this.instalacion});
 

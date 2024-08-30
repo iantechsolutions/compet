@@ -23,6 +23,9 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
         print('Fetched ${instalacions.length} instalacions');
         emit(InstalacionsFetched(instalaciones: instalacions));
       }
+      if (event is StandByInstalacion){
+        emit(InstalacionInitial());
+      }
       if (event is DetailsInitial) {
         try {
           print('Fetching instalacion details...');
@@ -46,11 +49,12 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
       if (event is AddInstalacion) {
         print('Creating instalacion...');
         String? result = await _createInstalacion(event.instalacion);
-        if(result!=null){
-          emit(InstalacionAdditionFailure(error: result));
+        if(result == null){
+          emit(InstalacionAdditionSuccess());
+          
         }
         else{
-          emit(InstalacionAdditionSuccess());
+          emit(InstalacionAdditionFailure(error: result));
         }
       }
       if (event is EditInstalacion) {
@@ -107,7 +111,6 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
 
   Future<String?> _createInstalacion(Map<String, dynamic> instalacion) async {
     String? accessToken = await storage.read(key: "credenciales");
-    print("accessToken");
     print(accessToken);
     var coso = jsonEncode(instalacion);
     print("aca no hay error");
@@ -124,13 +127,13 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
     print(response.body == '"Codigo en uso"');
     print(response.body == '"Codigo no sistema"');
     if (response.statusCode == 200) {
-      if(response.body == '"Codigo Usado"'){
+      if(response.body == '"Codigo en uso"'){
         return ("El Codigo de barras ya esta en uso");
       }
       else if (response.body == '"Codigo no sistema"'){
         return ("El Codigo de barras no existe en el sistema");
       }
-      Map<String, dynamic> map = json.decode(response.body);
+      return null;
     } else {
       // If the server returns an unsuccessful response code, throw an exception.
       return ('Error al crear la instalacion');
