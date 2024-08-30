@@ -52,6 +52,20 @@ export const productosRouter = createTRPCRouter({
 
       return channel;
     }),
+    getByInstalation: publicProcedure
+    .input(
+      z.object({
+        instalacionId: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const channel = await db.query.productos.findMany({
+        where: eq(productos.tipoDeInstalacion_id, input.instalacionId),
+      });
+
+      return channel;
+    }),
+
 
     update: publicProcedure.input(z.object({Id:z.string(), name: z.string().min(1), description: z.string(), barcode: z.string(), categoria: z.string().nullable(), })).mutation(async ({ ctx, input }) => {
       if( input.categoria){

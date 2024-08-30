@@ -1,11 +1,12 @@
 "use client"
 import { usePathname, useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
-import { Barcode } from "lucide-react";
+import { Barcode, Loader2Icon } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Button } from "~/components/ui/button";
 import { toast } from "sonner";
 import Link from "next/link";
+import Select from 'react-select';
 import {
     Table,
     TableBody,
@@ -16,10 +17,18 @@ import {
     TableHeader,
     TableRow,
 } from "~/components/ui/table"
+import {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+  } from "~/components/ui/dialog";
 import { BarcodeComponent } from "~/components/barcodesvg";
 import { useState, useEffect, useRef } from "react";
 import GoogleMaps from "~/components/maps-widget";
 import path from "path";
+import { Label } from "~/components/ui/label";
 
 const dateToDMY = (date: Date | null | undefined) => {
     if (date) {
@@ -34,7 +43,26 @@ export default function Page() {
     const pathname = usePathname().split('/').pop();
     const { data: instalacion, isLoading } = api.instalaciones.get.useQuery({ Id: pathname?.toString()! });
 
+    const { data: categorias } = api.tipoInstalaciones.list.useQuery();
+
+
+    const { mutateAsync: deleteInstalacion, isPending: isDeleating } = api.instalaciones.delete.useMutation();
     const { mutateAsync: updateInstalacion } = api.instalaciones.update.useMutation();    
+   
+    const [openUpdate, setOpenUpdate] = useState<boolean>(false)
+    const [openDelete, setOpenDelete] = useState<boolean>(false)
+
+    const [categoria, setCategoria] = useState("")
+
+    const handleCategoriaChange = (value: any) => {
+        setCategoria(value.value);
+      };
+
+    const opciones:readonly any[] = categorias?.map((categoria) => ({
+        value: categoria.id,
+        label: categoria.description || "",
+      })) ?? [];
+
     const [comment, setComment] = useState(instalacion?.Comentario);
     useEffect(()=>{
         if(instalacion && instalacion?.Estado === "Aprobada" || instalacion?.Estado === "Rechazada"){
@@ -62,14 +90,52 @@ export default function Page() {
     };
 
 
-    console.log("tipo instalacion",instalacion)
-    console.log("tipo instalacion",pathname)
-
     const mapRef = useRef(null);
 
     if (isLoading) {
         return <p>Loading...</p>;
     }
+
+  
+
+    async function handleUpdateTipo() {
+    
+       try{
+
+           await updateInstalacion({
+               Id: pathname?.toString()!,
+               Cliente: instalacion?.Cliente ?? "",
+               Empalmista: instalacion?.Empalmista ?? "",
+               FechaAlta: instalacion?.Fecha_de_alta?.getTime() ?? 0,
+               FechaVeri: Date.now(),
+               FechaInst: Date.now(),
+               Pedido: instalacion?.Pedido ?? "",
+               Producto_pedido: instalacion?.Producto_pedido ?? "",
+               tipoInstalacion: categoria ?? "",
+               Codigo_de_barras: instalacion?.Codigo_de_barras ?? "",
+               Comentario: comment ?? "",
+               NroLoteArticulo: instalacion?.NroLoteArticulo ?? "",
+               Estado: ""
+            })
+            toast.success(`Instalación asignada con éxito`);
+            router.refresh();
+            setOpenUpdate(false)
+        }
+        catch{
+            toast.error("Ha ocurrido un error")
+        }
+
+
+    }
+
+async function handleDelete() {
+    
+    await deleteInstalacion({
+        Id: pathname?.toString()!
+    })
+    setOpenDelete(false)
+    router.push("/dashboard/instalaciones")
+}
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
@@ -100,6 +166,7 @@ export default function Page() {
                             </div>
                         )}
                         </div>
+                       
                     {/* </div>
                     <div>
                         <div id="map" ref={mapRef} style={{ width: '100%', height: '400px' }}></div>
@@ -121,14 +188,28 @@ export default function Page() {
                     </>
                     }
                 </div>
-                <h2 className="text-xl font-bold mb-4">Imágenes</h2>
 
-                <Tabs defaultValue={instalacion?.tipoInstalacion?.pasoCriticoTotipoInstalacion? instalacion?.tipoInstalacion?.pasoCriticoTotipoInstalacion[0]?.pasoCritico : undefined}>
+                 {/* JblpR_RHKujpdeLyi4air */}
+                 {!instalacion?.tipoInstalacion ? (
+                              
+                        <div className="w-1/3">
+                                <h1>No existe el tipo de instalacion</h1>
+                                <br />
+                                <div className="flex justify-between">
+                                    <Button onClick={() => setOpenDelete(true)}>Eliminar instalacion</Button>
+                                    <Button onClick={() => setOpenUpdate(true)}>Asignar tipo de instalacion</Button>
+                                </div>
+                        </div>
+                        ) : (
+                            <div>
+
+                            <h2 className="text-xl font-bold mb-4">Imágenes</h2>
+                            <Tabs defaultValue={instalacion?.tipoInstalacion?.pasoCriticoTotipoInstalacion? instalacion?.tipoInstalacion?.pasoCriticoTotipoInstalacion[0]?.pasoCritico : undefined}>
                     <TabsList
                     className="max-w-full overflow-ellipsis"
                     >
                         {instalacion?.tipoInstalacion?.pasoCriticoTotipoInstalacion?.map((e) => (
-                        <TabsTrigger
+                            <TabsTrigger
                             key={e.pasoCriticoData?.id}
                             value={e.pasoCriticoData?.id}
                             className="data-[state=active]:bg-[#71EBD4]"
@@ -142,10 +223,10 @@ export default function Page() {
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 {instalacion?.fotos?.filter((f) => f.pasoId === e.pasoCritico).map((f) => (
                                     <img
-                                        key={f.Link}
-                                        src={f.Link ?? ""}
-                                        alt="Instalación"
-                                        className="w-full h-48 object-cover rounded"
+                                    key={f.Link}
+                                    src={f.Link ?? ""}
+                                    alt="Instalación"
+                                    className="w-full h-48 object-cover rounded"
                                     />
                                 ))}
                             </div>
@@ -156,6 +237,9 @@ export default function Page() {
                     <TabsContent value="perAge">
                     </TabsContent> */}
                 </Tabs>
+                </div>
+                
+                    )}
                 {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {instalacion?.fotos?.map((e) => (
                         <img
@@ -204,6 +288,79 @@ export default function Page() {
                         </div>
                     </div>
                 )}
+
+
+
+
+
+<Dialog open={openDelete} onOpenChange={setOpenDelete}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>
+             Esta seguro que desea eliminar la instalacion?
+            </DialogTitle>
+          </DialogHeader>
+          <DialogFooter>
+          <Button onClick={()=> setOpenDelete(false)}>
+              {(isDeleating) && (
+                <Loader2Icon className="mr-2 animate-spin" size={20} />
+              )}
+             Cancelar
+            </Button>
+            <Button  onClick={handleDelete}>
+              {(isDeleating) && (
+                <Loader2Icon className="mr-2 animate-spin" size={20} />
+              )}
+             Eliminar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
+      <Dialog open={openUpdate} onOpenChange={setOpenUpdate}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>
+            Asigne el tipo de instalacion
+            </DialogTitle>
+          </DialogHeader>
+
+          <div>
+            <Label>Categoria de producto</Label><br/>
+            
+            <Select
+              className="basic-single"
+              classNamePrefix="select"
+              defaultValue={opciones.find((categoria) => categoria.value === instalacion?.tipoInstalacionId)}
+              isClearable={true}
+              isSearchable={true}
+              name="Categoria"
+              options={opciones}
+              onChange={handleCategoriaChange}
+            />
+
+
+          </div>
+
+
+
+          <DialogFooter>
+          <Button onClick={()=> setOpenUpdate(false)}>
+              {(isDeleating) && (
+                <Loader2Icon className="mr-2 animate-spin" size={20} />
+              )}
+             Cancelar
+            </Button>
+            <Button  onClick={handleUpdateTipo}>
+              {(isDeleating) && (
+                <Loader2Icon className="mr-2 animate-spin" size={20} />
+              )}
+             Aceptar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
             </div>
         </div>
     );
