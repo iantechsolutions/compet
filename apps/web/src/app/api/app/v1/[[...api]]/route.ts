@@ -315,6 +315,15 @@ app.delete('/instalaciones/delete/:Id', async (c) => {
 
 app.post('/instalaciones/post', async (c) => {
     const body = await c.req.json();
+    const instalaciones = await api.instalaciones.list();
+    const generatedBarcodes = await api.generatedBarcodes.list();
+    if(generatedBarcodes.filter((barcode) => barcode.Codigo === body.Codigo_de_barras).length > 0){
+        return c.json("Codigo no sistema");    
+    }
+    else if(instalaciones.filter((instalacion) => instalacion.Codigo_de_barras === body.Codigo_de_barras).length > 0){
+        return c.json("Codigo Usado");
+    }
+
     const result = await api.instalaciones.create({
         Cliente: body.Cliente?.toString() ?? "",
         Empalmista: body.Empalmista?.toString() ?? "",

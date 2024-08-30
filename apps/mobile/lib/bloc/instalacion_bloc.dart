@@ -102,6 +102,7 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
   Future<void> _createInstalacion(Map<String, dynamic> instalacion) async {
     String? accessToken = await storage.read(key: "credenciales");
     var coso = jsonEncode(instalacion);
+    print("aca no hay error");
     final response = await http.post(
       Uri.parse('$_baseUrl/instalaciones/post'),
       body: coso,
@@ -110,7 +111,15 @@ class InstalacionBloc extends Bloc<InstalacionEvent, InstalacionState> {
         'Authorization': "Bearer $accessToken"
       },
     );
+    print("response");
+    print(response.body);
     if (response.statusCode == 200) {
+      if(response.body == "Codigo Usado"){
+        throw Exception("El Codigo de barras ya esta en uso");
+      }
+      else if (response.body == "Codigo no sistema"){
+        throw Exception("El Codigo de barras no existe en el sistema");
+      }
       Map<String, dynamic> map = json.decode(response.body);
     } else {
       // If the server returns an unsuccessful response code, throw an exception.

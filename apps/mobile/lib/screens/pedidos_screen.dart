@@ -85,8 +85,8 @@ class PedidosScreenState extends State<PedidosScreen> {
                                 icon: const Icon(Icons
                                     .barcode_reader), // replace with your barcode icon
                                 color: Colors.black,
-                                onPressed: () {
-                                  Navigator.push(
+                                onPressed: () async {
+                                  await Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
@@ -96,6 +96,7 @@ class PedidosScreenState extends State<PedidosScreen> {
                                       ),
                                     ),
                                   );
+                                  pedidosBloc.add(RefreshPedidos());
                                 },
                               ),
                             )

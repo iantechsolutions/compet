@@ -44,9 +44,10 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
         ),
       );
 
-      if (res is String && res != "-1" && res != result) {
+      if (res is String && res != "-1" ) {
         TextEditingController loteController = TextEditingController();
         String result = "";
+
         if (true) {
           showDialog(
             context: context,
@@ -69,6 +70,7 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
                   TextButton(
                     child: const Text('Guardar'),
                     onPressed: () {
+                      try{
                       instalacionBloc.add(AddInstalacion(instalacion: {
                         "Pedido": widget.pedido?.id,
                         "Empalmista": "RVYm3m9OoStGnokd6Tt5P",
@@ -80,6 +82,10 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
                         "tipoInstalacion": product?.tipoInstalacion,
                         "NroLoteArticulo": result,
                       }));
+                      }
+                      catch(e){
+                        print(e);
+                      }
                       productUpdateado = updateCantScaneada(product!);
 
                       Fluttertoast.showToast(
