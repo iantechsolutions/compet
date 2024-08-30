@@ -50,6 +50,10 @@ async function handleCreate() {
   if(isPending || isButtonDisabled){
     return null
   }
+  if(!empalmista || !cliente || !producto){
+    toast.error("Cargue todos los campos")
+    return null
+  }
 
   setIsButtonDisabled(true);
     try {
@@ -76,9 +80,9 @@ async function handleCreate() {
         
         
 
+        router.refresh();
         setOpen(false);
         toast.success("Instalacion creada correctamente");
-        router.refresh();
     } catch (e) {
         console.log(e);
     } finally {

@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { db } from "~/server/db";
+import { db, schema } from "~/server/db";
 import { asc, eq } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { pasoCritico, tipoInstalaciones } from "~/server/db/schema";
+import { instalaciones, pasoCritico, tipoInstalaciones } from "~/server/db/schema";
 
 export const tipoInstalacionesRouter = createTRPCRouter({
     create: publicProcedure.input(z.object({ description: z.string()
@@ -57,6 +57,9 @@ export const tipoInstalacionesRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input }) => {
+      
+      await db.update(instalaciones).set({tipoInstalacionId: null}).where(eq(tipoInstalaciones.id, input.Id))
+      
       await db
         .delete(tipoInstalaciones)
         .where(eq(tipoInstalaciones.id, input.Id));
