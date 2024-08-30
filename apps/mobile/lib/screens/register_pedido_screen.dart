@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mplikelanding/bloc/cliente_bloc.dart';
 import 'package:mplikelanding/bloc/instalacion_bloc.dart';
 import 'package:mplikelanding/bloc/pedido_bloc.dart';
 import 'package:mplikelanding/components/critic_steps/qr_scan.dart';
@@ -14,10 +15,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 class RegisterPedidoScreen extends StatefulWidget {
   final Pedido? pedido;
-  final List<ProductoPedido>? productos;
+   List<ProductoPedido>? productos;
 
   // ignore: use_super_parameters
-  const RegisterPedidoScreen({Key? key, this.pedido, this.productos})
+  RegisterPedidoScreen({Key? key, this.pedido, this.productos})
       : super(key: key);
   @override
   _RegisterPedidoScreenState createState() => _RegisterPedidoScreenState();
@@ -28,19 +29,33 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
   late StreamSubscription instalacionBlocSubscription;
   ProductoPedido? productoActual = null;
   updateCantScaneada(ProductoPedido product) {
-    print("updatea");
-    setState(() {
-      product.cantidadScaneada = product.cantidadScaneada + 1;
-    });
-    return product;
-  }
+      print("updatea");
+      setState(() {
+        product.cantidadScaneada = product.cantidadScaneada + 1;
+        int? index = widget.productos?.indexOf(product);
+        if (!(index==null) && index >= 0){
+          widget.productos?[index] = product;
+          // Create a new list to trigger the rebuild
+          widget.productos = List.from(widget.productos!);
+
+        }
+      });
+      return product;
+    }
+    
 
   @override
   Widget build(BuildContext context) {
     final instalacionBloc = BlocProvider.of<InstalacionBloc>(context);
+    bool hecho = false;
     instalacionBlocSubscription = instalacionBloc.stream.listen((state) {
+      print("hecho");
+      print(hecho);
       if (state is InstalacionAdditionSuccess) {
-        Fluttertoast.showToast(
+        if(hecho){
+          hecho = false;
+          print("se");
+          Fluttertoast.showToast(
             msg: "Instalacion creada correctamente",
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
@@ -48,9 +63,23 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
             backgroundColor: Colors.green,
             textColor: Colors.white,
             fontSize: 16.0);
-        productoActual = updateCantScaneada(productoActual!);
+          print("se2");
+          try{
+          Navigator.of(context).pop();
+          }
+          catch(e){
+            print("error");
+          }
+          print("aaa");
+          print(productoActual);
+          productoActual = updateCantScaneada(productoActual!);
+          print(productoActual);
+          instalacionBloc.add(StandByInstalacion());
+        }
       }
-      if (state is InstalacionAdditionFailure){
+      else if (state is InstalacionAdditionFailure){
+        if(hecho){
+        hecho = false;
         Fluttertoast.showToast(
             msg: state.error,
             toastLength: Toast.LENGTH_SHORT,
@@ -59,6 +88,15 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
             backgroundColor: Colors.red,
             textColor: Colors.white,
             fontSize: 16.0);
+        try{
+          Navigator.of(context).pop();
+          }
+          catch(e){
+            print("error");
+          }
+        instalacionBloc.add(StandByInstalacion());
+        }
+        
       }
     });
     openScanner(ProductoPedido? product) async {
@@ -107,9 +145,10 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
                           "tipoInstalacion": product?.tipoInstalacion,
                           "NroLoteArticulo": result,
                         }));
+                      hecho = true;
                       // var coso = await instalacionBloc.;
                       // await instalacionBloc.
-                      productoActual = updateCantScaneada(product!);
+                      // productoActual = updateCantScaneada(product!);
                     },
                   ),
                 ],
@@ -124,8 +163,8 @@ class _RegisterPedidoScreenState extends State<RegisterPedidoScreen> {
     }
 
     void showProductDetails(ProductoPedido? product) {
-      var productoActual = product;
-      if (productoActual!.cantidad <= productoActual.cantidadScaneada) {
+      productoActual = product;
+      if (productoActual!.cantidad <= productoActual!.cantidadScaneada) {
         Fluttertoast.showToast(
             msg: "Ya se escanearon todas las unidades de este producto",
             toastLength: Toast.LENGTH_SHORT,
