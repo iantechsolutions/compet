@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:mplikelanding/bloc/instalacion_bloc.dart';
 import 'package:mplikelanding/components/critic_steps/instalacion_masilla.dart';
 import 'package:http/http.dart' as http;
@@ -41,7 +42,8 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
   final String _baseUrl = Constants.BASE_URL; // replace with your API URL
   final storage = const FlutterSecureStorage();
   bool showPreview = false;
-
+    
+  bool isUploading = false;
   Future<void> takePicture() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.camera);
     if (image != null) {
@@ -105,13 +107,21 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
         controlsBuilder: (BuildContext context, AControlsDetails details) {
           return Row(
             children: <Widget>[
-              TextButton(
+              ShadButton.outline(
                 onPressed: details.onStepContinue,
-                child: const Text('Continuar'),
+                text: const Text('Continuar',style: TextStyle(color: Colors.black),),
+                enabled: !isUploading,
+                icon: isUploading
+                ? LoadingAnimationWidget.fourRotatingDots(
+                    color: Colors.black,
+                    size: 20,
+                  )
+                : null,
               ),
-              TextButton(
+              ShadButton.outline(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Cancelar'),
+                text: const Text('Cancelar',style: TextStyle(color: Colors.black),),
+                enabled: !isUploading,
               ),
             ],
           );
@@ -119,15 +129,26 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
         steps: getcosos(),
         currentStep: currentStep,
         onStepContinue: () async {
+          setState(() {
+            isUploading = true;
+          });
+          print(isUploading);
+          isUploading = true;
           Position ubi = await _determinePosition();
           print("se activa");
+          print(currentStep);
           print(widget.instalacion.tipoInstalacionData
-              ?.pasoCriticoTotipoInstalacion?[currentStep].pasoCriticoId);
+              ?.pasoCriticoTotipoInstalacion);
           final isLastStep = currentStep == getcosos().length - 1;
+          // final isLastStep = false;
           String? accessToken = await storage.read(key: "credenciales");
-          images.map((e) async {
+          List<Future> futures = images.map((e) async {
             List<int> bytes = await e!.readAsBytes();
             String base64 = base64Encode(bytes);
+            print("paso ahora");
+            print(currentStep);
+            print(widget.instalacion.tipoInstalacionData
+                  ?.pasoCriticoTotipoInstalacion?[currentStep]);
             Foto foto = Foto(
               link: base64,
               instalacion: widget.instalacion.id ?? "",
@@ -158,6 +179,7 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
               body: jsonEncode(foto.toJson()),
             );
           }).toList();
+          await Future.wait(futures);
           if (isLastStep) {
             instalacionBloc.add(EditInstalacion(instalacion: {
               "Id": widget.instalacion.id,
@@ -184,6 +206,9 @@ class _InstalacionesScreenState extends State<InstalacionesUploadScreen> {
           } else {
             images.clear();
             setState(() => currentStep += 1);
+            setState(() {
+              isUploading = false;
+            });
           }
         },
         onStepCancel: (() =>
