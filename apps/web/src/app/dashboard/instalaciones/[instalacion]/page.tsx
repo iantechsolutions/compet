@@ -19,6 +19,7 @@ import {
 import { BarcodeComponent } from "~/components/barcodesvg";
 import { useState, useEffect, useRef } from "react";
 import GoogleMaps from "~/components/maps-widget";
+import path from "path";
 
 const dateToDMY = (date: Date | null | undefined) => {
     if (date) {
@@ -32,6 +33,7 @@ export default function Page() {
     const router = useRouter();
     const pathname = usePathname().split('/').pop();
     const { data: instalacion, isLoading } = api.instalaciones.get.useQuery({ Id: pathname?.toString()! });
+
     const { mutateAsync: updateInstalacion } = api.instalaciones.update.useMutation();    
     const [comment, setComment] = useState(instalacion?.Comentario);
     useEffect(()=>{
@@ -58,6 +60,10 @@ export default function Page() {
         toast.success(`Instalación ${estado.toLowerCase()} con éxito`);
         router.refresh();
     };
+
+
+    console.log("tipo instalacion",instalacion)
+    console.log("tipo instalacion",pathname)
 
     const mapRef = useRef(null);
 
