@@ -37,7 +37,20 @@ export const productosPedidosRouter = createTRPCRouter({
 
       return channel;
     }),
+    getByProduct: publicProcedure
+    .input(
+      z.object({
+        IdProducto: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const channel = await db.query.productosPedidos.findMany({
+        where: eq(productosPedidos.Producto, input.IdProducto),
+        with: {pedido: {with: {cliente: true}}}
+      });
 
+      return channel;
+    }),
     update: publicProcedure.input(z.object({Id:z.string(),Pedido: z.string(),Producto:z.string(),Cantidad:z.number(),Nombre:z.string(),Descripcion:z.string(),CantidadScaneada:z.number(),tipoInstalacion:z.string(),})).mutation(async ({ ctx, input }) => {
       await db
         .update(productosPedidos)

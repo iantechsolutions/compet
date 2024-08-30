@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
+import { List, ListTile } from "./list";
 
 
 
@@ -18,15 +19,23 @@ interface DeleteProductoButtonProps {
       const [isDialogOpen, setIsDialogOpen] = useState(false); 
     const router = useRouter();
     const { mutateAsync: deletProductoMethod } = api.productos.delete.useMutation();
+    
+    // const {data: pedidoToProductos} = api.productosPedidos.getByProduct.useQuery({IdProducto: productoId})
+    // const pedido = pedidoToProductos?.filter((x) => x.pedido.Estado === "Pendiente")
+    // console.log("list:", pedido)
+    const {data: instalaciones} = api.instalaciones.getByProduct.useQuery({tipoId: productoId})
+
+
     const deleteProducto = async () => {
+      
+      
       try {
-          
         await deletProductoMethod({ Id: productoId });
         toast.success("Producto eliminado correctamente");
         router.refresh();
       } catch (e) {
         console.error(e);
-        toast.error("Error al eliminar producto");
+        toast.error("El producto tiene instalaciones y/o pedidos relacionados");
       }
     };
     return (
@@ -40,6 +49,18 @@ interface DeleteProductoButtonProps {
           <DialogTitle>¿Estás seguro?</DialogTitle>
         </DialogHeader>
         <div>¿Seguro que quieres eliminar este producto?</div>
+      {instalaciones && instalaciones.length > 0 ? (
+        <div>
+          <div>Se eliminarán los siguientes pedidos pendientes:</div>
+          <List>
+            {instalaciones.map((producto) => (
+              <h1>
+                -N° {producto.numero} Estado {producto.Estado}
+              </h1>
+            ))}
+          </List>
+        </div>
+      ) : null}
         <DialogFooter>
           <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
             Cancelar

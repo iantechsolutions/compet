@@ -2,7 +2,7 @@ import { z } from "zod";
 import { db } from "~/server/db";
 import { asc, eq } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { productos } from "~/server/db/schema";
+import { instalaciones, productos, productosPedidos } from "~/server/db/schema";
 
 export const productosRouter = createTRPCRouter({
     create: publicProcedure.input(z.object({ name: z.string().min(1), description: z.string(), barcode: z.string(), categoria: z.string().nullable() })).mutation(async ({ ctx, input }) => {
@@ -98,6 +98,10 @@ export const productosRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input }) => {
+      
+      await db.update(instalaciones).set({Producto_pedido: null}).where(eq(instalaciones.Producto_pedido, input.Id));
+      await db.delete(productosPedidos).where(eq(productosPedidos.Producto, input.Id));
+
       await db.delete(productos).where(eq(productos.Id, input.Id));
     }),
 });

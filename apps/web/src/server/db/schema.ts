@@ -235,6 +235,7 @@ export const productos = createTable(
         Codigo_de_barras: text('BarCode', { length: 256 }),
         Descripcion: text('Descripcion',{length: 256}),
         tipoDeInstalacion_id: text('tipoDeInstalacion_id',{length: 256}).default(''),
+        // estado: text("estado", { enum: ["Activo", "Inactivo"] }),
     }
 )
 

@@ -121,6 +121,18 @@ export const instalacionesRouter = createTRPCRouter({
 
       return channel;
     }),
+    getByProduct: publicProcedure
+    .input(
+      z.object({
+        tipoId: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const channel = await db.query.instalaciones.findMany({
+        where: eq(instalaciones.Producto_pedido, input.tipoId),
+      });
+      return channel;
+    }),
 
     getBarCode: publicProcedure
     .input(

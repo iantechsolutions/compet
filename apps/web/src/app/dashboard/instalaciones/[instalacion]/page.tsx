@@ -47,7 +47,7 @@ export default function Page() {
 
 
     const { mutateAsync: deleteInstalacion, isPending: isDeleating } = api.instalaciones.delete.useMutation();
-    const { mutateAsync: updateInstalacion } = api.instalaciones.update.useMutation();    
+    const { mutateAsync: updateInstalacion, isPending: isUpdated } = api.instalaciones.update.useMutation();    
    
     const [openUpdate, setOpenUpdate] = useState<boolean>(false)
     const [openDelete, setOpenDelete] = useState<boolean>(false)
@@ -279,11 +279,17 @@ async function handleDelete() {
                             onChange={(e) => setComment(e.target.value)}
                         />
                         <div className="flex space-x-4">
-                            <Button onClick={() => handleUpdate("Aprobada")} className="bg-green-500 hover:bg-green-600 text-white">
-                                Aprobar
+                            <Button 
+                            disabled={isUpdated}
+                            onClick={() => handleUpdate("Aprobada")} className="bg-green-500 hover:bg-green-600 text-white">
+                                 {(isUpdated) && (
+                <Loader2Icon className="mr-2 animate-spin" size={20} />
+              )} Aprobar
                             </Button>
-                            <Button onClick={() => handleUpdate("Rechazada")} className="bg-red-500 hover:bg-red-600 text-white">
-                                Rechazar
+                            <Button disabled={isUpdated} onClick={() => handleUpdate("Rechazada")} className="bg-red-500 hover:bg-red-600 text-white">
+                            {(isUpdated) && (
+                <Loader2Icon className="mr-2 animate-spin" size={20} />
+              )}  Rechazar
                             </Button>
                         </div>
                     </div>
