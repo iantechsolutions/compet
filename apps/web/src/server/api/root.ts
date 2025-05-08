@@ -19,6 +19,7 @@ import { pasocriticototipoinstalacionRouter } from './routers/pasocriticototipoi
 import { uploadthingrouter } from "./routers/uploadthing";
 import { generatedBarcodesRouter } from "./routers/generatedBarcodes";
 import { usersRouterList } from "./routers/user-router";
+import { testRouter } from "./routers/test-router";
 /**
  * This is the primary router for your server.
  *
@@ -40,6 +41,7 @@ export const appRouter = createTRPCRouter({
   CodigoBarras: CodigoBarrasRouter,
   uploadthing: uploadthingrouter,
   generatedBarcodes: generatedBarcodesRouter,
+  test: testRouter,
   sellCheck: sellerProcedure.query(({ ctx }) => {
     // falla si no es seller
   }),

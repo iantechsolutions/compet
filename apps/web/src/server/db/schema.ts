@@ -2,7 +2,7 @@
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
 import { Description } from "@radix-ui/react-dialog";
-import { isNotNull, relations, sql } from "drizzle-orm";
+import { isNotNull, Many, relations, sql } from "drizzle-orm";
 
 import { index, int, real, sqliteTableCreator, text } from "drizzle-orm/sqlite-core";
 import { nanoid } from "nanoid";
@@ -178,12 +178,13 @@ export const instalacionesRelations = relations(
         Fecha_de_envio:int('FechaEnvio', { mode: 'timestamp' }),
         Estado: text('Estado').notNull(), 
         Numero: int("Numero").default(0),
+        //Ponerle cliente_id
         Cliente: text('Cliente').notNull().references(()=>clientes.Id)
     }
 )
 
 export const pedidosRelations = relations(pedidos, ({ one, many }) => ({
-  cliente: one(clientes, {
+  clientes: one(clientes, {
     fields: [pedidos.Cliente],
     references: [clientes.Id],
   }),
@@ -345,7 +346,7 @@ export const pasoCriticoTotipoInstalacion = createTable("pasoCriticoTotipoInstal
     .$default(()=>createId()),
     tipoInstalacion: text("tipoInstalacion", { length: 255 }).notNull().references(()=>tipoInstalaciones.id),
     pasoCritico: text("pasoCritico", { length: 255 }).notNull().references(()=>pasoCritico.id),
-    number: int("number"),
+    number: int("numero").default(0),
 });
 
 export const pasoCriticoTotipoInstalacionRelations = relations(pasoCriticoTotipoInstalacion, ({ one }) => ({
@@ -360,30 +361,38 @@ export const pasoCriticoTotipoInstalacionRelations = relations(pasoCriticoTotipo
 })
 );
 
-
-function createInsertSchema(Clientes: any) {
-  throw new Error("Function not implemented.");
-}
-
 export const CodigoBarras = createTable("CodigoBarras", {
   Id: int("id").notNull().primaryKey(),
   productoSeleccionado: int("ProductoSeleccionado"),
   descripcion: text("Descripcion", { length: 256 }),
 });
 
-export const CodigoBarrassRelation = relations(CodigoBarras, ({ one }) => ({
-  CodigoBarras: one(productos),
+export const CodigoBarrassRelation = relations(CodigoBarras, ({ one, many }) => ({
+  CodigoBarras: one(productos,
+    {
+      fields: [CodigoBarras.productoSeleccionado],
+      references: [productos.Id],
+    },
+  ),
+  generatedBarcode: many(generatedBarcodes),
 }));
 
 export const generatedBarcodes = createTable(
-  'generatedBarcodes',
+  "generatedBarcodes",
   {
-      Id: text("id", { length: 255 })
+    Id: text("id", { length: 255 })
       .notNull()
       .primaryKey()
-      .$default(()=>createId()),
-      Codigo: text('Codigo', { length: 256 }),
-      Instalacion: text('Instalacion'),
-      Linked: int("linked", { mode: "boolean" }).default(true),
+      .$default(() => createId()),
+    CodigoBarras: text("CodigoBarras", { length: 255 }).notNull(),
+    instalacionId: text("Instalacion", { length: 255 }),
   }
-)
+);
+
+export const generatedBarcodesRelations = relations(generatedBarcodes, ({ one }) => ({
+  
+  CodigoBarras: one(CodigoBarras, {
+    fields: [generatedBarcodes.CodigoBarras],
+    references: [CodigoBarras.Id],
+  }),
+}));

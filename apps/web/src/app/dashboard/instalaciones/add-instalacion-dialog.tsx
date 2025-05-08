@@ -15,13 +15,18 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { Cliente, Clientes } from "~/server/api/routers/clientes";
+import { Empalmista } from "~/server/api/routers/empalmistas";
+import { Pedido } from "~/server/api/routers/pedidos";
+import { Producto } from "~/server/api/routers/productos";
 // import { asTRPCError } from "~/lib/errors";
 import { api } from "~/trpc/react";
 
 export function AddInstalacionDialog() {
   const { mutateAsync: createInstalacion, isPending } =
     api.instalaciones.createAssignBarcode.useMutation();
-  const [name, setName] = useState("");
+
+
   const [open, setOpen] = useState(false);
   const [empalmista, setEmpalmista] = useState("");
   const [cliente, setCliente] = useState("");
@@ -44,10 +49,9 @@ const { data: empalmistas} = api.empalmistas.list.useQuery(undefined);
 const { data: clientes } = api.clientes.list.useQuery(undefined);
 const { data: pedidos } = api.pedidos.list.useQuery(undefined);
 
-const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
 async function handleCreate() {
-  if(isPending || isButtonDisabled){
+  if(isPending){
     return null
   }
   if(!empalmista || !cliente || !producto){
@@ -55,27 +59,31 @@ async function handleCreate() {
     return null
   }
 
-  setIsButtonDisabled(true);
     try {
-        const clienteT = clientes?.find((categoriaT) => categoriaT.Id === cliente);
-        const pedidoT = pedidos?.find((categoriaT) => categoriaT.Id === producto);
-        const empalmistaT = empalmistas?.find((categoriaT) => categoriaT.Id === empalmista);
-        console.log("cliente",clienteT);
-        console.log("pedido",pedidoT);
-        console.log("empalmista",empalmistaT);
+        const clienteT = clientes?.find((client) => client?.Id === cliente);
+        const pedidoT = pedidos?.find((pedido: Pedido) => pedido?.Id === producto);
+        const empalmistaT = empalmistas?.find((empalmis) => empalmis?.Id === empalmista );
+       
         if(pedidoT?.productos){
-          pedidoT.productos.forEach(async (producto) => {
-            await createInstalacion({
-              Cliente:clienteT?.Id ?? "",
-              Pedido:pedidoT?.Id ?? "",
-              Empalmista: empalmistaT?.Id ?? "",
-              FechaAlta: new Date().getTime(),
-              Estado: "Pendiente",
-              Producto_pedido: producto.Id,
-              tipoInstalacionId: producto.tipoInstalacion ?? "",
-              NroLoteArticulo: "",
-            });
-          })
+         
+         try{
+
+           pedidoT.productos.forEach(async (producto) => {
+             await createInstalacion({
+               Cliente:clienteT?.Id ?? "",
+               Pedido:pedidoT?.Id ?? "",
+               Empalmista: empalmistaT?.Id ?? "",
+               FechaAlta: new Date().getTime(),
+               Estado: "Pendiente",
+               Producto_pedido: producto?.Id ?? "",
+               tipoInstalacionId: producto?.tipoInstalacion ?? "",
+               NroLoteArticulo: "",
+              });
+            })
+          }catch(e){
+            console.log(e);
+            toast.error("No existen barcodes disponibles");
+          }
         }
         
         
@@ -85,9 +93,7 @@ async function handleCreate() {
         toast.success("Instalacion creada correctamente");
     } catch (e) {
         console.log(e);
-    } finally {
-      setTimeout(() => setIsButtonDisabled(false), 2000);
-    }
+    } 
 }
 
   return (
@@ -106,8 +112,8 @@ async function handleCreate() {
             title="Seleccionar empalmista..."
             placeholder="Empalmista"
             options={empalmistas?.map((empalmista) => ({
-              value: empalmista.Id.toString(),
-              label: empalmista.Nombre || "",
+              value: empalmista?.Id.toString(),
+              label: empalmista?.Nombre || "",
             })) ?? []}
             onSelectionChange={handleEmpalmistaChange}
 
@@ -118,8 +124,8 @@ async function handleCreate() {
             title="Seleccionar cliente..."
             placeholder="Cliente"
             options={clientes?.map((cliente) => ({
-              value: cliente.Id.toString(),
-              label: cliente.Nombre || "",
+              value: cliente?.Id.toString(),
+              label: cliente?.Nombre || "",
             })) ?? []}
             onSelectionChange={handleClienteChange}
           />
@@ -129,8 +135,8 @@ async function handleCreate() {
             title="Seleccionar pedido..."
             placeholder="Producto"
             options={pedidos?.map((pedido) => ({
-              value: pedido.Id.toString(),
-              label: pedido.Numero?.toString() || "",
+              value: pedido?.Id.toString(),
+              label: pedido?.Numero?.toString() || "",
             })) ?? []}
             onSelectionChange={handleProductoChange}
           />
@@ -143,8 +149,8 @@ async function handleCreate() {
           >
         </Input> */}
           <DialogFooter>
-            <Button disabled={isPending || isButtonDisabled} onClick={handleCreate}>
-              {isPending || isButtonDisabled && (
+            <Button disabled={isPending} onClick={handleCreate}>
+              {isPending && (
                 <Loader2Icon className="mr-2 animate-spin" size={20} />
               )}
               Agregar instalacion

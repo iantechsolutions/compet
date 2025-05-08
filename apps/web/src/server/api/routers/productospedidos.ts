@@ -5,9 +5,14 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { productosPedidos } from "~/server/db/schema";
 
 export const productosPedidosRouter = createTRPCRouter({
-    create: publicProcedure.input(z.object({Pedido: z.string(),Producto:z.string(),Cantidad:z.number(),Nombre:z.string(),Descripcion:z.string(),tipoInstalacion:z.string()})).mutation(async ({ ctx, input }) => {
-        // simulate a slow db call
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+    create: publicProcedure.input(z.object({
+      Pedido: z.string(),
+      Producto:z.string(),
+      Cantidad:z.number(),
+      Nombre:z.string(),
+      Descripcion:z.string(),
+      tipoInstalacion:z.string()
+    })).mutation(async ({ ctx, input }) => {
 
       await ctx.db.insert(productosPedidos).values({
         Pedido: input.Pedido,
@@ -19,7 +24,23 @@ export const productosPedidosRouter = createTRPCRouter({
         CantidadScaneada: 0,
       });
     }),
-
+    createMany: publicProcedure
+    .input(z.array(z.object({
+      Pedido: z.string(),
+      Producto: z.string(),
+      Cantidad: z.number(),
+      Nombre: z.string(),
+      Descripcion: z.string(),
+      tipoInstalacion: z.string(),
+    })))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.insert(productosPedidos).values(
+        input.map(producto => ({
+          ...producto,
+          CantidadScaneada: 0,
+        }))
+      );
+    }),
   list: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.productosPedidos.findMany();
   }),
@@ -46,7 +67,7 @@ export const productosPedidosRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const channel = await db.query.productosPedidos.findMany({
         where: eq(productosPedidos.Producto, input.IdProducto),
-        with: {pedido: {with: {cliente: true}}}
+        with: {pedido: {with: {clientes: true}}}
       });
 
       return channel;

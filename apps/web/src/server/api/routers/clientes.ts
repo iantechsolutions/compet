@@ -7,6 +7,7 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { clientes } from "~/server/db/schema";
+import { RouterOutputs } from "../root";
 
 export const clientesRouter = createTRPCRouter({
   create: protectedProcedure
@@ -54,3 +55,6 @@ export const clientesRouter = createTRPCRouter({
       await db.delete(clientes).where(eq(clientes.Id, input.Id));
     }),
 });
+
+export type Clientes = RouterOutputs["productos"]["list"];
+export type Cliente = RouterOutputs["productos"]["get"];

@@ -3,6 +3,7 @@ import { db } from "~/server/db";
 import { asc, eq } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { instalaciones, productos, productosPedidos } from "~/server/db/schema";
+import { RouterOutputs } from "../root";
 
 export const productosRouter = createTRPCRouter({
     create: publicProcedure.input(z.object({ name: z.string().min(1), description: z.string(), barcode: z.string(), categoria: z.string().nullable() })).mutation(async ({ ctx, input }) => {
@@ -32,7 +33,8 @@ export const productosRouter = createTRPCRouter({
         tipoDeInstalacion:{
           with:{
             pasoCriticoTotipoInstalacion:true
-          
+
+            
           }
         }
       },
@@ -48,6 +50,13 @@ export const productosRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const channel = await db.query.productos.findFirst({
         where: eq(productos.Id, input.Id),
+        with: {
+          tipoDeInstalacion: {
+            with: {
+              pasoCriticoTotipoInstalacion: true,
+            },
+          },
+        }
       });
 
       return channel;
@@ -105,3 +114,6 @@ export const productosRouter = createTRPCRouter({
       await db.delete(productos).where(eq(productos.Id, input.Id));
     }),
 });
+
+export type Producto = RouterOutputs["productos"]["get"];
+export type Productos = RouterOutputs["productos"]["list"];

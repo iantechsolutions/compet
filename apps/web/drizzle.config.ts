@@ -5,7 +5,7 @@ import { env } from '~/env'
 export default {
     strict: false,
     schema: './src/server/db/schema.ts',
-    driver: 'turso',
+    dialect: 'turso', 
     dbCredentials: {
         url: env.DATABASE_URL,
         authToken: env.DATABASE_AUTH_TOKEN,

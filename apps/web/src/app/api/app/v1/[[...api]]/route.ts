@@ -287,7 +287,8 @@ app.post('/pedidos/post', async (c) => {
     const result = await api.pedidos.create({
         Cliente: "",
         FechaCreacion: 0,
-        Estado: '1'
+        Estado: '1',
+        Productos: []
     });
     return c.json("Succesful")
 });
@@ -317,7 +318,7 @@ app.post('/instalaciones/post', async (c) => {
     const body = await c.req.json();
     const instalaciones = await api.instalaciones.list();
     const generatedBarcodes = await api.generatedBarcodes.list();
-    if(generatedBarcodes.filter((barcode) => barcode.Codigo === body.Codigo_de_barras).length == 0){
+    if(generatedBarcodes.filter((barcode) => barcode.CodigoBarras === body.Codigo_de_barras).length == 0){
         return c.json("Codigo no sistema");    
     }
     else if(instalaciones.filter((instalacion) => instalacion.Codigo_de_barras === body.Codigo_de_barras).length > 0){
