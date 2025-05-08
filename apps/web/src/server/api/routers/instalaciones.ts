@@ -60,8 +60,8 @@ export const instalacionesRouter = createTRPCRouter({
       console.log(generatedBarcodes);
       let lastCode = 0
       if (generatedBarcodes){
-        generatedBarcodes = generatedBarcodes.sort((a, b) => parseInt(a.Codigo ?? "0") - parseInt(b.Codigo ?? "0"));
-        lastCode = parseInt(generatedBarcodes[generatedBarcodes.length-1]?.Codigo ?? "0")
+        generatedBarcodes = generatedBarcodes.sort((a, b) => parseInt(a.CodigoBarras ?? "0") - parseInt(b.CodigoBarras ?? "0"));
+        lastCode = parseInt(generatedBarcodes[generatedBarcodes.length-1]?.CodigoBarras ?? "0")
       }
       
       await db.insert(instalaciones).values(

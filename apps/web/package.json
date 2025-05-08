@@ -5,8 +5,9 @@
     "type": "module",
     "scripts": {
         "build": "next build",
-        "db:push": "drizzle-kit push:sqlite",
+        "db:push": "drizzle-kit push",
         "db:studio": "drizzle-kit studio",
+        "db:migrate": "drizzle-kit migrate",
         "dev": "next dev -H 0.0.0.0",
         "lint": "next lint",
         "start": "next start"
@@ -14,7 +15,7 @@
     "dependencies": {
         "@auth0/nextjs-auth0": "^3.5.0",
         "@googlemaps/js-api-loader": "1.16.2",
-        "@libsql/client": "^0.6.0",
+        "@libsql/client": "^0.14.0",
         "@radix-ui/react-accordion": "^1.1.2",
         "@radix-ui/react-checkbox": "^1.0.4",
         "@radix-ui/react-dialog": "^1.0.5",
@@ -42,7 +43,7 @@
         "cmdk": "^0.2.0",
         "date-fns": "^3.6.0",
         "dayjs": "^1.11.11",
-        "drizzle-orm": "^0.29.4",
+        "drizzle-orm": "^0.43.1",
         "express": "^4.19.2",
         "express-oauth2-jwt-bearer": "^1.6.0",
         "framer-motion": "^12.10.4",
@@ -85,7 +86,7 @@
         "@typescript-eslint/eslint-plugin": "^7.1.1",
         "@typescript-eslint/parser": "^7.1.1",
         "auth-helpers": "workspace:*",
-        "drizzle-kit": "^0.20.17",
+        "drizzle-kit": "^0.31.1",
         "mobile-api": "workspace:*",
         "postcss": "^8.4.34",
         "tailwind-config": "workspace:*",

@@ -29,7 +29,7 @@ export default function Home() {
   useEffect(() => {
     if (generatedBarcodes && generatedBarcodes.length > 0) {
       const lastBarcode = generatedBarcodes[generatedBarcodes.length - 1];
-      setUltimaId(parseInt(lastBarcode?.Codigo ?? "0"));
+      setUltimaId(parseInt(lastBarcode?.CodigoBarras ?? "0"));
     }
   }, [generatedBarcodes]);
 

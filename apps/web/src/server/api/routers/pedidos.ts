@@ -21,14 +21,20 @@ export const pedidosRouter = createTRPCRouter({
     }))
   })).mutation(async ({ ctx, input }) => {
   
-    const clienteExists = await ctx.db.query.clientes.findFirst({
+    const clienteExists = await db.query.clientes.findFirst({
       where: eq(schema.clientes.Id, input.Cliente),
     });
-    if (!clienteExists) {
+
+    const clienteExiste = await db.query.clientes.findFirst({
+      where(fields, operators) {
+        return operators.eq(fields.Id, input.Cliente);
+      }
+    });
+    console.log("¿Cliente existe en DB?", clienteExiste);    if (!clienteExists) {
       throw new Error("El cliente no existe");
     }
   
-    const anterior = await ctx.db.query.pedidos.findMany({
+    const anterior = await db.query.pedidos.findMany({
       orderBy: [desc(pedidos.Numero)],
     });
     let numero = 1;
@@ -36,33 +42,41 @@ export const pedidosRouter = createTRPCRouter({
       numero = (anterior[0]?.Numero ?? 0) + 1;
     }
   
-    const result = await ctx.db.insert(pedidos).values({
+    console.log("Revisar",input);
+    console.log("Revisar",anterior);
+
+    const result = await ctx.db.insert(schema.pedidos).values({
       Cliente: input.Cliente,
       Estado: input.Estado,
       Fecha_de_creacion: new Date(input.FechaCreacion),
       Numero: numero,
+      Fecha_de_aprobacion: null,
+      Fecha_de_envio: null,
     }).returning();
   
+
+    console.log("Entro",result);
+
     if (!result) {
       throw new Error("No se pudo crear el pedido");
     }
   
     for (const producto of input.Productos) {
-      const productoExists = await ctx.db.query.productos.findFirst({
+      const productoExists = await db.query.productos.findFirst({
         where: eq(schema.productos.Id, producto.Producto_id),
       });
       if (!productoExists) {
         throw new Error(`El producto con ID ${producto.Producto_id} no existe`);
       }
   
-      const tipoInstalacionExists = await ctx.db.query.tipoInstalaciones.findFirst({
+      const tipoInstalacionExists = await db.query.tipoInstalaciones.findFirst({
         where: eq(schema.tipoInstalaciones.id, producto.tipoInstalacionId),
       });
       if (!tipoInstalacionExists) {
         throw new Error(`El tipo de instalación con ID ${producto.tipoInstalacionId} no existe`);
       }
   
-      await ctx.db.insert(schema.productosPedidos).values({
+      await db.insert(schema.productosPedidos).values({
         Pedido: result[0]?.Id ?? "",
         Producto: producto.Producto_id,
         Cantidad: producto.Cantidad,
