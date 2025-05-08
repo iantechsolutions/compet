@@ -12,7 +12,7 @@ export const generatedBarcodesRouter = createTRPCRouter({
   add: protectedProcedure
     .input(
       z.object({
-        Codigo: z.string(),
+        CodigoBarras: z.string(),
         Instalacion: z.string().optional(),
         Linked: z.boolean().default(false),
       })
@@ -23,7 +23,7 @@ export const generatedBarcodesRouter = createTRPCRouter({
 
   list: publicProcedure.query(async () => {
     const barcodes = await db.query.generatedBarcodes.findMany();
-    barcodes.sort((a, b) => parseInt(a.Codigo ?? "0") - parseInt(b.Codigo ?? "0"));
+    barcodes.sort((a, b) => parseInt(a.CodigoBarras ?? "0") - parseInt(b.CodigoBarras ?? "0"));
     return barcodes;
   }),
 
@@ -44,7 +44,7 @@ export const generatedBarcodesRouter = createTRPCRouter({
     .input(
       z.object({
         Id: z.string(),
-        Codigo: z.string(),
+        CodigoBarras: z.string(),
         Instalacion: z.string(),
         Linked: z.boolean(),
       })
@@ -53,9 +53,8 @@ export const generatedBarcodesRouter = createTRPCRouter({
       await db
         .update(generatedBarcodes)
         .set({
-          Codigo: input.Codigo,
-          Instalacion: input.Instalacion,
-          Linked: input.Linked,
+          CodigoBarras: input.CodigoBarras,
+          instalacionId: input.Instalacion,
         })
         .where(eq(generatedBarcodes.Id, input.Id));
     }),

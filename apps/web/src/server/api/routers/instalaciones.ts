@@ -45,10 +45,13 @@ export const instalacionesRouter = createTRPCRouter({
       Comentario:z.string().optional(),
       NroLoteArticulo: z.string() })).mutation(async ({input }) => {
 
-
+        console.log("Entro");
       const anterior = await db.query.instalaciones.findMany({
         orderBy: [desc(instalaciones.numero)],
       });
+
+        console.log("Entro", input);
+
       let numero = 1
       if (anterior){
         numero = (anterior[0]?.numero ?? 0) + 1
@@ -59,14 +62,16 @@ export const instalacionesRouter = createTRPCRouter({
 
       console.log(generatedBarcodes);
       let lastCode = 0
+      console.log("lastCode", lastCode);
       if (generatedBarcodes){
         generatedBarcodes = generatedBarcodes.sort((a, b) => parseInt(a.CodigoBarras ?? "0") - parseInt(b.CodigoBarras ?? "0"));
         lastCode = parseInt(generatedBarcodes[generatedBarcodes.length-1]?.CodigoBarras ?? "0")
       }
+      console.log("lastCode", lastCode);
       
       await db.insert(instalaciones).values(
       {
-        ...input, numero, Codigo_de_barras:(lastCode + 1).toString()
+        ...input, numero, Codigo_de_barras:(lastCode + 1).toString(), NroLoteArticulo:input.NroLoteArticulo ?? "N/A"
       }
       )
   }),

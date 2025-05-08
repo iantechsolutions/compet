@@ -161,10 +161,7 @@ export const instalacionesRelations = relations(
     }),
     fotos: many(fotos),
     documentos: many(documentUploads),
-    codigoBarras: one(generatedBarcodes, {
-      fields: [instalaciones.Codigo_de_barras],
-      references: [generatedBarcodes.CodigoBarras],
-    }),
+    
   }));
   
 
@@ -388,15 +385,12 @@ export const generatedBarcodes = createTable(
       .primaryKey()
       .$default(() => createId()),
     CodigoBarras: text("CodigoBarras", { length: 255 }).notNull(),
-    instalacionId: text("Instalacion", { length: 255 }).notNull().references(() => instalaciones.Id),
+    instalacionId: text("Instalacion", { length: 255 }),
   }
 );
 
 export const generatedBarcodesRelations = relations(generatedBarcodes, ({ one }) => ({
-  generatedBarcodes: one(instalaciones, {
-    fields: [generatedBarcodes.instalacionId],
-    references: [instalaciones.Id],
-  }),
+  
   CodigoBarras: one(CodigoBarras, {
     fields: [generatedBarcodes.CodigoBarras],
     references: [CodigoBarras.Id],

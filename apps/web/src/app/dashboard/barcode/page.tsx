@@ -46,7 +46,7 @@ export default function Home() {
     const ids = [];
     for (let i = desde; i <= hasta; i++) {
       addGeneratedBarcode({
-        Codigo: i.toString(),
+        CodigoBarras: i.toString(),
       });
       ids.push(i);
     }

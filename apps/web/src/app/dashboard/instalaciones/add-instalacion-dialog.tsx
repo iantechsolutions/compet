@@ -65,18 +65,25 @@ async function handleCreate() {
         const empalmistaT = empalmistas?.find((empalmis) => empalmis?.Id === empalmista );
        
         if(pedidoT?.productos){
-          pedidoT.productos.forEach(async (producto) => {
-            await createInstalacion({
-              Cliente:clienteT?.Id ?? "",
-              Pedido:pedidoT?.Id ?? "",
-              Empalmista: empalmistaT?.Id ?? "",
-              FechaAlta: new Date().getTime(),
-              Estado: "Pendiente",
-              Producto_pedido: producto?.Id ?? "",
-              tipoInstalacionId: producto?.tipoInstalacion ?? "",
-              NroLoteArticulo: "",
-            });
-          })
+         
+         try{
+
+           pedidoT.productos.forEach(async (producto) => {
+             await createInstalacion({
+               Cliente:clienteT?.Id ?? "",
+               Pedido:pedidoT?.Id ?? "",
+               Empalmista: empalmistaT?.Id ?? "",
+               FechaAlta: new Date().getTime(),
+               Estado: "Pendiente",
+               Producto_pedido: producto?.Id ?? "",
+               tipoInstalacionId: producto?.tipoInstalacion ?? "",
+               NroLoteArticulo: "",
+              });
+            })
+          }catch(e){
+            console.log(e);
+            toast.error("No existen barcodes disponibles");
+          }
         }
         
         
