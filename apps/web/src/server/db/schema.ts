@@ -178,12 +178,13 @@ export const instalacionesRelations = relations(
         Fecha_de_envio:int('FechaEnvio', { mode: 'timestamp' }),
         Estado: text('Estado').notNull(), 
         Numero: int("Numero").default(0),
+        //Ponerle cliente_id
         Cliente: text('Cliente').notNull().references(()=>clientes.Id)
     }
 )
 
 export const pedidosRelations = relations(pedidos, ({ one, many }) => ({
-  cliente: one(clientes, {
+  clientes: one(clientes, {
     fields: [pedidos.Cliente],
     references: [clientes.Id],
   }),
@@ -359,11 +360,6 @@ export const pasoCriticoTotipoInstalacionRelations = relations(pasoCriticoTotipo
     }),
 })
 );
-
-
-function createInsertSchema(Clientes: any) {
-  throw new Error("Function not implemented.");
-}
 
 export const CodigoBarras = createTable("CodigoBarras", {
   Id: int("id").notNull().primaryKey(),

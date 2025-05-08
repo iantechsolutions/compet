@@ -27,31 +27,35 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 // import { asTRPCError } from "~/lib/errors";
 import { api } from "~/trpc/react";
+import { Producto, Productos } from "~/server/api/routers/productos";
+import { Cliente } from "~/server/api/routers/clientes";
+import { Pedido } from "~/server/api/routers/pedidos";
 
-export function AddPedidoDialog() {
+export function AddPedidoDialog({
+  refetch,
+}: 
+{
+  refetch: () => void;
+}) {
   const { mutateAsync: createPedido, isPending } =
     api.pedidos.create.useMutation();
 
-  const { mutateAsync: createProductoPedido, isPending: isPendingProducto } =
-    api.productosPedidos.create.useMutation();
+  // const { mutateAsync: createProductosPedido, isPending: isPendingProducto } =
+  //   api.productosPedidos.createMany.useMutation();
 
-  const [cliente, setCliente] = useState("");
-  const [productoSeleccion, setProducto] = useState("");
-  const [cantidad, setCantidad] = useState(1);
+    const [cliente, setCliente] = useState("");
   const [productCounts, setProductCounts] = useState<Record<string, number>>({});
 
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  const { data: clientes } = api.clientes.list.useQuery(undefined)
-  const { data: productos } = api.productos.list.useQuery(undefined)
-  const productosConCategoria = productos?.filter((producto) => producto.tipoDeInstalacion !== null);
+  const { data: clientes }: { data: Cliente[] | undefined } = api.clientes.list.useQuery();
+  const { data: productos } = api.productos.list.useQuery()
+
   const handleClienteChange = (value : any) => {
     console.log(value);
     setCliente(value);
   }
-  const handleProductoChange = (value : any) => {
-    setProducto(value);
-  }
+  
   
 
   const handleProductCountChange = (productId: string, count: number) => {
@@ -60,58 +64,66 @@ export function AddPedidoDialog() {
       [productId]: count
     }));
   };
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   async function handleCreate() {
-    if(isButtonDisabled || isPending || isPendingProducto){
-      return null
-     }
-     setIsButtonDisabled(true);
+
+     if (cliente === null || cliente === "") {
+      toast.error("Debes seleccionar un cliente");
+      return;
+    }
+    const productosValidos = Object.values(productCounts).some(c => c > 0);
+    if (!productosValidos) {
+      toast.error("Debes seleccionar al menos un producto con cantidad > 0");
+      return;
+    }
 
 
     try {
-      const idCliente = clientes?.find((producto) => producto.Id === cliente)?.Id;
-      const result = await createPedido({
-        Cliente: idCliente!,
+
+      const productosParaGuardar = Object.entries(productCounts)
+  .filter(([_, count]) => count > 0)
+  .map(([productId, count]) => {
+    const producto = productos?.find((p: Producto) => p?.Id === productId);
+    if (!producto) {
+      throw new Error(`Producto con ID ${productId} no encontrado`);
+    }
+    return {
+      Producto_id: producto.Id,
+      Cantidad: count,
+      Descripcion: producto.Descripcion ?? "",
+      Nombre: producto.Nombre ?? "",
+      tipoInstalacionId: producto.tipoDeInstalacion_id ?? "",
+    };
+  })
+  .filter(Boolean) as {
+    Producto_id: string;
+    Cantidad: number;
+    Descripcion: string;
+    Nombre: string;
+    tipoInstalacionId: string;
+  }[];
+
+     await createPedido({
+        Cliente: cliente ?? "",
         Estado: "Pendiente",
         FechaCreacion: new Date().getTime(),
-      });
-      const id = result[0]!.Id;
-      if(id){
-        for (const [productId, count] of Object.entries(productCounts)) {
-            console.log(productos);
-            console.log(productId);
-            const desc = productos?.find((producto) => producto.Id === productId)?.Descripcion;
-            const idProd = productos?.find((producto) => producto.Id === productId)?.Id;
-            const nombre = productos?.find((producto) => producto.Id === productId)?.Nombre;
-            const tipoDeInstalacion_id = productos?.find((producto) => producto.Id === productId)?.tipoDeInstalacion_id;
-            await createProductoPedido({
-                Pedido: id,
-                Producto: idProd!,
-                Cantidad: count,
-                Descripcion: desc ?? "",
-                Nombre: nombre ?? "",
-                tipoInstalacion: tipoDeInstalacion_id ?? "",
-            });
-        };
-        // const prod = productos?.find((producto) => producto.Id === productoSeleccion);
-        // await createProductoPedido({
-        //   Pedido: id,
-        //   Producto: prod!.Id, 
-        //   Cantidad: cantidad,
-        //   Descripcion: prod?.Descripcion || "",
-        //   Nombre:prod?.Nombre || "",
-        // })
-        }
-        setOpen(false);
+        Productos: productosParaGuardar
+      }).then((res) => res.at(0));
+      
+
+      
+    
+
+       
+      setOpen(false);
+      refetch();
       toast.success("Pedido creado correctamente");
       router.refresh();
     } catch (e) {
       console.log(e);
+      toast.error("Error al crear el pedido");
     }
-    finally {
-      setTimeout(() => setIsButtonDisabled(false), 2000);
-    }
+   
   }
 
   return (
@@ -130,30 +142,13 @@ export function AddPedidoDialog() {
           <ComboboxDemo
             title="Seleccionar cliente..."
             placeholder="Cliente"
-            options={clientes?.map((cliente) => ({
-              value: cliente.Id.toString(),
-              label: cliente.Nombre || "",
-            })) ?? []}
+            options={clientes?.map((cliente: Cliente) => ({
+              value: cliente?.Id?.toString() || "",
+              label: cliente?.Nombre || "",
+            })).filter(option => option.value !== "") ?? []}
             onSelectionChange={handleClienteChange}
           />
-          {/* <Label className="relative top-2" htmlFor="name">Producto</Label>
-          <ComboboxDemo
-            title="Seleccionar producto..."
-            placeholder="Producto"
-            options={productos?.map((producto) => ({
-              value: producto.Id.toString(),
-              label: producto.Nombre || "",
-            })) ?? []}
-            onSelectionChange={handleProductoChange}
-            />
-            <Label htmlFor="name">Cantidad</Label>
-            <Input
-                type="number"
-                min="0"
-                value={cantidad}
-                onChange={e => setCantidad(Number(e.target.value))}
-            />
-          */}
+         
           </div> 
           <div>
           <Table>
@@ -165,17 +160,17 @@ export function AddPedidoDialog() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {productos?.filter(x=>(x.tipoDeInstalacion?.pasoCriticoTotipoInstalacion?.length ?? 0) > 0)
-                .map((producto) => (
-                    <TableRow key={producto.Id}>
-                        <TableCell>{producto.Nombre}</TableCell>
-                        <TableCell>{producto.Descripcion}</TableCell>
+                {productos?.filter((x: Producto)=>(x?.tipoDeInstalacion?.pasoCriticoTotipoInstalacion?.length ?? 0) > 0)
+                .map((producto: Producto) => (
+                    <TableRow key={producto?.Id}>
+                        <TableCell>{producto?.Nombre}</TableCell>
+                        <TableCell>{producto?.Descripcion}</TableCell>
                         <TableCell>
                             <Input
                                 type="number"
                                 min="0"
-                                value={productCounts[producto.Id] || ""}
-                                onChange={e => handleProductCountChange(producto.Id, Number.parseInt(e.target.value))}
+                                value={producto?.Id ? productCounts[producto.Id] || "" : ""}
+                                onChange={e => producto?.Id && handleProductCountChange(producto.Id, Number.parseInt(e.target.value))}
                             />
                         </TableCell>
                     </TableRow>
@@ -184,8 +179,8 @@ export function AddPedidoDialog() {
             </Table>
           </div>
           <DialogFooter>
-            <Button disabled={isPending || isPendingProducto || isButtonDisabled} onClick={handleCreate}>
-              {(isPending || isPendingProducto || isButtonDisabled) && (
+            <Button disabled={isPending} onClick={handleCreate}>
+              {(isPending) && (
                 <Loader2Icon className="mr-2 animate-spin" size={20} />
               )}
               Agregar pedido

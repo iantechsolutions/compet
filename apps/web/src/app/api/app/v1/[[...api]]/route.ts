@@ -287,7 +287,8 @@ app.post('/pedidos/post', async (c) => {
     const result = await api.pedidos.create({
         Cliente: "",
         FechaCreacion: 0,
-        Estado: '1'
+        Estado: '1',
+        Productos: []
     });
     return c.json("Succesful")
 });

@@ -29,25 +29,42 @@ export const instalacionesRouter = createTRPCRouter({
         }
         )
     }),
-    createAssignBarcode: publicProcedure.input(z.object({ Pedido: z.string(),tipoInstalacionId: z.string(),Empalmista: z.string(),FechaAlta: z.number(),FechaInst: z.number().optional(),FechaVeri: z.number().optional(),Estado: z.string(),Cliente: z.string(),Producto_pedido:z.string(), lat: z.number().optional(), long: z.number().optional(), Comentario:z.string().optional(),NroLoteArticulo: z.string() })).mutation(async ({ ctx, input }) => {
-      // simulate a slow db call
-      const anterior = await ctx.db.query.instalaciones.findMany({
+    createAssignBarcode: publicProcedure
+    .input(z.object({ 
+      Pedido: z.string(),
+      tipoInstalacionId: z.string(),
+      Empalmista: z.string(),
+      FechaAlta: z.number(),
+      FechaInst: z.number().optional(),
+      FechaVeri: z.number().optional(),
+      Estado: z.string(),
+      Cliente: z.string(),
+      Producto_pedido:z.string(),
+      lat: z.number().optional(),
+      long: z.number().optional(),
+      Comentario:z.string().optional(),
+      NroLoteArticulo: z.string() })).mutation(async ({input }) => {
+
+
+      const anterior = await db.query.instalaciones.findMany({
         orderBy: [desc(instalaciones.numero)],
       });
       let numero = 1
       if (anterior){
         numero = (anterior[0]?.numero ?? 0) + 1
       }
-      let generatedBarcodes = await ctx.db.query.generatedBarcodes.findMany({
+      let generatedBarcodes = await db.query.generatedBarcodes.findMany({
         orderBy: [desc(instalaciones.numero)],
       });
+
+      console.log(generatedBarcodes);
       let lastCode = 0
       if (generatedBarcodes){
         generatedBarcodes = generatedBarcodes.sort((a, b) => parseInt(a.Codigo ?? "0") - parseInt(b.Codigo ?? "0"));
         lastCode = parseInt(generatedBarcodes[generatedBarcodes.length-1]?.Codigo ?? "0")
       }
       
-      await ctx.db.insert(instalaciones).values(
+      await db.insert(instalaciones).values(
       {
         ...input, numero, Codigo_de_barras:(lastCode + 1).toString()
       }

@@ -3,6 +3,7 @@ import { db } from "~/server/db";
 import { asc, eq } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { empalmistas } from "~/server/db/schema";
+import { RouterOutputs } from "../root";
 
 export const empalmistasRouter = createTRPCRouter({
   create: publicProcedure
@@ -57,3 +58,5 @@ export const empalmistasRouter = createTRPCRouter({
       await db.delete(empalmistas).where(eq(empalmistas.Id, input.Id));
     }),
 });
+
+export type Empalmista = RouterOutputs["empalmistas"]["get"];
