@@ -19,8 +19,8 @@ import { api } from "~/trpc/react";
 
 interface AddPasoDialogProps {
   paso?: {
-    id: string;
-    description: string;
+    id: number;
+    descripcion: string;
     detalle: string;
     useCamera: boolean | null;
   };
@@ -31,14 +31,14 @@ export function AddPasoDialog({ paso }: AddPasoDialogProps) {
   const { mutateAsync: updatePaso, isPending: isUpdating } = api.pasoCritico.update.useMutation();
 
   const [open, setOpen] = useState(false);
-  const [descripcion, setDecripcion] = useState(paso?.description || "");
+  const [descripcion, setDecripcion] = useState(paso?.descripcion || "");
   const [detalle, setDetalle] = useState(paso?.detalle || "");
   const [usesCamera, setUsesCamera] = useState(paso?.useCamera || false);
   const router = useRouter();
 
   useEffect(() => {
     if (paso) {
-      setDecripcion(paso.description ?? "");
+      setDecripcion(paso.descripcion ?? "");
       setDetalle(paso.detalle ?? "");
       setUsesCamera(paso.useCamera ?? false);
     }
@@ -56,10 +56,10 @@ export function AddPasoDialog({ paso }: AddPasoDialogProps) {
 
     try {
       if (paso) {
-        await updatePaso({ Id: paso.id, description: descripcion, detalle, useCamera: usesCamera });
+        await updatePaso({ id: paso.id, descripcion: descripcion, detalle, useCamera: usesCamera });
         toast.success("Paso actualizado correctamente");
       } else {
-        await createPaso({ description: descripcion, detalle, useCamera: usesCamera });
+        await createPaso({ descripcion: descripcion, detalle, useCamera: usesCamera });
         toast.success("Paso creado correctamente");
       }
       router.refresh();

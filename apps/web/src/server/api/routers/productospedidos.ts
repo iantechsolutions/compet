@@ -6,38 +6,38 @@ import { productosPedidos } from "~/server/db/schema";
 
 export const productosPedidosRouter = createTRPCRouter({
     create: publicProcedure.input(z.object({
-      Pedido: z.string(),
-      Producto:z.string(),
+      pedidoId: z.number(),
+      productoId:z.string(),
       Cantidad:z.number(),
       Nombre:z.string(),
       Descripcion:z.string(),
-      tipoInstalacion:z.string()
+      tipoInstalacion:z.number()
     })).mutation(async ({ ctx, input }) => {
 
       await ctx.db.insert(productosPedidos).values({
-        Pedido: input.Pedido,
-        Producto: input.Producto,
-        Cantidad: input.Cantidad,
-        Nombre: input.Nombre,
-        Descripcion: input.Descripcion,
+        pedidoId: input.pedidoId,
+        productoId: input.productoId,
+        cantidadScaneada: 0,
+        cantidad: input.Cantidad,
+        descripcion: input.Descripcion,
+        nombre: input.Nombre,
         tipoInstalacion: input.tipoInstalacion,
-        CantidadScaneada: 0,
       });
     }),
     createMany: publicProcedure
     .input(z.array(z.object({
-      Pedido: z.string(),
-      Producto: z.string(),
-      Cantidad: z.number(),
-      Nombre: z.string(),
-      Descripcion: z.string(),
-      tipoInstalacion: z.string(),
+      pedidoId: z.number(),
+      productoId: z.string(),
+      cantidad: z.number(),
+      nombre: z.string(),
+      descripcion: z.string(),
+      tipoInstalacion:z.number()
     })))
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(productosPedidos).values(
         input.map(producto => ({
           ...producto,
-          CantidadScaneada: 0,
+          Cantidad: 0,
         }))
       );
     }),
@@ -48,12 +48,12 @@ export const productosPedidosRouter = createTRPCRouter({
   get: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        id: z.string(),
       }),
     )
     .query(async ({ input }) => {
       const channel = await db.query.productosPedidos.findFirst({
-        where: eq(productosPedidos.Id, input.Id),
+        where: eq(productosPedidos.id, input.id),
       });
 
       return channel;
@@ -61,41 +61,42 @@ export const productosPedidosRouter = createTRPCRouter({
     getByProduct: publicProcedure
     .input(
       z.object({
-        IdProducto: z.string(),
+        IdpedidoId: z.string(),
       }),
     )
     .query(async ({ input }) => {
       const channel = await db.query.productosPedidos.findMany({
-        where: eq(productosPedidos.Producto, input.IdProducto),
-        with: {pedido: {with: {clientes: true}}}
+        where: eq(productosPedidos.productoId, input.IdpedidoId),
+        with: {pedido: {with: {cliente: true}}}
       });
 
       return channel;
     }),
-    update: publicProcedure.input(z.object({Id:z.string(),Pedido: z.string(),Producto:z.string(),Cantidad:z.number(),Nombre:z.string(),Descripcion:z.string(),CantidadScaneada:z.number(),tipoInstalacion:z.string(),})).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({id:z.string(),pedido: z.number(),productoId:z.string(),cantidad:z.number(),nombre:z.string(),
+      descripcion:z.string(),cantidadScaneada:z.number(),tipoInstalacion:z.number(),})).mutation(async ({ ctx, input }) => {
       await db
         .update(productosPedidos)
         .set({
-          Pedido: input.Pedido,
-          Producto: input.Producto,
-          Cantidad: input.Cantidad,
-          Nombre: input.Nombre,
-          Descripcion: input.Descripcion,
+          pedidoId: input.pedido,
+          productoId: input.productoId,
+          cantidad: input.cantidad,
+          nombre: input.nombre,
+          descripcion: input.descripcion,
           tipoInstalacion: input.tipoInstalacion,
-          CantidadScaneada: input.CantidadScaneada,
+          cantidadScaneada: input.cantidadScaneada,
         })
-        .where(eq(productosPedidos.Id, input.Id));
+        .where(eq(productosPedidos.id, input.id));
     }),
 
   delete: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        id: z.string(),
       }),
     )
     .mutation(async ({ input }) => {
       await db
         .delete(productosPedidos)
-        .where(eq(productosPedidos.Id, input.Id));
+        .where(eq(productosPedidos.id, input.id));
     }),
 });

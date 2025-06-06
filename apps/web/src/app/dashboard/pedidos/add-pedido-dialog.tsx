@@ -83,31 +83,31 @@ export function AddPedidoDialog({
       const productosParaGuardar = Object.entries(productCounts)
   .filter(([_, count]) => count > 0)
   .map(([productId, count]) => {
-    const producto = productos?.find((p: Producto) => p?.Id === productId);
+    const producto = productos?.find((p: Producto) => p?.id === productId);
     if (!producto) {
       throw new Error(`Producto con ID ${productId} no encontrado`);
     }
     return {
-      Producto_id: producto.Id,
-      Cantidad: count,
-      Descripcion: producto.Descripcion ?? "",
-      Nombre: producto.Nombre ?? "",
-      tipoInstalacionId: producto.tipoDeInstalacion_id ?? "",
+      productoId: producto.id,
+      cantidad: count,
+      descripcion: producto.descripcion ?? "",
+      nombre: producto.nombre ?? "",
+      tipoInstalacionId: producto.tipoDeInstalacionId ?? 0,
     };
   })
   .filter(Boolean) as {
-    Producto_id: string;
-    Cantidad: number;
-    Descripcion: string;
-    Nombre: string;
-    tipoInstalacionId: string;
+    productoId: string;
+    cantidad: number;
+    descripcion: string;
+    nombre: string;
+    tipoInstalacionId: number;
   }[];
 
      await createPedido({
-        Cliente: cliente ?? "",
-        Estado: "Pendiente",
-        FechaCreacion: new Date().getTime(),
-        Productos: productosParaGuardar
+        clienteId: cliente ?? "",
+        estado: "Pendiente",
+        fechaCreacion: new Date().getTime(),
+        productos: productosParaGuardar
       }).then((res) => res.at(0));
       
 
@@ -143,8 +143,8 @@ export function AddPedidoDialog({
             title="Seleccionar cliente..."
             placeholder="Cliente"
             options={clientes?.map((cliente: Cliente) => ({
-              value: cliente?.Id?.toString() || "",
-              label: cliente?.Nombre || "",
+              value: cliente?.id?.toString() || "",
+              label: cliente?.nombre || "",
             })).filter(option => option.value !== "") ?? []}
             onSelectionChange={handleClienteChange}
           />
@@ -154,23 +154,23 @@ export function AddPedidoDialog({
           <Table>
             <TableHeader>
                 <TableRow>
-                <TableHead className="w-[100px]">Nombre del producto</TableHead>
-                <TableHead>Descripcion</TableHead>
+                <TableHead className="w-[100px]">nombre del producto</TableHead>
+                <TableHead>descripcion</TableHead>
                 <TableHead>Cantidad</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
                 {productos?.filter((x: Producto)=>(x?.tipoDeInstalacion?.pasoCriticoTotipoInstalacion?.length ?? 0) > 0)
                 .map((producto: Producto) => (
-                    <TableRow key={producto?.Id}>
-                        <TableCell>{producto?.Nombre}</TableCell>
-                        <TableCell>{producto?.Descripcion}</TableCell>
+                    <TableRow key={producto?.id}>
+                        <TableCell>{producto?.nombre}</TableCell>
+                        <TableCell>{producto?.descripcion}</TableCell>
                         <TableCell>
                             <Input
                                 type="number"
                                 min="0"
-                                value={producto?.Id ? productCounts[producto.Id] || "" : ""}
-                                onChange={e => producto?.Id && handleProductCountChange(producto.Id, Number.parseInt(e.target.value))}
+                                value={producto?.id ? productCounts[producto.id] || "" : ""}
+                                onChange={e => producto?.id && handleProductCountChange(producto.id, Number.parseInt(e.target.value))}
                             />
                         </TableCell>
                     </TableRow>

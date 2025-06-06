@@ -23,14 +23,13 @@ import { Producto } from "~/server/api/routers/productos";
 import { api } from "~/trpc/react";
 
 export function AddInstalacionDialog() {
-  const { mutateAsync: createInstalacion, isPending } =
-    api.instalaciones.createAssignBarcode.useMutation();
+ 
 
 
   const [open, setOpen] = useState(false);
   const [empalmista, setEmpalmista] = useState("");
   const [cliente, setCliente] = useState("");
-  const [producto, setProducto] = useState("");
+  const [producto, setProducto] = useState(0);
   const router = useRouter();
 
   const handleEmpalmistaChange = (value : any) => {
@@ -42,7 +41,7 @@ export function AddInstalacionDialog() {
     console.log(cliente)
   }
   const handleProductoChange = (value : any) => {
-    setProducto(value);
+    setProducto(Number(value));
   }
 
 const { data: empalmistas} = api.empalmistas.list.useQuery(undefined);
@@ -51,34 +50,32 @@ const { data: pedidos } = api.pedidos.list.useQuery(undefined);
 
 
 async function handleCreate() {
-  if(isPending){
-    return null
-  }
+  
   if(!empalmista || !cliente || !producto){
     toast.error("Cargue todos los campos")
     return null
   }
 
     try {
-        const clienteT = clientes?.find((client) => client?.Id === cliente);
-        const pedidoT = pedidos?.find((pedido: Pedido) => pedido?.Id === producto);
-        const empalmistaT = empalmistas?.find((empalmis) => empalmis?.Id === empalmista );
+        const clienteT = clientes?.find((client) => client?.id === cliente);
+        const pedidoT = pedidos?.find((pedido: Pedido) => pedido?.id === producto);
+        const empalmistaT = empalmistas?.find((empalmis) => empalmis?.id === empalmista );
        
-        if(pedidoT?.productos){
+        if(pedidoT?.productosPedidos){
          
          try{
 
-           pedidoT.productos.forEach(async (producto) => {
-             await createInstalacion({
-               Cliente:clienteT?.Id ?? "",
-               Pedido:pedidoT?.Id ?? "",
-               Empalmista: empalmistaT?.Id ?? "",
-               FechaAlta: new Date().getTime(),
-               Estado: "Pendiente",
-               Producto_pedido: producto?.Id ?? "",
-               tipoInstalacionId: producto?.tipoInstalacion ?? "",
-               NroLoteArticulo: "",
-              });
+           pedidoT.productosPedidos.forEach(async (producto) => {
+            //  await createInstalacion({
+            //    Cliente:clienteT?.id ?? "",
+            //    Pedido:pedidoT?.id ?? "",
+            //    Empalmista: empalmistaT?.id ?? "",
+            //    FechaAlta: new Date().getTime(),
+            //    Estado: "Pendiente",
+            //    Producto_pedido: producto?.id ?? "",
+            //    tipoInstalacionId: producto?.tipoInstalacion ?? "",
+            //    NroLoteArticulo: "",
+            //   });
             })
           }catch(e){
             console.log(e);
@@ -112,8 +109,8 @@ async function handleCreate() {
             title="Seleccionar empalmista..."
             placeholder="Empalmista"
             options={empalmistas?.map((empalmista) => ({
-              value: empalmista?.Id.toString(),
-              label: empalmista?.Nombre || "",
+              value: empalmista?.id.toString(),
+              label: empalmista?.nombre || "",
             })) ?? []}
             onSelectionChange={handleEmpalmistaChange}
 
@@ -124,8 +121,8 @@ async function handleCreate() {
             title="Seleccionar cliente..."
             placeholder="Cliente"
             options={clientes?.map((cliente) => ({
-              value: cliente?.Id.toString(),
-              label: cliente?.Nombre || "",
+              value: cliente?.id.toString(),
+              label: cliente?.nombre || "",
             })) ?? []}
             onSelectionChange={handleClienteChange}
           />
@@ -135,8 +132,8 @@ async function handleCreate() {
             title="Seleccionar pedido..."
             placeholder="Producto"
             options={pedidos?.map((pedido) => ({
-              value: pedido?.Id.toString(),
-              label: pedido?.Numero?.toString() || "",
+              value: pedido?.id?.toString() || "",
+              label: pedido?.numero?.toString() || "",
             })) ?? []}
             onSelectionChange={handleProductoChange}
           />
@@ -149,8 +146,8 @@ async function handleCreate() {
           >
         </Input> */}
           <DialogFooter>
-            <Button disabled={isPending} onClick={handleCreate}>
-              {isPending && (
+            <Button disabled={false} onClick={handleCreate}>
+              {false && (
                 <Loader2Icon className="mr-2 animate-spin" size={20} />
               )}
               Agregar instalacion

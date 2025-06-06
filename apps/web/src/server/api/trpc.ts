@@ -85,7 +85,7 @@ export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
     }
 
     const user = await ctx.db.query.users.findFirst({
-        where: eq(schema.users.Id, session.user.id),
+        where: eq(schema.users.id, session.user.id),
         columns: {
             client: true,
             company: true,
@@ -98,7 +98,7 @@ export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
         await ctx.db
             .insert(schema.users)
             .values({
-                Id: session.user.id,
+                id: session.user.id,
                 email: session.user.email,
                 nombre: session.user.name,
                 picture: session.user.picture,

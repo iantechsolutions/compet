@@ -20,7 +20,7 @@ export default async function Home(){
             return (
               <ListTile
                 key={Paso.id}
-                leading={Paso.description}
+                leading={Paso.descripcion}
                 button={<AddPasoDialog paso={Paso} />}
                 deleteButton={<DeletePasoButton clientId={Paso.id} />}
                 // href={`/dashboard/criticsteps/${Paso.id}`}

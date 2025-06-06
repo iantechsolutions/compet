@@ -30,7 +30,7 @@ interface DeleteProductoButtonProps {
       
       
       try {
-        await deletProductoMethod({ Id: productoId });
+        await deletProductoMethod({ id: productoId });
         toast.success("Producto eliminado correctamente");
         router.refresh();
       } catch (e) {
@@ -55,7 +55,7 @@ interface DeleteProductoButtonProps {
           <List>
             {instalaciones.map((producto) => (
               <h1>
-                -N° {producto.numero} Estado {producto.Estado}
+                -N° {producto.id} Estado {producto.estado}
               </h1>
             ))}
           </List>

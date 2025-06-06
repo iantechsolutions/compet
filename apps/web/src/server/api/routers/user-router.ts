@@ -15,7 +15,7 @@ export const usersRouterList = createTRPCRouter({
     const users = await db.query.users.findMany();
     return users;
   }),
-    update: publicProcedure.input(z.object({Id:z.string(), email: z.string(),
+    update: publicProcedure.input(z.object({id:z.string(), email: z.string(),
         nombre: z.string(), apellido: z.string(),rol: z.string(),
         solicitudAprobada: z.boolean(), 
         administrator: z.boolean(), picture: z.string(),
@@ -23,7 +23,7 @@ export const usersRouterList = createTRPCRouter({
       await db
         .update(users)
         .set({
-        Id: input.Id,
+        id: input.id,
         email: input.email,
         nombre: input.nombre,
         apellido: input.apellido,
@@ -35,10 +35,10 @@ export const usersRouterList = createTRPCRouter({
         company: input.company,
         splicer: input.splicer,
         })
-        .where(eq(users.Id, input.Id));
+        .where(eq(users.id, input.id));
     }),
     create: protectedProcedure
-    .input(z.object({ Id:z.string(),email: z.string(),
+    .input(z.object({ id:z.string(),email: z.string(),
         nombre: z.string(), apellido: z.string(),rol: z.string(),
         solicitudAprobada: z.boolean(), 
         administrator: z.boolean(), picture: z.string(),

@@ -11,7 +11,7 @@ import { RouterOutputs } from "../root";
 
 export const clientesRouter = createTRPCRouter({
   create: protectedProcedure
-    .input(z.object({ Direccion: z.string(), Nombre: z.string() }))
+    .input(z.object({ direccion: z.string(), nombre: z.string() }))
     .mutation(async ({ input }) => {
       await db.insert(clientes).values(input);
     }),
@@ -24,35 +24,35 @@ export const clientesRouter = createTRPCRouter({
   get: protectedProcedure
     .input(
       z.object({
-        clienteId: z.string(),
+        clienteid: z.string(),
       }),
     )
     .query(async ({ input }) => {
       const administrative_audit = await db.query.clientes.findFirst({
-        where: eq(schema.clientes.Id, input.clienteId),
+        where: eq(schema.clientes.id, input.clienteid),
       });
 
       return administrative_audit;
     }),
-    update: publicProcedure.input(z.object({Id:z.string(), name: z.string(), direccion: z.string() })).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({id:z.string(), name: z.string(), direccion: z.string() })).mutation(async ({ ctx, input }) => {
       await db
         .update(clientes)
         .set({
-          Id: input.Id,
-          Nombre: input.name,
-          Direccion: input.direccion,
+          id: input.id,
+          nombre: input.name,
+          direccion: input.direccion,
         })
-        .where(eq(clientes.Id, input.Id));
+        .where(eq(clientes.id, input.id));
     }),
 
   delete: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        id: z.string(),
       }),
     )
     .mutation(async ({ input }) => {
-      await db.delete(clientes).where(eq(clientes.Id, input.Id));
+      await db.delete(clientes).where(eq(clientes.id, input.id));
     }),
 });
 

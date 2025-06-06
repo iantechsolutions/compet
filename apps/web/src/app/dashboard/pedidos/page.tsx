@@ -16,13 +16,13 @@ export default function Home(){
 
 
     const data: PedidoTabla[]  = (pedidos ?? []).map((ped: Pedido) => ({
-      Id: ped?.Id || "Sin Id",
-      estado: ped?.Estado || "SinEstado",
-      numero: String(ped?.Numero) || "Sin número",
-      fecha_creacion: ped?.Fecha_de_creacion
-        ? dayjs(ped?.Fecha_de_creacion).format("DD/MM/YYYY")
+      id: ped?.id || 0,
+      estado: ped?.estado || "Pendiente",
+      numero: String(ped?.numero) || "Sin número",
+      fecha_creacion: ped?.fechaCreacion
+        ? dayjs(ped?.fechaCreacion).format("DD/MM/YYYY")
         : "Sin Fecha",
-        cliente: ped?.clientes.Nombre || "Sin Cliente",
+        cliente: ped?.cliente.nombre || "Sin Cliente",
     }));
 
 

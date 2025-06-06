@@ -31,18 +31,18 @@ interface AddEmpalmistaDialogProps {
 export function AddEmpalmistaDialog({ empalmista }: AddEmpalmistaDialogProps) {
   const { mutateAsync: createEmpalmista, isPending: isCreating } = api.empalmistas.create.useMutation();
   const { mutateAsync: updateEmpalmista, isPending: isUpdating } = api.empalmistas.update.useMutation();
-  const [name, setName] = useState(empalmista?.Nombre || "");
-  const [DNI, setDNI] = useState(empalmista?.DNI || "");
-  const [BirthDate, setBirthDate] = useState<Date | undefined>(empalmista?.BirthDate || undefined);
+  const [name, setName] = useState(empalmista?.nombre || "");
+  const [dni, setdni] = useState(empalmista?.dni || "");
+  const [birthDate, setbirthDate] = useState<Date | undefined>(empalmista?.birthDate || undefined);
   const [open, setOpen] = useState(false);
   const [popover1Open, setPopover1Open] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     if (empalmista) {
-      setName(empalmista.Nombre ?? "");
-      setDNI(empalmista.DNI ?? "");
-      setBirthDate(empalmista.BirthDate ?? new Date());
+      setName(empalmista.nombre ?? "");
+      setdni(empalmista.dni ?? "");
+      setbirthDate(empalmista.birthDate ?? new Date());
     }
   }, [empalmista]);
 
@@ -57,12 +57,12 @@ export function AddEmpalmistaDialog({ empalmista }: AddEmpalmistaDialogProps) {
 
 
     try {
-      console.log("BirthDate", BirthDate);
+      console.log("birthDate", birthDate);
       if (empalmista) {
-        await updateEmpalmista({ Id: empalmista.Id, name, DNI, BirthDate: BirthDate?.getTime() });
+        await updateEmpalmista({ id: empalmista.id, name, dni, birthDate: birthDate?.getTime() });
         toast.success("Empalmista actualizado correctamente");
       } else {
-        await createEmpalmista({ name, DNI, BirthDate:BirthDate?.getTime() });
+        await createEmpalmista({ name, dni, birthDate:birthDate?.getTime() });
         toast.success("Empalmista creado correctamente");
       }
       router.refresh();
@@ -76,7 +76,7 @@ export function AddEmpalmistaDialog({ empalmista }: AddEmpalmistaDialogProps) {
   }
 
   async function FechasCreateEmpalmista(e: any) {
-    setBirthDate(e);
+    setbirthDate(e);
     setPopover1Open(false);
   }
 
@@ -101,7 +101,7 @@ export function AddEmpalmistaDialog({ empalmista }: AddEmpalmistaDialogProps) {
             <DialogTitle>{empalmista ? "Editar empalmista" : "Agregar nuevo empalmista"}</DialogTitle>
           </DialogHeader>
           <div>
-            <Label htmlFor="name">Nombre del empalmista</Label>
+            <Label htmlFor="name">nombre del empalmista</Label>
             <Input
               id="name"
               placeholder="..."
@@ -110,12 +110,12 @@ export function AddEmpalmistaDialog({ empalmista }: AddEmpalmistaDialogProps) {
             />
           </div>
           <div>
-            <Label htmlFor="name">DNI</Label>
+            <Label htmlFor="name">dni</Label>
             <Input
               id="dni"
               placeholder="..."
-              value={DNI}
-              onChange={(e) => setDNI(e.target.value)}
+              value={dni}
+              onChange={(e) => setdni(e.target.value)}
             />
           </div>
           <div>
@@ -127,18 +127,18 @@ export function AddEmpalmistaDialog({ empalmista }: AddEmpalmistaDialogProps) {
                 variant={"outline"}
                 className={cn(
                   "w-[280px] justify-start text-left font-normal",
-                  !BirthDate && "text-muted-foreground"
+                  !birthDate && "text-muted-foreground"
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {BirthDate ? dayjs(BirthDate).format("D [de] MMMM [de] YYYY") : <span>Seleccione una fecha</span>}
+                {birthDate ? dayjs(birthDate).format("D [de] MMMM [de] YYYY") : <span>Seleccione una fecha</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <Calendar
                 mode="single"
-                selected={BirthDate}
-                onSelect={setBirthDate}
+                selected={birthDate}
+                onSelect={setbirthDate}
               />
             </PopoverContent>
           </Popover> */}
@@ -148,12 +148,12 @@ export function AddEmpalmistaDialog({ empalmista }: AddEmpalmistaDialogProps) {
                       variant={"outline"}
                       className={cn(
                         "w-[240px] pl-3 text-left font-normal",
-                        !BirthDate && "text-muted-foreground"
+                        !birthDate && "text-muted-foreground"
                       )}
                     >
                       <p>
-                        {BirthDate ? (
-                          dayjs.utc(BirthDate).format("D [de] MMMM [de] YYYY")
+                        {birthDate ? (
+                          dayjs.utc(birthDate).format("D [de] MMMM [de] YYYY")
                         ) : (
                           <span>Escoga una fecha</span>
                         )}
@@ -164,7 +164,7 @@ export function AddEmpalmistaDialog({ empalmista }: AddEmpalmistaDialogProps) {
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={BirthDate ? new Date(BirthDate) : undefined}
+                    selected={birthDate ? new Date(birthDate) : undefined}
                     onSelect={(e)=>{
                       FechasCreateEmpalmista(e);
                     }}

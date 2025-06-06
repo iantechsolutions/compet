@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
 
 interface DeleteTipoInstalacionButtonProps {
-  clientId: string;
+  clientId: number;
 }
 
 export function DeleteTipoInstalacionButton({ clientId }: DeleteTipoInstalacionButtonProps) {
@@ -26,8 +26,8 @@ const {data:instalaciones} = api.instalaciones.getByTipoInstalacion.useQuery({ti
 
   const deleteInstalacion = async () => {
     try {
-      await deleteRelaciones({Id: clientId});
-      await deleteInstalacionMethod({ Id: clientId });
+      await deleteRelaciones({id: clientId});
+      await deleteInstalacionMethod({ id: clientId });
       toast.success("Categoria eliminada correctamente");
       setIsDialogOpen(false);
       router.refresh();
@@ -53,14 +53,14 @@ const {data:instalaciones} = api.instalaciones.getByTipoInstalacion.useQuery({ti
             <h1>Productos</h1>
           {productos && productos.map((prod) => 
           { return(
-            <li key={prod.Id}>-{prod.Nombre}</li>
+            <li key={prod.id}>-{prod.nombre}</li>
            )}
           )}
             <h1>Instalaciones</h1>
 
           {instalaciones && instalaciones.map((prod) => 
           { return(
-            <li key={prod.Id}>-N° {prod.numero}</li>
+            <li key={prod.id}>-N° {prod.id}</li>
            )}
           )}
           </ul>

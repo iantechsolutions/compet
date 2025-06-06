@@ -6,7 +6,7 @@ import { AddProductoDialog } from "./add-product-dialog";
 import { DeleteProductoButton } from "~/components/deletebuttonproducto";
 
 export default async function Home(){
-    const clients = await api.productos.list();
+    const products = await api.productos.list();
     return(
       <LayoutContainer>
       <section className="space-y-2">
@@ -15,14 +15,14 @@ export default async function Home(){
           <AddProductoDialog />
         </div>
         <List>
-          {clients.map((clients) => {
+          {products.map((product) => {
             return (
               <ListTile
-                key={clients.Id}
-                title={clients.Nombre}
-                leading={clients.Descripcion}
-                button={<AddProductoDialog product={clients} />}
-                deleteButton={<DeleteProductoButton productoId={clients.Id} />}
+                key={product.id}
+                title={product.nombre}
+                leading={product.descripcion}
+                button={<AddProductoDialog product={product} />}
+                deleteButton={<DeleteProductoButton productoId={product.id} />}
               />
             );
           })}

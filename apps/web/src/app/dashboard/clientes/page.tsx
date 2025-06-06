@@ -20,11 +20,11 @@ export default async function Home(){
           {clients.map((clients) => {
             return (
               <ListTile
-                key={clients.Id}
-                leading={clients.Direccion}
-                title={clients.Nombre}
+                key={clients.id}
+                leading={clients.direccion}
+                title={clients.nombre}
                 button={<AddClienteDialog client={clients} />}
-                deleteButton={<DeleteClientButton clientId={clients.Id} />}
+                deleteButton={<DeleteClientButton clientId={clients.id} />}
               />
             );
           })}

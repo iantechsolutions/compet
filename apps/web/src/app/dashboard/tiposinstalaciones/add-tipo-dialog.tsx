@@ -30,7 +30,7 @@ import { int } from "drizzle-orm/mysql-core";
 
 type EmpalmistaType = RouterOutputs['tipoInstalaciones']['list'][number];
 interface pasoType {
-  readonly id: string;
+  readonly id: number;
   readonly value: string;
   readonly label: string;
 }
@@ -53,16 +53,16 @@ export function AddTipoInstalacionDialog({ tipoInstalacion }: AddEmpalmistaDialo
   
   useEffect(() => {
     if (tipoInstalacion && pasosCriticos) {
-      setDescripcion(tipoInstalacion.description);
+      setDescripcion(tipoInstalacion.descripcion);
       console.log("entra al if");
       const pasosArray = tipoInstalacion.pasoCriticoTotipoInstalacion.map((paso) =>{
-        const pasoCritico = pasosCriticos?.find((pasoCritico) => pasoCritico.id === paso.pasoCritico);
+        const pasoCritico = pasosCriticos?.find((pasoCritico) => pasoCritico.id === paso.pasoCriticoId);
         console.log("pasoCritico",pasoCritico)
         if(pasoCritico){
           const createdPaso = {
             id: pasoCritico.id,
-            value: pasoCritico.id,
-            label: pasoCritico.description,
+            value: pasoCritico.id.toString(),
+            label: pasoCritico.descripcion,
           }
           setSelectedPasos(currentSelectedPasos => [...currentSelectedPasos, createdPaso]);
         }
@@ -124,8 +124,8 @@ export function AddTipoInstalacionDialog({ tipoInstalacion }: AddEmpalmistaDialo
       
       if (tipoInstalacion) {
         await updateTipoInstalacion({
-          Id: tipoInstalacion.id,
-          description: descripcion,
+          id: tipoInstalacion.id,
+          descripcion: descripcion,
         });
         // Delete existing relations before creating new ones
         for (const paso of tipoInstalacion.pasoCriticoTotipoInstalacion) {
@@ -135,11 +135,11 @@ export function AddTipoInstalacionDialog({ tipoInstalacion }: AddEmpalmistaDialo
         }
       } else {
         const newTipoInstalacion = await createTipoInstalacion({
-          description: descripcion,
+          descripcion: descripcion,
         });
         const conversion = {
-          id: newTipoInstalacion[0]?.id ?? "",
-          description: newTipoInstalacion[0]?.description ?? "",
+          id: Number(newTipoInstalacion[0]?.id ?? 0),
+          descripcion: newTipoInstalacion[0]?.descripcion ?? "",
           pasoCriticoTotipoInstalacion: []
         }
         
@@ -149,8 +149,8 @@ export function AddTipoInstalacionDialog({ tipoInstalacion }: AddEmpalmistaDialo
       // Create new relations
       for (let i = 0; i < selectedPasos.length; i++) {
         await createRelacion({
-          pasoCritico: selectedPasos[i]?.id ?? "",
-          tipoInstalacion: tipoInstalacion?.id ?? "",
+          pasoCriticoId: selectedPasos[i]?.id ?? 0,
+          tipoInstalacionId: tipoInstalacion?.id ?? 0,
           number: i,
         });
       }
@@ -168,8 +168,8 @@ export function AddTipoInstalacionDialog({ tipoInstalacion }: AddEmpalmistaDialo
 
   const listaPasos = pasosCriticos ? pasosCriticos.map(paso => ({
     id: paso.id,
-    value: paso.id,
-    label: paso.description,
+    value: paso.id.toString(),
+    label: paso.descripcion,
   })) : [];
 
   return (

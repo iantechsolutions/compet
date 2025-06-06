@@ -2,8 +2,8 @@ import { createColumnHelper, ColumnDef } from "@tanstack/react-table";
 import InfoButton from "~/components/ui/info-button";
 
 export type PedidoTabla = {
-  Id: string;
-  estado: string;
+  id: number;
+  estado: "Pendiente"| "Generado"| "Enviado"| "Aprobado" | "ACTIVO";
   numero: string;
   cliente: string;
   fecha_creacion: string;

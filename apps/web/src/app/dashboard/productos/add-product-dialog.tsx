@@ -30,29 +30,29 @@ export function AddProductoDialog({ product }: AddProductoDialogProps) {
   const { mutateAsync: updateProduct, isPending: isUpdating } =
     api.productos.update.useMutation();
 
-  const [name, setName] = useState(product?.Nombre || "");
-  const [description, setDescription] = useState(product?.Descripcion || "");
-  const [barcode, setBarcode] = useState(product?.Codigo_de_barras || "");
+  const [name, setName] = useState(product?.nombre || "");
+  const [descripcion, setDescripcion] = useState(product?.descripcion || "");
+  const [codigoDeBarras, setCodigoDeBarras] = useState(product?.codigoDeBarras || "");
 
   const [open, setOpen] = useState(false);
 
   const router = useRouter();
   const { data: categorias } = api.tipoInstalaciones.list.useQuery(undefined);
 
-  const [categoria, setCategoria] = useState(product?.tipoDeInstalacion_id || "");
+  const [categoria, setCategoria] = useState(product?.tipoDeInstalacionId || "");
   const handleCategoriaChange = (value: any) => {
     setCategoria(value.value);
   };
   const opciones:readonly any[] = categorias?.map((categoria) => ({
     value: categoria.id,
-    label: categoria.description || "",
+    label: categoria.descripcion || "",
   })) ?? [];
   useEffect(() => {
     if (product) {
-      setName(product.Nombre);
-      setDescription(product.Descripcion ?? "");
-      setBarcode(product.Codigo_de_barras ?? "");
-      setCategoria(product.tipoDeInstalacion_id ?? "");
+      setName(product.nombre);
+      setDescripcion(product.descripcion ?? "");
+      setCodigoDeBarras(product.codigoDeBarras ?? "");
+      setCategoria(product.tipoDeInstalacionId ?? "");
     }
   }, [product]);
 
@@ -72,20 +72,20 @@ export function AddProductoDialog({ product }: AddProductoDialogProps) {
       if (product) {
         console.log("update");
         await updateProduct({
-          Id: product.Id,
+          id: product.id,
           name,
-          description,
-          barcode,
-          categoria: categoriaItem ? categoriaItem?.id : null,
+          description: descripcion,
+          codigoDeBarras,
+          tipoDeInstalacionId: categoriaItem ? categoriaItem?.id : null,
         });
         toast.success("Producto actualizado correctamente");
       } else {
         console.log("create");
         await createProduct({
-          categoria: categoriaItem ? categoriaItem?.id : null,
+          tipoDeInstalacionId: categoriaItem ? categoriaItem?.id : null,
           name,
-          description,
-          barcode,
+          description: descripcion,
+          codigoDeBarras,
         });
         toast.success("Producto creado correctamente");
       }
@@ -122,7 +122,7 @@ export function AddProductoDialog({ product }: AddProductoDialogProps) {
             <DialogTitle>{product ? "Editar producto" : "Agregar nuevo producto"}</DialogTitle>
           </DialogHeader>
           <div>
-            <Label htmlFor="name">Nombre del producto</Label>
+            <Label htmlFor="name">nombre del producto</Label>
             <Input
               id="name"
               placeholder="..."
@@ -131,12 +131,12 @@ export function AddProductoDialog({ product }: AddProductoDialogProps) {
             />
           </div>
           <div>
-            <Label htmlFor="description">Descripcion del producto</Label>
+            <Label htmlFor="descripcion">descripcion del producto</Label>
             <Input
-              id="description"
+              id="descripcion"
               placeholder="..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={descripcion}
+              onChange={(e) => setDescripcion(e.target.value)}
             />
           </div>
           {/* <div>
@@ -145,7 +145,7 @@ export function AddProductoDialog({ product }: AddProductoDialogProps) {
               id="barcode"
               placeholder="..."
               value={barcode}
-              onChange={(e) => setBarcode(e.target.value)}
+              onChange={(e) => setCodigoDeBarras(e.target.value)}
             />
           </div> */}
           <div>
@@ -154,7 +154,7 @@ export function AddProductoDialog({ product }: AddProductoDialogProps) {
             <Select
               className="basic-single"
               classNamePrefix="select"
-              defaultValue={opciones.find((categoria) => categoria.value === product?.tipoDeInstalacion_id)}
+              defaultValue={opciones.find((categoria) => categoria.value === product?.tipoDeInstalacionId)}
               isClearable={true}
               isSearchable={true}
               name="Categoria"

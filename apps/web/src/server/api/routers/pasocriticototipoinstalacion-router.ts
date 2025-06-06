@@ -6,7 +6,7 @@ import { pasoCriticoTotipoInstalacion } from '~/server/db/schema'
 
 export const pasocriticototipoinstalacionRouter = createTRPCRouter({
   create: protectedProcedure
-  .input(z.object( {tipoInstalacion: z.string(), pasoCritico: z.string(), number: z.number().optional() }))
+  .input(z.object( {tipoInstalacionId: z.number(), pasoCriticoId: z.number(), number: z.number().optional() }))
   .mutation(async ({ input }) => {
     
     await db.insert(pasoCriticoTotipoInstalacion).values(input);
@@ -31,15 +31,15 @@ export const pasocriticototipoinstalacionRouter = createTRPCRouter({
 
       return administrative_audit;
     }),
-    update: publicProcedure.input(z.object({Id:z.string(), tipoInstalacion: z.string().min(1), pasoCritico: z.string() })).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({id:z.string(), tipoInstalacionId: z.number().min(1), pasoCriticoId: z.number() })).mutation(async ({ ctx, input }) => {
       await db
         .update(pasoCriticoTotipoInstalacion)
         .set({
-          id: input.Id,
-          tipoInstalacion: input.tipoInstalacion,
-          pasoCritico: input.pasoCritico,
+          id: input.id,
+          tipoInstalacionId: input.tipoInstalacionId,
+          pasoCriticoId: input.pasoCriticoId,
         })
-        .where(eq(pasoCriticoTotipoInstalacion.id, input.Id));
+        .where(eq(pasoCriticoTotipoInstalacion.id, input.id));
     }),
 
     delete: publicProcedure
@@ -56,13 +56,13 @@ export const pasocriticototipoinstalacionRouter = createTRPCRouter({
     deleteByTipoInstalacionId: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        id: z.number(),
       }),
     )
     .mutation(async ({ input }) => {
       await db
         .delete(pasoCriticoTotipoInstalacion)
-        .where(eq(pasoCriticoTotipoInstalacion.tipoInstalacion, input.Id));
+        .where(eq(pasoCriticoTotipoInstalacion.tipoInstalacionId, input.id));
     }),
 
 })

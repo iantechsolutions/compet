@@ -13,8 +13,6 @@ export const testRouter = createTRPCRouter({
             await tx.delete(schema.productosPedidos).run(); // Dependiente de pedidos
             await tx.delete(schema.pedidos).run(); // Eliminar registros en pedidos
             await tx.delete(schema.productos).run(); // Relacionado con productosPedidos, etc.
-            await tx.delete(schema.generatedBarcodes)
-            await tx.delete(schema.CodigoBarras ).run();
             // Ahora elimina las tablas principales que no tienen dependencias
             await tx.delete(schema.empalmistas).run(); // Eliminar primero las dependientes
             await tx.delete(schema.clientes).run(); // De último los clientes

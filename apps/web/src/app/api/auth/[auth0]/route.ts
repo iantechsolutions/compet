@@ -9,7 +9,7 @@ import { db, schema } from '~/server/db'
 const afterCallback: AfterCallbackAppRoute = async (_req, session, _state) => {
     try{
         await db.insert(schema.users).values({
-            Id: session.user.sub,
+            id: session.user.sub,
             email: session.user.email,
             nombre: session.user.name,
             picture: session.user.picture,

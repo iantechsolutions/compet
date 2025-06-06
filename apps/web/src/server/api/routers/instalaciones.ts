@@ -13,75 +13,97 @@ import { PgTimestampBuilder } from "drizzle-orm/pg-core";
 import { RouterOutputs } from "../root";
 
 export const instalacionesRouter = createTRPCRouter({
-    // Producto: z.number(),Empalmista: z.number(),FechaAlta: z.number(),FechaInst: z.number(),FechaVeri: z.number(),Estado: z.number(),Cliente: z.number()
-    create: publicProcedure.input(z.object({ Pedido: z.string(),tipoInstalacionId: z.string(),Empalmista: z.string(),FechaAlta: z.number(),FechaInst: z.number().optional(),FechaVeri: z.number().optional(),Estado: z.string(),Cliente: z.string(),Producto_pedido:z.string(),Codigo_de_barras:z.string(), lat: z.number().optional(), long: z.number().optional(), Comentario:z.string().optional(),NroLoteArticulo: z.string() })).mutation(async ({ ctx, input }) => {
-        // simulate a slow db call
-        const anterior = await ctx.db.query.instalaciones.findMany({
-          orderBy: [desc(instalaciones.numero)],
-        });
-        let numero = 1
-        if (anterior){
-          numero = (anterior[0]?.numero ?? 0) + 1
-        }
-        await ctx.db.insert(instalaciones).values(
-        {
-          ...input, numero
-        }
-        )
-    }),
-    createAssignBarcode: publicProcedure
-    .input(z.object({ 
-      Pedido: z.string(),
-      tipoInstalacionId: z.string(),
-      Empalmista: z.string(),
-      FechaAlta: z.number(),
-      FechaInst: z.number().optional(),
-      FechaVeri: z.number().optional(),
-      Estado: z.string(),
-      Cliente: z.string(),
-      Producto_pedido:z.string(),
+      create: publicProcedure.input(z.object({ 
+      pedido: z.number(),
+      tipoInstalacionId: z.number(),
+      productoPedidoId:z.string(),
+      empalmista: z.string(),
+      fechaAlta: z.number(),
+      fechaInst: z.number().optional(),
+      fechaVeri: z.number().optional(),
+      estado: z.enum(["Pendiente", "Generada","En progreso", "Instalada", "Verificada", "Completada", "Rechazada", "Aprobada"]),
+      cliente: z.string(),
+      codigoDeBarras:z.string(),
       lat: z.number().optional(),
       long: z.number().optional(),
-      Comentario:z.string().optional(),
-      NroLoteArticulo: z.string() })).mutation(async ({input }) => {
-
-        console.log("Entro");
-      const anterior = await db.query.instalaciones.findMany({
-        orderBy: [desc(instalaciones.numero)],
-      });
-
-        console.log("Entro", input);
-
-      let numero = 1
-      if (anterior){
-        numero = (anterior[0]?.numero ?? 0) + 1
-      }
-      let generatedBarcodes = await db.query.generatedBarcodes.findMany({
-        orderBy: [desc(instalaciones.numero)],
-      });
-
-      console.log(generatedBarcodes);
-      let lastCode = 0
-      console.log("lastCode", lastCode);
-      if (generatedBarcodes){
-        generatedBarcodes = generatedBarcodes.sort((a, b) => parseInt(a.CodigoBarras ?? "0") - parseInt(b.CodigoBarras ?? "0"));
-        lastCode = parseInt(generatedBarcodes[generatedBarcodes.length-1]?.CodigoBarras ?? "0")
-      }
-      console.log("lastCode", lastCode);
+      comentario:z.string().optional(),
+      nroLoteArticulo: z.string()
+         })).mutation(async ({ ctx, input }) => {
       
-      await db.insert(instalaciones).values(
-      {
-        ...input, numero, Codigo_de_barras:(lastCode + 1).toString(), NroLoteArticulo:input.NroLoteArticulo ?? "N/A"
-      }
-      )
-  }),
+         await db.insert(instalaciones).values({
+  clienteId: input.cliente, 
+  pedidoId: input.pedido,
+  tipoInstalacionId: input.tipoInstalacionId,
+  productoPedidoId: input.productoPedidoId,
+  empalmistaId: input.empalmista,
+  fechaAlta: new Date(input.fechaAlta), 
+  fechaInstalacion: input.fechaInst ? new Date(input.fechaInst) : undefined, 
+  fechaVerificacion: input.fechaVeri ? new Date(input.fechaVeri) : undefined,
+  estado: input.estado,
+  lat: input.lat,
+  long: input.long,
+  comentario: input.comentario,
+  nroLoteArticulo: input.nroLoteArticulo,
+  codigoDeBarras: input.codigoDeBarras
+})
+
+          
+
+    }),
+  //   createAssignBarcode: publicProcedure
+  //   .input(z.object({ 
+  //     pedido: z.string(),
+  //     tipoInstalacionId: z.string(),
+  //     empalmista: z.string(),
+  //     fechaAlta: z.number(),
+  //     fechaInst: z.number().optional(),
+  //     fechaVeri: z.number().optional(),
+  //     estado: z.enum(["Pendiente", "Generada", "Instalada", "Verificada"]),
+  //           cliente: z.string(),
+  //     productoPedidoId:z.string(),
+  //     lat: z.number().optional(),
+  //     long: z.number().optional(),
+  //     comentario:z.string().optional(),
+  //     nroLoteArticulo: z.string() })).mutation(async ({input }) => {
+
+     
+  //     //   const anterior = await db.query.instalaciones.findMany({
+  //     //   orderBy: [desc(instalaciones.id)],
+  //     // });
+
+  //     //   console.log("Entro", input);
+
+  //     // let numero = 1
+  //     // if (anterior){
+  //     //   numero = (anterior[0]?.id ?? 0) + 1
+  //     // }
+  //     // let generatedBarcodes = await db.query.generatedBarcodes.findMany({
+  //     //   orderBy: [desc(instalaciones.numero)],
+  //     // });
+
+  //     // console.log(generatedBarcodes);
+  //     // let lastCode = 0
+  //     // console.log("lastCode", lastCode);
+  //     // if (generatedBarcodes){
+  //     //   generatedBarcodes = generatedBarcodes.sort((a, b) => parseInt(a.CodigoBarras ?? "0") - parseInt(b.CodigoBarras ?? "0"));
+  //     //   lastCode = parseInt(generatedBarcodes[generatedBarcodes.length-1]?.CodigoBarras ?? "0")
+  //     // }
+  //     // console.log("lastCode", lastCode);
+      
+  //     await db.insert(instalaciones).values(
+  //     {
+  //       ...input, numero, Codigo_de_barras:(lastCode + 1).toString(), nroLoteArticulo:input.nroLoteArticulo ?? "N/A"
+  //     }
+  //     )
+  // }),
   list: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.instalaciones.findMany({
       with: {
         empalmista: true,
         pedido: {
           with: {
-            productos: true,
+            productosPedidos: true,
+
           },
         },
         cliente: true,
@@ -97,17 +119,17 @@ export const instalacionesRouter = createTRPCRouter({
   get: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        id: z.number(),
       }),
     )
     .query(async ({ input }) => {
       const channel = await db.query.instalaciones.findFirst({
-        where: eq(instalaciones.Id, input.Id),
+        where: eq(instalaciones.id, input.id),
         with: {
           empalmista: true,
           pedido: {
             with: {
-              productos: true,
+              productosPedidos: true,
             },
           },
           cliente: true,
@@ -117,7 +139,7 @@ export const instalacionesRouter = createTRPCRouter({
             with:{
               pasoCriticoTotipoInstalacion:{
                 with:{
-                  pasoCriticoData:true,
+                  pasoCritico:true,
                 },
               },
             }
@@ -132,7 +154,7 @@ export const instalacionesRouter = createTRPCRouter({
     getByTipoInstalacion: publicProcedure
     .input(
       z.object({
-        tipoId: z.string(),
+        tipoId: z.number(),
       }),
     )
     .query(async ({ input }) => {
@@ -151,7 +173,7 @@ export const instalacionesRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       const channel = await db.query.instalaciones.findMany({
-        where: eq(instalaciones.Producto_pedido, input.tipoId),
+        where: eq(instalaciones.productoPedidoId, input.tipoId),
       });
       return channel;
     }),
@@ -164,19 +186,19 @@ export const instalacionesRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       const channel = await db.query.instalaciones.findFirst({
-        where: and(eq(instalaciones.Codigo_de_barras, input.barcode),or(eq(instalaciones.Estado,"En progreso"),eq(instalaciones.Estado,"Pendiente"))),
+        where: and(eq(instalaciones.codigoDeBarras, input.barcode),or(eq(instalaciones.estado,"En progreso"),eq(instalaciones.estado,"Pendiente"))),
         with: {
           empalmista: true,
           pedido: {
             with: {
-              productos: true,
+              productosPedidos: true,
             },
           },
           tipoInstalacion:{
             with:{
               pasoCriticoTotipoInstalacion:{
                 with:{
-                  pasoCriticoData:true,
+                  pasoCritico:true,
                 },
               },
             },
@@ -189,35 +211,53 @@ export const instalacionesRouter = createTRPCRouter({
 
 
 
-    update: publicProcedure.input(z.object({Id:z.string(), tipoInstalacion: z.string(), Pedido: z.string(),Empalmista: z.string(),FechaAlta: z.number(),FechaInst: z.number(),FechaVeri: z.number(),Estado: z.string(),Cliente: z.string(),Producto_pedido:z.string(), Codigo_de_barras:z.string() , lat:z.number().optional(),long:z.number().optional(), Comentario:z.string().optional(), NroLoteArticulo:z.string()})).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(
+        z.object(
+          {
+            id:z.number(),
+        tipoInstalacion: z.number(),
+        pedidoId: z.number(),
+        empalmistaId: z.string(),
+        fechaAlta: z.number(),
+        fechaInstalacion: z.number(),
+        fechaVerificacion: z.number(),
+        estado: z.enum(["Pendiente", "Generada", "Instalada", "Verificada"]),
+        clienteId: z.string(),
+        productoPedidoId:z.string(),
+        Codigo_de_barras:z.string(), 
+        lat:z.number().optional(),
+        long:z.number().optional(),
+        comentario:z.string().optional(),
+        nroLoteArticulo:z.string()
+      })).mutation(async ({ ctx, input }) => {
       const updated = await db
         .update(instalaciones)
         .set({
-          Pedido: input.Pedido,
-          Empalmista: input.Empalmista,
-          Fecha_de_alta: new Date(input.FechaAlta),
-          Fecha_de_instalacion: new Date(input.FechaInst),
-          Fecha_de_verificacion: new Date(input.FechaVeri),
-          Estado: input.Estado,
-          Cliente: input.Cliente,
+          pedidoId: input.pedidoId,
+          empalmistaId: input.empalmistaId,
+          fechaAlta: new Date(input.fechaAlta),
+          fechaInstalacion: new Date(input.fechaInstalacion),
+          fechaVerificacion: new Date(input.fechaVerificacion),
+          estado: input.estado,
+          clienteId: input.clienteId,
           tipoInstalacionId: input.tipoInstalacion,
           lat: input.lat,
           long: input.long,
-          Comentario: input.Comentario,
-          NroLoteArticulo: input.NroLoteArticulo,
+          comentario: input.comentario,
+          nroLoteArticulo: input.nroLoteArticulo,
         })
-        .where(eq(instalaciones.Id, input.Id)).returning();
+        .where(eq(instalaciones.id, input.id)).returning();
         return updated;
     }),
 
   delete: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        id: z.number(),
       }),
     )
     .mutation(async ({ input }) => {
-      await db.delete(instalaciones).where(eq(instalaciones.Id, input.Id));
+      await db.delete(instalaciones).where(eq(instalaciones.id, input.id));
     }),
 });
 

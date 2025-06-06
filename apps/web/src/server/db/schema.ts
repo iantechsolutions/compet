@@ -1,398 +1,270 @@
-// Example model schema from the Drizzle docs
-// https://orm.drizzle.team/docs/sql-schema-declaration
+import {
+  pgTableCreator,
+  varchar,
+  integer,
+  boolean,
+  timestamp,
+  real,
+  doublePrecision,
+  primaryKey,
+  serial,
+  index,
+} from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import { columnId } from "~/lib/schema/utils";
+import { number } from "zod";
 
-import { Description } from "@radix-ui/react-dialog";
-import { isNotNull, Many, relations, sql } from "drizzle-orm";
-
-import { index, int, real, sqliteTableCreator, text } from "drizzle-orm/sqlite-core";
-import { nanoid } from "nanoid";
-import { number, string, z } from "zod";
-/**
- * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
- * database instance for multiple projects.
- *
- * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
- */
-export const createTable = sqliteTableCreator((name) => `web_${name}`);
-
-export function createId() {
-  return nanoid();
-}
-
-export const users = createTable(
-  "user",
-  {
-    Id: text("id", { length: 255 })
-        .notNull()
-        .primaryKey()
-        .$default(()=>createId()),
-    email: text("email", { length: 256 }).notNull(),
-    nombre: text("nombre", { length: 256 }),
-    apellido: text("apellido", { length: 256 }),
-    rol: text("rol", { length: 256 }),
-    solicitudAprobada: int("solicitudAprobada", { mode: "boolean" }).default(false),
-    administrator: int("adminsitrator", { mode: "boolean" }).default(false),
-    picture: text("picture"),
-    client: int("client", { mode: "boolean" }).default(true),
-    company: int("company", { mode: "boolean" }).default(true),
-    splicer: int("splicer", { mode: "boolean" }).default(true),
-  },
-);
-
-// export const posts = createTable(
-//     'post',
-//     {
-//         Id: int('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
-//         name: text('name', { length: 256 }),
-//         createdAt: int('created_at', { mode: 'timestamp' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-//         updatedAt: int('updatedAt', { mode: 'timestamp' }),
-//     },
-//     (example) => ({
-//         nameIndex: index('name_idx').on(example.name),
-//     }),
-// )
-
-export const clientes = createTable(
-    'Cliente',
-    {
-        Id: text("id", { length: 255 })
-        .notNull()
-        .primaryKey()
-        .$default(()=>createId()),
-        Nombre: text('Nombre', { length: 256 }),
-        Direccion: text('Direccion', { length: 256 }),
-    }
-)
+export const createTable = pgTableCreator((name) => `web_${name}`);
 
 
 
-export const empalmistas = createTable(
-    'Empalmista',
-    {
-        Id: text("id", { length: 255 })
-        .notNull()
-        .primaryKey()
-        .$default(()=>createId()),
-        Nombre: text('Nombre', { length: 256 }),
-        DNI: text('DNI', { length: 256 }),
-        BirthDate: int('FechaAlta', { mode: 'timestamp' }).default(sql`CURRENT_TIMESTAMP`),
-    }
-)
+export const users = createTable("user", {
+  id: columnId,
+  email: varchar("email", { length: 256 }).notNull(),
+  nombre: varchar("nombre", { length: 256 }),
+  apellido: varchar("apellido", { length: 256 }),
+  rol: varchar("rol", { length: 256 }),
+  solicitudAprobada: boolean("solicitud_aprobada").default(false),
+  administrator: boolean("administrator").default(false),
+  picture: varchar("picture"),
+  client: boolean("client").default(true),
+  company: boolean("company").default(true),
+  splicer: boolean("splicer").default(true),
+});
 
-export const fotos = createTable(
-    'Fotos',
-    {
-        Id: text("id", { length: 255 })
-        .notNull()
-        .primaryKey()
-        .$default(()=>createId()),
-        Link: text('Link', { length: 256 }),
-        Instalacion: text('Instalacion').notNull().references(()=>instalaciones.Id),
-        lat: real('lat'),
-        long: real('long'),
-        pasoId: text('pasoId', { length: 255 }),
-    },
-    (example) => ({
-        imagesIndex: index('images_idx').on(example.Instalacion),
-    }),
-)
+export const clientes = createTable("cliente", {
+  id: columnId,
+  nombre: varchar("nombre", { length: 256 }),
+  direccion: varchar("direccion", { length: 256 }),
+});
+
+export const empalmistas = createTable("empalmista", {
+  id: columnId,
+  nombre: varchar("nombre", { length: 256 }),
+  dni: varchar("dni", { length: 256 }),
+  birthDate: timestamp("birth_date").defaultNow(),
+});
+
+export const fotos = createTable("foto", {
+  id: columnId,
+  link: varchar("link", { length: 256 }),
+  instalacionId: varchar("instalacion_id").notNull().references(() => instalaciones.id, { onDelete: "cascade" }),
+  lat: real("lat"),
+  long: real("long"),
+  pasoCriticoId: integer("paso_critico_id").notNull().references(() => pasoCritico.id),
+}, (foto) => ({
+  imagesIndex: index("images_idx").on(foto.instalacionId),
+  pasoIndex: index("paso_idx").on(foto.pasoCriticoId),
+  instalacionIndex: index("instalacion_idx").on(foto.instalacionId),
+}));
 
 export const fotosRelation = relations(fotos, ({ one }) => ({
-  post: one(instalaciones, {
-    fields: [fotos.Instalacion],
-    references: [instalaciones.Id],
+  instalacion: one(instalaciones, {
+    fields: [fotos.instalacionId],
+    references: [instalaciones.id],
   }),
-  pasoData: one(pasoCritico, {
-    fields: [fotos.pasoId],
+  paso: one(pasoCritico, {
+    fields: [fotos.pasoCriticoId],
     references: [pasoCritico.id],
   }),
 }));
 
-export const instalaciones = createTable(
-    'Instalacion',
-    {
-        Id: text("id", { length: 255 })
-        .notNull()
-        .primaryKey()
-        .$default(()=>createId()),
-        Pedido: text('Pedido').notNull().references(()=>pedidos.Id),
-        Producto_pedido: text('Producto_pedido').references(()=>productosPedidos.Id),
-        Empalmista: text('Empalmista').references(()=>empalmistas.Id),
-        Comentario: text('Comentario'),
-        Fecha_de_alta: int('FechaAlta', { mode: 'timestamp' }).default(sql`CURRENT_TIMESTAMP`),
-        Fecha_de_instalacion:int('FechaInstal', { mode: 'timestamp' }),
-        Fecha_de_verificacion:int('FechaVeri', { mode: 'timestamp' }),
-        Estado: text('Estado').notNull(),
-        Codigo_de_barras: text("BarCode"),
-        Cliente: text('Cliente').notNull().references(()=>clientes.Id),
-        NroLoteArticulo: text('NroLoteArticulo', { length: 255 }),
-        tipoInstalacionId: text('tipoInstalacion',{ length: 255 }),
-        lat: real('lat'),
-        long: real('long'),
-        numero: int('numero').notNull(),
-    },
-    (example) => ({
-        instalationsIndex: index('instalations_idx').on(example.Pedido),
-    }), 
-)
+export const instalaciones = createTable("instalacion", {
+  id: serial().primaryKey(),
+  pedidoId: integer("pedido_id").notNull().references(() => pedidos.id),
+  comentario: varchar("comentario"),
+  fechaAlta: timestamp("fecha_alta").defaultNow(),
+  fechaInstalacion: timestamp("fecha_instalacion"),
+  fechaVerificacion: timestamp("fecha_verificacion"),
+  estado: varchar("estado", {enum:["Generada","Pendiente", "En progreso","Instalada", "Rechazada", "Verificada", "Aprobada", "Completada"]}).notNull(),
+  codigoDeBarras: varchar("codigo_de_barras"),
+  nroLoteArticulo: varchar("nro_lote_articulo", { length: 255 }),
+  //Lol tiene coordenadas
+  lat: real("lat"),
+  long: real("long"),
+  //
+  productoPedidoId: varchar("producto_pedido_id").references(() => productosPedidos.id),
+  empalmistaId: varchar("empalmista_id").references(() => empalmistas.id),
+  clienteId: varchar("cliente_id").notNull().references(() => clientes.id),
+  tipoInstalacionId: integer("tipo_instalacion_id").references(() => tipoInstalaciones.id),
+}, (instalacion) => ({
+  instalacionIndex: index("instalacion_idx").on(instalacion.id),
+  pedidoIndex: index("pedido_idx").on(instalacion.pedidoId),
+  empalmistaIndex: index("empalmista_idx").on(instalacion.empalmistaId),
+  clienteIndex: index("cliente_idx").on(instalacion.clienteId),
+}));
 
-export const instalacionesRelations = relations(
-  instalaciones,
-  ({ one, many }) => ({
-    pedido: one(pedidos, {
-      fields: [instalaciones.Pedido],
-      references: [pedidos.Id],
-    }),
-    empalmista: one(empalmistas, {
-      fields: [instalaciones.Empalmista],
-      references: [empalmistas.Id],
-    }),
-    cliente: one(clientes, {
-      fields: [instalaciones.Cliente],
-      references: [clientes.Id],
-    }),
-    tipoInstalacion: one(tipoInstalaciones,{
-        fields: [instalaciones.tipoInstalacionId],
-        references: [tipoInstalaciones.id],
-    }),
-    productoPedido: one(productosPedidos, {
-      fields: [instalaciones.Producto_pedido],
-      references: [productosPedidos.Id],
-    }),
-    fotos: many(fotos),
-    documentos: many(documentUploads),
-    
-  }));
-  
+export const instalacionesRelations = relations(instalaciones, ({ one, many }) => ({
+  pedido: one(pedidos, {
+    fields: [instalaciones.pedidoId],
+    references: [pedidos.id],
+  }),
+  empalmista: one(empalmistas, {
+    fields: [instalaciones.empalmistaId],
+    references: [empalmistas.id],
+  }),
+  cliente: one(clientes, {
+    fields: [instalaciones.clienteId],
+    references: [clientes.id],
+  }),
+  tipoInstalacion: one(tipoInstalaciones, {
+    fields: [instalaciones.id],
+    references: [tipoInstalaciones.id],
+  }),
+  productoPedido: one(productosPedidos, {
+    fields: [instalaciones.productoPedidoId],
+    references: [productosPedidos.id],
+  }),
+  fotos: many(fotos),
+  documentos: many(documentUploads),
+}));
 
-
-  export const pedidos = createTable(
-    'Pedido',
-    {
-        Id: text("id", { length: 255 })
-        .notNull()
-        .primaryKey()
-        .$default(()=>createId()),
-        Fecha_de_creacion: int('FechaCreacion', { mode: 'timestamp' }).default(sql`CURRENT_TIMESTAMP`).notNull(),
-        Fecha_de_aprobacion: int('FechaAprobacion', { mode: 'timestamp' }),
-        Fecha_de_envio:int('FechaEnvio', { mode: 'timestamp' }),
-        Estado: text('Estado').notNull(), 
-        Numero: int("Numero").default(0),
-        //Ponerle cliente_id
-        Cliente: text('Cliente').notNull().references(()=>clientes.Id)
-    }
-)
+export const pedidos = createTable("pedido", {
+  id: serial().primaryKey(),
+  fechaCreacion: timestamp("fecha_creacion").defaultNow().notNull(),
+  fechaAprobacion: timestamp("fecha_aprobacion"),
+  fechaEnvio: timestamp("fecha_envio"),
+  estado: varchar("estado", {enum:["Generado","Pendiente", "Enviado","Aprobado"]}).notNull(),
+  numero: integer("numero").default(0),
+  clienteId: varchar("cliente_id").notNull().references(() => clientes.id),
+}, (pedido) => ({
+  pedidoIndex: index("pedido_idx").on(pedido.id),
+  clienteIndex: index("cliente_idx").on(pedido.clienteId),
+}));
 
 export const pedidosRelations = relations(pedidos, ({ one, many }) => ({
-  clientes: one(clientes, {
-    fields: [pedidos.Cliente],
-    references: [clientes.Id],
+  cliente: one(clientes, {
+    fields: [pedidos.clienteId],
+    references: [clientes.id],
   }),
-  productos: many(productosPedidos),
+  productosPedidos: many(productosPedidos),
 }));
 
-export const productosPedidos = createTable(
-    'ProductosPedidos',
-    {
-        Id: text("id", { length: 255 })
-        .notNull()
-        .primaryKey()
-        .$default(()=>createId()),
-        Pedido: text('Pedido').notNull().references(()=>pedidos.Id),
-        Producto: text('Producto').notNull().references(()=>productos.Id),
-        Cantidad: int('Cantidad').notNull(),
-        CantidadScaneada: int('CantidadScaneada').notNull().default(0),
-        Nombre: text('Nombre', { length: 256 }),
-        Descripcion: text('Descripcion',{length: 256}),
-        tipoInstalacion: text('tipo_instalacion', { length: 256 }),
-    },
-    (example) => ({
-        instalationsIndex: index('pedidosproductos_idx').on(example.Producto),
-    }),
-)
-
-export const productosPedidosRelation = relations(
-  productosPedidos,
-  ({ one }) => ({
-    pedido: one(pedidos, {
-      fields: [productosPedidos.Pedido],
-      references: [pedidos.Id],
-    }),
-    producto: one(productos, {
-      fields: [productosPedidos.Producto],
-      references: [productos.Id],
-    }),
-  })
-);
-
-export const productos = createTable(
-    'Producto',
-    {
-        Id: text("id", { length: 255 })
-        .notNull()
-        .primaryKey()
-        .$default(()=>createId()),
-        Nombre: text('Nombre', { length: 256 }).notNull(),
-        Codigo_de_barras: text('BarCode', { length: 256 }),
-        Descripcion: text('Descripcion',{length: 256}),
-        tipoDeInstalacion_id: text('tipoDeInstalacion_id',{length: 256}).default(''),
-        // estado: text("estado", { enum: ["Activo", "Inactivo"] }),
-    }
-)
-
-export const productosRelation = relations(productos, ({ one }) => ({
-    tipoDeInstalacion: one(tipoInstalaciones, {
-      fields: [productos.tipoDeInstalacion_id],
-      references: [tipoInstalaciones.id],
-    }),
-      
+export const productosPedidos = createTable("producto_pedido", {
+  id: columnId,
+  cantidad: integer("cantidad").notNull(),
+  cantidadScaneada: integer("cantidad_scaneada").notNull().default(0),
+  nombre: varchar("nombre", { length: 256 }),
+  descripcion: varchar("descripcion", { length: 256 }),
+  tipoInstalacion: integer("tipo_instalacion").references(() => tipoInstalaciones.id),
+  pedidoId: integer("pedido_id").notNull().references(() => pedidos.id),
+  productoId: varchar("producto_id").notNull().references(() => productos.id),
+}, (productoPedido) => ({
+  productoPedidoIndex: index("producto_pedido_idx").on(productoPedido.productoId),
+  pedidoIndex: index("pedido_idx").on(productoPedido.pedidoId),
+  productoIndex: index("producto_idx").on(productoPedido.productoId),
 }));
 
 
+export const productosPedidosRelations = relations(productosPedidos, ({ one }) => ({
+  pedido: one(pedidos, {
+    fields: [productosPedidos.pedidoId],
+    references: [pedidos.id],
+  }),
+  producto: one(productos, {
+    fields: [productosPedidos.productoId],
+    references: [productos.id],
+  }),
+  tipoInstalacion: one(tipoInstalaciones, {
+    fields: [productosPedidos.id],
+    references: [tipoInstalaciones.id],
+  }),
+}));
 
-export const documentUploads = createTable(
-    "document_upload",
-    {
-    id: text("id", { length: 255 })
-    .notNull()
-    .primaryKey()
-    .$default(()=>createId().toLowerCase()),
-      userId: text("userId", { length: 255 }).notNull(),
-      fileUrl: text("fileUrl", { length: 255 }).notNull(),
-      fileName: text("fileName", { length: 255 }).notNull(),
-      fileSize: int("fileSize").notNull(),
-      rowsCount: int("rowsCount"),
-  
-      confirmed: int('company', { mode: 'boolean' }).notNull().default(false),
-      confirmedAt: int('confirmedAt', { mode: 'timestamp' }),
-  
-      documentType: text("documentType", { length: 255 }).$type<
-        "rec" | null
-      >(),
-  
-      instalationId: text("instalationId")
-        .notNull()
-        .references(() => instalaciones.Id),
-  
-      createdAt : int('createdAt', { mode: 'timestamp' }),
-      updatedAt: int('updatedAt', { mode: 'timestamp' }),
-    },
-    (example) => ({
-      userIdIdx: index("docuemnt_upload_userId_idx").on(example.userId),
-    }),
-  );
-  
-    export const documentUploadsRelations = relations(documentUploads, ({ one }) => ({
-        instalacion: one(instalaciones, {
-          fields: [documentUploads.instalationId],
-          references: [instalaciones.Id],
-        }),
-          
-    }));
-  
-  export const responseDocumentUploads = createTable("response_document_uploads", {
-    Id: text("id", { length: 255 })
-        .notNull()
-        .primaryKey()
-        .$default(()=>createId()),
-    userId: text("userId", { length: 255 }).notNull(),
-    fileUrl: text("fileUrl", { length: 255 }).notNull(),
-    fileName: text("fileName", { length: 255 }).notNull(),
-    fileSize: int("fileSize").notNull(),
-    rowsCount: int("rowsCount"),
+export const productos = createTable("producto", {
+  id: columnId,
+  nombre: varchar("nombre", { length: 256 }).notNull(),
+  codigoDeBarras: varchar("codigo_de_barras", { length: 256 }),
+  descripcion: varchar("descripcion", { length: 256 }),
+  createdAt: timestamp("created_at"),
+  tipoDeInstalacionId: integer("tipo_de_instalacion_id").references(() => tipoInstalaciones.id),
+}, (producto) => ({
+  productoIndex: index("producto_idx").on(producto.id),
+}));
 
-    confirmed: int("confirmed", { mode: "boolean" }).notNull().default(false),
-    confirmedAt: int("confirmedAt", { mode: "timestamp" }),
+export const productosRelations = relations(productos, ({ one }) => ({
+  tipoDeInstalacion: one(tipoInstalaciones, {
+    fields: [productos.tipoDeInstalacionId],
+    references: [tipoInstalaciones.id],
+  }),
+}));
 
-    documentType: text("documentType", { length: 255 }).$type<"txt" | null>(),
+// 📑 Document Uploads
+export const documentUploads = createTable("document_upload", {
+  id: columnId,
+  userId: varchar("user_id", { length: 255 }).notNull(),
+  fileUrl: varchar("file_url", { length: 255 }).notNull(),
+  fileName: varchar("file_name", { length: 255 }).notNull(),
+  fileSize: integer("file_size").notNull(),
+  rowsCount: integer("rows_count"),
+  confirmed: boolean("confirmed").notNull().default(false),
+  confirmedAt: timestamp("confirmed_at"),
+  documentType: varchar("document_type", { length: 255 }).$type<"rec" | null>(),
+  createdAt: timestamp("created_at"),
+  updatedAt: timestamp("updated_at"),
+  instalacionId: varchar("instalacion_id").notNull().references(() => instalaciones.id),
+}, (documentUpload) => ({
+  userIdIdx: index("document_upload_user_id_idx").on(documentUpload.userId),
+  instalacionIdIdx: index("document_upload_instalacion_id_idx").on(documentUpload.instalacionId),
+  
+}));
 
-    createdAt: int("createdAt", { mode: "timestamp" }),
-    updatedAt: int("updatedAt", { mode: "timestamp" }),
-  }
-);
+export const documentUploadsRelations = relations(documentUploads, ({ one }) => ({
+  instalacion: one(instalaciones, {
+    fields: [documentUploads.instalacionId],
+    references: [instalaciones.id],
+  }),
+}));
 
-export const tipoInstalaciones = createTable("tipo_instalaciones", {
-    id: text("id", { length: 255 })
-    .notNull()
-    .primaryKey()
-    .$default(()=>createId()),
-    description: text("descripcion", { length: 255 }).notNull(),
+export const responseDocumentUploads = createTable("response_document_upload", {
+  id: columnId,
+  userId: varchar("user_id", { length: 255 }).notNull(),
+  fileUrl: varchar("file_url", { length: 255 }).notNull(),
+  fileName: varchar("file_name", { length: 255 }).notNull(),
+  fileSize: integer("file_size").notNull(),
+  rowsCount: integer("rows_count"),
+  confirmed: boolean("confirmed").notNull().default(false),
+  confirmedAt: timestamp("confirmed_at"),
+  documentType: varchar("document_type", { length: 255 }).$type<"txt" | null>(),
+  createdAt: timestamp("created_at"),
+  updatedAt: timestamp("updated_at"),
+});
+
+export const tipoInstalaciones = createTable("tipo_instalacion", {
+  id: serial().primaryKey(),
+  descripcion: varchar("descripcion", { length: 255 }).notNull(),
 });
 
 export const tipoInstalacionesRelations = relations(tipoInstalaciones, ({ many }) => ({
-    pasoCriticoTotipoInstalacion: many(pasoCriticoTotipoInstalacion)
-  }));
-
+  pasoCriticoTotipoInstalacion: many(pasoCriticoTotipoInstalacion),
+}));
 
 export const pasoCritico = createTable("paso_critico", {
-    id: text("id", { length: 255 })
-    .notNull()
-    .primaryKey()
-    .$default(()=>createId()),
-    detalle: text("detalle", { length: 255 }).notNull(),
-    description: text("descripcion", { length: 255 }).notNull(),
-    useCamera: int('useCamera', { mode: 'boolean' }).default(false),
+  id: serial().primaryKey(),
+  detalle: varchar("detalle", { length: 255 }).notNull(),
+  descripcion: varchar("descripcion", { length: 255 }).notNull(),
+  useCamera: boolean("use_camera").default(false),
 });
 
 export const pasoCriticoRelations = relations(pasoCritico, ({ many }) => ({
-    pasoCriticoTotipoInstalacion: many(pasoCriticoTotipoInstalacion)
-})
-);
+  pasoCriticoTotipoInstalacion: many(pasoCriticoTotipoInstalacion),
+}));
 
-export const pasoCriticoTotipoInstalacion = createTable("pasoCriticoTotipoInstalacion", {
-    id: text("id", { length: 255 })
-    .notNull()
-    .primaryKey()
-    .$default(()=>createId()),
-    tipoInstalacion: text("tipoInstalacion", { length: 255 }).notNull().references(()=>tipoInstalaciones.id),
-    pasoCritico: text("pasoCritico", { length: 255 }).notNull().references(()=>pasoCritico.id),
-    number: int("numero").default(0),
+// 🛠️ Paso Crítico a Tipo Instalación
+export const pasoCriticoTotipoInstalacion = createTable("paso_critico_tipo_instalacion", {
+  id: columnId,
+  tipoInstalacionId: integer("tipo_instalacion_id").notNull().references(() => tipoInstalaciones.id),
+  pasoCriticoId: integer("paso_critico_id").notNull().references(() => pasoCritico.id),
+  numero: integer("numero").default(0),
 });
 
 export const pasoCriticoTotipoInstalacionRelations = relations(pasoCriticoTotipoInstalacion, ({ one }) => ({
-    tipoInstalacion: one(tipoInstalaciones,{
-        fields: [pasoCriticoTotipoInstalacion.tipoInstalacion],
-        references: [tipoInstalaciones.id],
-    }),
-    pasoCriticoData: one(pasoCritico,{
-        fields: [pasoCriticoTotipoInstalacion.pasoCritico],
-        references: [pasoCritico.id],
-    }),
-})
-);
-
-export const CodigoBarras = createTable("CodigoBarras", {
-  Id: int("id").notNull().primaryKey(),
-  productoSeleccionado: int("ProductoSeleccionado"),
-  descripcion: text("Descripcion", { length: 256 }),
-});
-
-export const CodigoBarrassRelation = relations(CodigoBarras, ({ one, many }) => ({
-  CodigoBarras: one(productos,
-    {
-      fields: [CodigoBarras.productoSeleccionado],
-      references: [productos.Id],
-    },
-  ),
-  generatedBarcode: many(generatedBarcodes),
-}));
-
-export const generatedBarcodes = createTable(
-  "generatedBarcodes",
-  {
-    Id: text("id", { length: 255 })
-      .notNull()
-      .primaryKey()
-      .$default(() => createId()),
-    CodigoBarras: text("CodigoBarras", { length: 255 }).notNull(),
-    instalacionId: text("Instalacion", { length: 255 }),
-  }
-);
-
-export const generatedBarcodesRelations = relations(generatedBarcodes, ({ one }) => ({
-  
-  CodigoBarras: one(CodigoBarras, {
-    fields: [generatedBarcodes.CodigoBarras],
-    references: [CodigoBarras.Id],
+  tipoInstalacion: one(tipoInstalaciones, {
+    fields: [pasoCriticoTotipoInstalacion.tipoInstalacionId],
+    references: [tipoInstalaciones.id],
+  }),
+  pasoCritico: one(pasoCritico, {
+    fields: [pasoCriticoTotipoInstalacion.pasoCriticoId],
+    references: [pasoCritico.id],
   }),
 }));

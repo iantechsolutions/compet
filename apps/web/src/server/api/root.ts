@@ -14,10 +14,8 @@ import { pedidosRouter } from "./routers/pedidos";
 import { productosPedidosRouter } from "./routers/productospedidos";
 import { pasoCriticoRouter } from "./routers/pasoCritico-router";
 import { tipoInstalacionesRouter } from "./routers/tipoInstalaciones-router";
-import { CodigoBarrasRouter } from "./routers/codigoBarra-router";
 import { pasocriticototipoinstalacionRouter } from './routers/pasocriticototipoinstalacion-router'
 import { uploadthingrouter } from "./routers/uploadthing";
-import { generatedBarcodesRouter } from "./routers/generatedBarcodes";
 import { usersRouterList } from "./routers/user-router";
 import { testRouter } from "./routers/test-router";
 /**
@@ -37,10 +35,8 @@ export const appRouter = createTRPCRouter({
   pedidos: pedidosRouter,
   pasoCritico: pasoCriticoRouter,
   tipoInstalaciones: tipoInstalacionesRouter,
-    pasoCriticoTotipoInstalacion: pasocriticototipoinstalacionRouter,
-  CodigoBarras: CodigoBarrasRouter,
+  pasoCriticoTotipoInstalacion: pasocriticototipoinstalacionRouter,
   uploadthing: uploadthingrouter,
-  generatedBarcodes: generatedBarcodesRouter,
   test: testRouter,
   sellCheck: sellerProcedure.query(({ ctx }) => {
     // falla si no es seller

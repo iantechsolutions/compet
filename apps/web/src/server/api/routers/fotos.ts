@@ -5,16 +5,22 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { fotos } from "~/server/db/schema";
 
 export const fotosRouter = createTRPCRouter({
-    create: publicProcedure.input(z.object({ Link: z.string().min(1), Instalacion: z.string(), lat: z.number().optional(), long: z.number().optional(), pasoId: z.string().optional() })).mutation(async ({ ctx, input }) => {
+    create: publicProcedure.input(z.object({ 
+      link: z.string().min(1),
+       instalacionId: z.string(),
+        lat: z.number().optional(),
+         long: z.number().optional(),
+          pasoCriticoId: z.number().optional() 
+        })).mutation(async ({ ctx, input }) => {
         // simulate a slow db call
         // await new Promise((resolve) => setTimeout(resolve, 1000))
 
         await ctx.db.insert(fotos).values({
-          Link: input.Link,
-          Instalacion: input.Instalacion,
+          link: input.link,
+          instalacionId: input.instalacionId,
           lat: input.lat,
           long: input.long,
-          pasoId: input.pasoId,
+          pasoCriticoId: input.pasoCriticoId ?? 0
         })
     }),
 
@@ -25,36 +31,43 @@ export const fotosRouter = createTRPCRouter({
   get: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        id: z.string(),
       }),
     )
     .query(async ({ input }) => {
       const channel = await db.query.fotos.findFirst({
-        where: eq(fotos.Id, input.Id),
+        where: eq(fotos.id, input.id),
       });
 
       return channel;
     }),
 
-    update: publicProcedure.input(z.object({Id:z.string(), Link: z.string().min(1), Instalacion: z.string(), lat: z.number().optional(), long: z.number().optional() })).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({id:z.string(),
+       link: z.string().min(1), 
+       instalacionId: z.string(), 
+       lat: z.number().optional(), 
+       long: z.number().optional(),
+        pasoCriticoId: z.number().optional()
+      })).mutation(async ({ ctx, input }) => {
       await db
         .update(fotos)
         .set({
-          Link: input.Link,
-          Instalacion: input.Instalacion,
+          link: input.link,
+          instalacionId: input.instalacionId,
           lat: input.lat,
           long: input.long,
+          pasoCriticoId: input.pasoCriticoId ?? 0
         })
-        .where(eq(fotos.Id, input.Id));
+        .where(eq(fotos.id, input.id));
     }),
 
   delete: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        id: z.string(),
       }),
     )
     .mutation(async ({ input }) => {
-      await db.delete(fotos).where(eq(fotos.Id, input.Id));
+      await db.delete(fotos).where(eq(fotos.id, input.id));
     }),
 });

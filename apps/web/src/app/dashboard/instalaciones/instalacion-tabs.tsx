@@ -14,11 +14,11 @@ interface InstalacionTabsProps {
 
 const InstalacionTabs: React.FC<InstalacionTabsProps> = ({ instalaciones }) => {
     const [activeTab, setActiveTab] = useState('unfinished');
-    const finishedInstalaciones = instalaciones?.filter(instalacion => instalacion.Estado === 'Completada');
-    const unfinishedInstalaciones = instalaciones?.filter(instalacion => instalacion.Estado === 'Pendiente');
-    const inProgressInstalaciones = instalaciones?.filter(instalacion => instalacion.Estado === "En progreso");
-    const approvedInstalaciones = instalaciones?.filter(instalacion => instalacion.Estado === "Aprobada");
-    const rejectedInstalaciones = instalaciones?.filter(instalacion => instalacion.Estado === "Rechazada");
+    const finishedInstalaciones = instalaciones?.filter(instalacion => instalacion.estado === 'Completada');
+    const unfinishedInstalaciones = instalaciones?.filter(instalacion => instalacion.estado === 'Pendiente');
+    const inProgressInstalaciones = instalaciones?.filter(instalacion => instalacion.estado === "En progreso");
+    const approvedInstalaciones = instalaciones?.filter(instalacion => instalacion.estado === "Aprobada");
+    const rejectedInstalaciones = instalaciones?.filter(instalacion => instalacion.estado === "Rechazada");
     let displayedInstalaciones = [] as RouterOutputs['instalaciones']['list'] | undefined;
     switch (activeTab) {
         case 'unfinished':
@@ -80,14 +80,14 @@ const InstalacionTabs: React.FC<InstalacionTabsProps> = ({ instalaciones }) => {
             <List>
                 {displayedInstalaciones?.map(instalacion => (
                     <ListTile
-                        key={instalacion.Id}
+                        key={instalacion.id}
                         leading={
-                            <BarcodeComponent key={instalacion.Codigo_de_barras} id={instalacion.Codigo_de_barras ?? "placeholder"}/>
+                            <BarcodeComponent key={instalacion.codigoDeBarras} id={instalacion.codigoDeBarras ?? "placeholder"}/>
                         }
-                        title={instalacion.numero}
-                        subtitle={instalacion.cliente?.Nombre}
+                        title={instalacion.id}
+                        subtitle={instalacion.cliente?.nombre}
                         
-                        href={`/dashboard/instalaciones/${instalacion.Id}`}
+                        href={`/dashboard/instalaciones/${instalacion.id}`}
                     />
                 ))}
             </List>

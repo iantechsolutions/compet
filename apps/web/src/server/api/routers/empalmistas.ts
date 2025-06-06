@@ -7,15 +7,15 @@ import { RouterOutputs } from "../root";
 
 export const empalmistasRouter = createTRPCRouter({
   create: publicProcedure
-    .input(z.object({ name: z.string().min(1), DNI: z.string(), BirthDate : z.number().optional() }))
+    .input(z.object({ name: z.string().min(1), dni: z.string(), birthDate : z.number().optional() }))
     .mutation(async ({ ctx, input }) => {
       // simulate a slow db call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       await ctx.db.insert(empalmistas).values({
-        Nombre: input.name,
-        DNI: input.DNI,
-        BirthDate: new Date(input.BirthDate ?? 0),
+        nombre: input.name,
+        dni: input.dni,
+        birthDate: new Date(input.birthDate ?? 0),
       });
     }),
 
@@ -26,36 +26,36 @@ export const empalmistasRouter = createTRPCRouter({
   get: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        id: z.string(),
       }),
     )
     .query(async ({ input }) => {
       const channel = await db.query.empalmistas.findFirst({
-        where: eq(empalmistas.Id, input.Id),
+        where: eq(empalmistas.id, input.id),
       });
 
       return channel;
     }),
 
-    update: publicProcedure.input(z.object({Id:z.string(), name: z.string().min(1), DNI: z.string(), BirthDate : z.number().optional() })).mutation(async ({ ctx, input }) => {
+    update: publicProcedure.input(z.object({id:z.string(), name: z.string().min(1), dni: z.string(), birthDate : z.number().optional() })).mutation(async ({ ctx, input }) => {
       await db
         .update(empalmistas)
         .set({
-          Nombre: input.name,
-          DNI: input.DNI,
-          BirthDate: new Date(input.BirthDate ?? 0),
+          nombre: input.name,
+          dni: input.dni,
+          birthDate: new Date(input.birthDate ?? 0),
         })
-        .where(eq(empalmistas.Id, input.Id));
+        .where(eq(empalmistas.id, input.id));
     }),
 
   delete: publicProcedure
     .input(
       z.object({
-        Id: z.string(),
+        id: z.string(),
       }),
     )
     .mutation(async ({ input }) => {
-      await db.delete(empalmistas).where(eq(empalmistas.Id, input.Id));
+      await db.delete(empalmistas).where(eq(empalmistas.id, input.id));
     }),
 });
 

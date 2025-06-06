@@ -23,7 +23,7 @@ interface Pedido {
     cliente: {
     Nombre: string;
     };
-    Estado: string;
+    estado: string;
     productos: {
     Id: number;
     Nombre: string;
@@ -33,12 +33,12 @@ interface Pedido {
   }
 interface AccordionListProps {
     pedidos: {
-        Id: string;
-        Cliente: string;
+        id: number;
+        clienteId: string;
         Fecha_de_creacion: Date;
         Fecha_de_aprobacion: Date | null;
         Fecha_de_envio: Date | null;
-        Estado: string;
+        estado:  "Pendiente" | "Aprobado" | "Enviado" | "Generado";
         cliente: {
             Id: string;
             Nombre: string | null;
@@ -47,7 +47,7 @@ interface AccordionListProps {
         productos: {
             Id: string;
             Nombre: string | null;
-            Pedido: string;
+            Pedido: number;
             Producto: string;
             Codigo_de_barras: string | null;
             Descripcion: string | null;
@@ -65,40 +65,40 @@ export default function AccordionList({ pedidos }: AccordionListProps) {
     api.instalaciones.create.useMutation();
 
 
-    const handleEditEstado = (id: string, estado: string) => {
-        const pedido = pedidos.find((pedido) => pedido.Id === id);
-        if (pedido?.Estado === "Pendiente") {
-            pedido.Estado = "Aprobado";
+    const handleEditestado = (id: number, estado: string) => {
+        const pedido = pedidos.find((pedido) => pedido.id === id);
+        if (pedido?.estado === "Pendiente") {
+            pedido.estado = "Aprobado";
             pedido.Fecha_de_aprobacion = new Date();
             updatePedido({
-                Id: id,
-                Cliente: pedido.Cliente,
-                Estado: pedido.Estado,
-                FechaCreacion: pedido.Fecha_de_creacion.getTime(),
-                Fecha_de_aprobacion: pedido.Fecha_de_aprobacion.getTime(),
+                id: id,
+                clienteId: pedido.clienteId,
+                estado: pedido.estado,
+                fechaCreacion: pedido.Fecha_de_creacion.getTime(),
+                fechaAprobacion: pedido.Fecha_de_aprobacion.getTime(),
             });
         }
-        else if(pedido?.Estado === "Aprobado"){
-            pedido.Estado = "Enviado";
+        else if(pedido?.estado === "Aprobado"){
+            pedido.estado = "Enviado";
             pedido.Fecha_de_envio = new Date();
             updatePedido({
-                Id: id,
-                Cliente: pedido.Cliente,
-                Estado: pedido.Estado,
-                FechaCreacion: pedido.Fecha_de_creacion.getTime(),
-                Fecha_de_aprobacion: pedido.Fecha_de_aprobacion?.getTime(),
-                Fecha_de_envio: pedido.Fecha_de_envio?.getTime(),
+                id: id,
+                clienteId: pedido.clienteId,
+                estado: pedido.estado,
+                fechaCreacion: pedido.Fecha_de_creacion.getTime(),
+                fechaAprobacion: pedido.Fecha_de_aprobacion?.getTime(),
+                fechaEnvio: pedido.Fecha_de_envio?.getTime(),
             });
             createInstalacion({
-                Cliente: pedido.Cliente,
-                FechaAlta: new Date().getMilliseconds(),
-                Pedido : pedido.Id,
-                Estado: "",
-                Empalmista: "",
-                tipoInstalacionId:"",
-                Producto_pedido: "",
-                Codigo_de_barras: "",
-                NroLoteArticulo: "",
+                cliente: pedido.clienteId,
+                fechaAlta: new Date().getMilliseconds(),
+                pedido : Number(pedido.id),
+                estado: "Pendiente",
+                empalmista: "",
+                tipoInstalacionId:0,
+                productoPedidoId: "",
+                codigoDeBarras: "",
+                nroLoteArticulo: "",
             })
         
         }
@@ -114,8 +114,8 @@ export default function AccordionList({ pedidos }: AccordionListProps) {
             <AccordionContent>
                 {<div className="px-8 pt-4">
                 <div className="row flex flex-row justify-between">
-                    <div className="flex flex-row gap-4"><h5 className=" font-bold">Cliente: </h5><h5>{pedido.cliente.Nombre}</h5></div>
-                    <div className="flex flex-row gap-4"><h5 className=" font-bold">Estado: </h5><h5>{pedido.Estado}</h5></div>
+                    <div className="flex flex-row gap-4"><h5 className=" font-bold">clienteId: </h5><h5>{pedido.cliente.Nombre}</h5></div>
+                    <div className="flex flex-row gap-4"><h5 className=" font-bold">estado: </h5><h5>{pedido.estado}</h5></div>
                 </div>
                 <div>
                   <br/>
@@ -141,10 +141,10 @@ export default function AccordionList({ pedidos }: AccordionListProps) {
                     </Table>
                 </div>
                 <br/>
-            {pedido?.Estado !== "Enviado" && (
-                <Button onClick={() => {handleEditEstado(pedido.Id, pedido.Estado)}}>
+            {pedido?.estado !== "Enviado" && (
+                <Button onClick={() => {handleEditestado(pedido.id, pedido.estado)}}>
                     <span>
-                        {pedido.Estado === "Pendiente" ? "Aprobar pedido" : "Enviar pedido"}
+                        {pedido.estado === "Pendiente" ? "Aprobar pedido" : "Enviar pedido"}
                     </span>
                 </Button>
                 // <AdvanceButton pedido={pedido} pedidos={pedidos}></AdvanceButton>

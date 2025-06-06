@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
 
 interface DeletePasoButtonProps {
-  clientId: string;
+  clientId: number;
 }
 
 export function DeletePasoButton({ clientId }: DeletePasoButtonProps) {
@@ -19,7 +19,7 @@ export function DeletePasoButton({ clientId }: DeletePasoButtonProps) {
   const deleteClient = async () => {
     try {
         
-      await deleteClientMethod({ Id: clientId });
+      await deleteClientMethod({ id: clientId });
       toast.success("Paso eliminado correctamente");
       router.refresh();
     } catch (e) {

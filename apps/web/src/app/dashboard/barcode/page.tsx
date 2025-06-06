@@ -15,8 +15,8 @@ import { Barcode } from "lucide-react";
 import BarcodePrintComponent from "~/components/barcodeprintsvg";
 
 export default function Home() {
-  const {data: generatedBarcodes} = api.generatedBarcodes.list.useQuery();
-  const {mutateAsync: addGeneratedBarcode, isPending: isLoading} = api.generatedBarcodes.add.useMutation();
+  // const {data: generatedBarcodes} = api.generatedBarcodes.list.useQuery();
+  // const {mutateAsync: addGeneratedBarcode, isPending: isLoading} = api.generatedBarcodes.add.useMutation();
 
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [ultimaId, setUltimaId] = useState<number | undefined>(undefined);
@@ -26,12 +26,12 @@ export default function Home() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    if (generatedBarcodes && generatedBarcodes.length > 0) {
-      const lastBarcode = generatedBarcodes[generatedBarcodes.length - 1];
-      setUltimaId(parseInt(lastBarcode?.CodigoBarras ?? "0"));
-    }
-  }, [generatedBarcodes]);
+  // useEffect(() => {
+  //   if (generatedBarcodes && generatedBarcodes.length > 0) {
+  //     const lastBarcode = generatedBarcodes[generatedBarcodes.length - 1];
+  //     setUltimaId(parseInt(lastBarcode?.CodigoBarras ?? "0"));
+  //   }
+  // }, [generatedBarcodes]);
 
   //Obtener el ultimo codigo de barras
 
@@ -45,9 +45,9 @@ export default function Home() {
   const handleAddIds = async () => {
     const ids = [];
     for (let i = desde; i <= hasta; i++) {
-      addGeneratedBarcode({
-        CodigoBarras: i.toString(),
-      });
+      // addGeneratedBarcode({
+      //   CodigoBarras: i.toString(),
+      // });
       ids.push(i);
     }
     setSelectedIds(ids);
@@ -104,9 +104,9 @@ export default function Home() {
     }
   };
 
-  if (isLoading) {
-    return <p>Loading...</p>;
-  }
+  // if (isLoading) {
+  //   return <p>Loading...</p>;
+  // }
   return (
     <LayoutContainer>
       <section className="space-y-2">

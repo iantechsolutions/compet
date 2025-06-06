@@ -33,8 +33,8 @@ export function AddClienteDialog({ client }: AddClienteDialogProps) {
 
   const userinfo = useUserInfo();
 
-  const [direccion, setDireccion] = useState(client?.Direccion || "");
-  const [name, setName] = useState(client?.Nombre || "");
+  const [direccion, setDireccion] = useState(client?.direccion || "");
+  const [name, setName] = useState(client?.nombre || "");
 
   const [open, setOpen] = useState(false);
 
@@ -53,15 +53,15 @@ export function AddClienteDialog({ client }: AddClienteDialogProps) {
     try {
       if (client) {
         await updateClient({
-          Id: client.Id,
+          id: client.id,
           name: name,
           direccion: direccion,
         });
         toast.success("Cliente actualizado correctamente");
       } else {
         await createClient({
-          Nombre: name,
-          Direccion: direccion,
+          nombre: name,
+          direccion: direccion,
         });
         toast.success("Cliente creado correctamente");
       }

@@ -19,7 +19,7 @@ export function DeleteClientButton({ clientId }: DeleteClientButtonProps) {
   const deleteClient = async () => {
     try {
         
-      await deleteClientMethod({ Id: clientId });
+      await deleteClientMethod({ id: clientId });
       toast.success("Cliente eliminado correctamente");
       router.refresh();
     } catch (e) {

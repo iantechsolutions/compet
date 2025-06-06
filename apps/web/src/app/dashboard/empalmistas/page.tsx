@@ -19,10 +19,10 @@ export default async function Home(){
           {empalmistas.map((empalmistas) => {
             return (
               <ListTile
-                key={empalmistas.Id}
-                title={empalmistas.Nombre}
+                key={empalmistas.id}
+                title={empalmistas.nombre}
                 button={<AddEmpalmistaDialog empalmista={empalmistas} />}
-                deleteButton={<DeleteEmpalmistaButton clientId={empalmistas.Id} />}
+                deleteButton={<DeleteEmpalmistaButton clientId={empalmistas.id} />}
               />
             );
           })}
